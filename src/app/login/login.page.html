@@ -1,0 +1,112 @@
+<ion-content [fullscreen]="true" class="login-content">
+  <div class="login-container">
+    <!-- Logo/Brand Section -->
+    <div class="brand-section">
+      <div class="logo-container">
+        <img src="assets/imagenes/football-scoop.png" alt="Football Scoop Logo" class="brand-logo" />
+      </div>
+      <h1 class="welcome-title">¡Bienvenido a Football Scoop!</h1>
+      <p class="welcome-subtitle">Tu portal de noticias deportivas</p>
+    </div>
+
+    <!-- Login Form -->
+    <form class="login-form" (ngSubmit)="onLogin()">
+      <!-- Email Input -->
+      <div class="input-group" [class.has-error]="emailError && emailTouched">
+        <div class="input-wrapper">
+          <ion-icon name="mail-outline" class="input-icon"></ion-icon>
+          <ion-input
+            type="email"
+            placeholder="Correo electrónico"
+            [(ngModel)]="email"
+            name="email"
+            (ionBlur)="validateEmail()"
+            [class.filled]="email"
+            class="custom-input"
+          ></ion-input>
+        </div>
+        <span class="error-message" *ngIf="emailError && emailTouched">
+          {{ emailError }}
+        </span>
+      </div>
+
+      <!-- Password Input -->
+      <div class="input-group" [class.has-error]="passwordError && passwordTouched">
+        <div class="input-wrapper">
+          <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
+          <ion-input
+            [type]="showPassword ? 'text' : 'password'"
+            placeholder="Contraseña"
+            [(ngModel)]="password"
+            name="password"
+            (ionBlur)="validatePassword()"
+            [class.filled]="password"
+            class="custom-input"
+          ></ion-input>
+          <ion-icon
+            [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+            class="toggle-password"
+            (click)="togglePassword()"
+          ></ion-icon>
+        </div>
+        <span class="error-message" *ngIf="passwordError && passwordTouched">
+          {{ passwordError }}
+        </span>
+      </div>
+
+      <!-- Remember Me & Forgot Password -->
+      <div class="form-options">
+        <label class="remember-me">
+          <ion-checkbox [(ngModel)]="rememberMe" name="rememberMe"></ion-checkbox>
+          <span>Recordarme</span>
+        </label>
+        <a class="forgot-password" (click)="onForgotPassword()">
+          ¿Olvidaste tu contraseña?
+        </a>
+      </div>
+
+      <!-- Login Button -->
+      <ion-button
+        expand="block"
+        type="submit"
+        class="login-button"
+        [disabled]="isLoading"
+      >
+        <ion-spinner name="crescent" *ngIf="isLoading"></ion-spinner>
+        <span *ngIf="!isLoading">Iniciar Sesión</span>
+      </ion-button>
+
+      <!-- Divider -->
+      <div class="divider">
+        <span>o continúa con</span>
+      </div>
+
+      <!-- Social Login Buttons -->
+      <div class="social-buttons">
+        <ion-button fill="outline" class="social-button google" (click)="loginWithGoogle()">
+          <ion-icon slot="start" name="logo-google"></ion-icon>
+          Google
+        </ion-button>
+        <ion-button fill="outline" class="social-button apple" (click)="loginWithApple()">
+          <ion-icon slot="start" name="logo-apple"></ion-icon>
+          Apple
+        </ion-button>
+      </div>
+
+      <!-- Sign Up Link -->
+      <div class="signup-section">
+        <p>
+          ¿No tienes una cuenta?
+          <a class="signup-link" (click)="onSignUp()">Regístrate aquí</a>
+        </p>
+      </div>
+      
+      <!-- Sports Icons Decoration -->
+      <div class="sports-decoration">
+        <ion-icon name="football-outline"></ion-icon>
+        <ion-icon name="trophy-outline"></ion-icon>
+        <ion-icon name="flame-outline"></ion-icon>
+      </div>
+    </form>
+  </div>
+</ion-content>

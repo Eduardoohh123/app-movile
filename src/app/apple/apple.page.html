@@ -1,0 +1,78 @@
+<ion-content class="apple-content">
+  <div class="apple-container">
+    <!-- Back Button -->
+    <div class="back-button">
+      <ion-button fill="clear" (click)="goBack()">
+        <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
+        Volver
+      </ion-button>
+    </div>
+
+    <!-- Apple Logo Section -->
+    <div class="brand-section">
+      <div class="logo-circle">
+        <ion-icon name="logo-apple"></ion-icon>
+      </div>
+      <h1>Continuar con Apple</h1>
+      <p>Inicia sesión de forma segura con tu Apple ID</p>
+    </div>
+
+    <!-- Info Card -->
+    <div class="info-card">
+      <h3>¿Por qué usar Apple?</h3>
+      <div class="feature-list">
+        <div class="feature-item">
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          <span>Máxima privacidad y seguridad</span>
+        </div>
+        <div class="feature-item">
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          <span>Oculta tu dirección de email</span>
+        </div>
+        <div class="feature-item">
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          <span>Face ID o Touch ID</span>
+        </div>
+        <div class="feature-item">
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          <span>Autenticación biométrica</span>
+        </div>
+      </div>
+
+      <!-- Apple Login Button -->
+      <ion-button 
+        expand="block" 
+        class="apple-button"
+        (click)="loginWithApple()"
+        [disabled]="isLoading"
+      >
+        <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+        <ion-icon *ngIf="!isLoading" name="logo-apple" slot="start"></ion-icon>
+        <span *ngIf="!isLoading">Iniciar sesión con Apple</span>
+      </ion-button>
+
+      <!-- Divider -->
+      <div class="divider">
+        <span>O continúa con</span>
+      </div>
+
+      <!-- Alternative Options -->
+      <div class="alternative-buttons">
+        <ion-button fill="outline" (click)="goToEmail()">
+          <ion-icon name="mail-outline" slot="start"></ion-icon>
+          Email
+        </ion-button>
+        <ion-button fill="outline" (click)="goToGoogle()">
+          <ion-icon name="logo-google" slot="start"></ion-icon>
+          Google
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Privacy Notice -->
+    <div class="privacy-notice">
+      <ion-icon name="shield-checkmark-outline"></ion-icon>
+      <p>Apple no comparte tu información personal. Lee más sobre <a href="#" (click)="showPrivacyPolicy($event)">privacidad de Apple</a>.</p>
+    </div>
+  </div>
+</ion-content>

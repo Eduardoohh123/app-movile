@@ -1,0 +1,78 @@
+<ion-content class="google-content">
+  <div class="google-container">
+    <!-- Back Button -->
+    <div class="back-button">
+      <ion-button fill="clear" (click)="goBack()">
+        <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
+        Volver
+      </ion-button>
+    </div>
+
+    <!-- Google Logo Section -->
+    <div class="brand-section">
+      <div class="logo-circle">
+        <ion-icon name="logo-google"></ion-icon>
+      </div>
+      <h1>Continuar con Google</h1>
+      <p>Accede rápidamente usando tu cuenta de Google</p>
+    </div>
+
+    <!-- Info Card -->
+    <div class="info-card">
+      <h3>¿Por qué usar Google?</h3>
+      <div class="feature-list">
+        <div class="feature-item">
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          <span>Acceso rápido y seguro</span>
+        </div>
+        <div class="feature-item">
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          <span>Sin necesidad de recordar contraseñas</span>
+        </div>
+        <div class="feature-item">
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          <span>Autenticación de dos factores</span>
+        </div>
+        <div class="feature-item">
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          <span>Sincronización automática</span>
+        </div>
+      </div>
+
+      <!-- Google Login Button -->
+      <ion-button 
+        expand="block" 
+        class="google-button"
+        (click)="loginWithGoogle()"
+        [disabled]="isLoading"
+      >
+        <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+        <ion-icon *ngIf="!isLoading" name="logo-google" slot="start"></ion-icon>
+        <span *ngIf="!isLoading">Iniciar sesión con Google</span>
+      </ion-button>
+
+      <!-- Divider -->
+      <div class="divider">
+        <span>O continúa con</span>
+      </div>
+
+      <!-- Alternative Options -->
+      <div class="alternative-buttons">
+        <ion-button fill="outline" (click)="goToEmail()">
+          <ion-icon name="mail-outline" slot="start"></ion-icon>
+          Email
+        </ion-button>
+        <ion-button fill="outline" (click)="goToApple()">
+          <ion-icon name="logo-apple" slot="start"></ion-icon>
+          Apple
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Privacy Notice -->
+    <div class="privacy-notice">
+      <ion-icon name="shield-checkmark-outline"></ion-icon>
+      <p>Tus datos están protegidos y seguros. Lee nuestra <a href="#" (click)="showPrivacyPolicy($event)">política de privacidad</a>.</p>
+    </div>
+  </div>
+</ion-content>
