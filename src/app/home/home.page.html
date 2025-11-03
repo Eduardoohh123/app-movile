@@ -1,66 +1,67 @@
 <!-- Side Menu -->
-<ion-menu contentId="main-content" type="overlay" class="custom-menu">
+<ion-menu contentId="main-content" type="overlay" class="custom-menu" [swipeGesture]="true">
   <ion-header>
-    <ion-toolbar color="primary">
-      <ion-title>Menú</ion-title>
+    <ion-toolbar>
+      <div style="display: flex; justify-content: center; align-items: center; padding: 0.5rem 0;">
+        <img src="assets/imagenes/football-scoop.png" alt="Football Scoop" class="menu-logo" />
+      </div>
     </ion-toolbar>
   </ion-header>
   
   <ion-content class="menu-content">
-    <!-- User Profile Section -->
-    <div class="menu-profile" (click)="navigateToProfile()">
-      <ion-avatar class="profile-avatar">
-        <img [src]="userAvatar" alt="User avatar" />
-      </ion-avatar>
-      <div class="profile-info">
-        <h3>{{ userName }}</h3>
-        <p>Ver perfil</p>
+    <div class="menu-content-wrapper">
+      <!-- User Profile Section -->
+      <div class="menu-profile" (click)="navigateToProfile()">
+        <ion-avatar class="profile-avatar">
+          <img [src]="userAvatar" alt="User avatar" />
+        </ion-avatar>
+        <div class="profile-info">
+          <h3>{{ userName }}</h3>
+          <p>Ver perfil</p>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="profile-arrow"></ion-icon>
       </div>
-      <ion-icon name="chevron-forward-outline" class="profile-arrow"></ion-icon>
-    </div>
 
-    <!-- Menu Items -->
-    <ion-list class="menu-list">
-      <ion-item button (click)="navigateToHome()" detail="false">
-        <ion-icon slot="start" name="home-outline"></ion-icon>
-        <ion-label>Inicio</ion-label>
-      </ion-item>
+      <!-- Menu Items -->
+      <div class="menu-items-wrapper">
+        <ion-list class="menu-list">
+          <ion-item button (click)="navigateToLogin()" detail="false">
+            <ion-icon slot="start" name="log-in-outline"></ion-icon>
+            <ion-label>Iniciar Sesión</ion-label>
+          </ion-item>
 
-      <ion-item button (click)="navigateToLogin()" detail="false">
-        <ion-icon slot="start" name="log-in-outline"></ion-icon>
-        <ion-label>Iniciar Sesión</ion-label>
-      </ion-item>
+          <ion-item button (click)="navigateToPage('/matches')" detail="false">
+            <ion-icon slot="start" name="football-outline"></ion-icon>
+            <ion-label>Partidos</ion-label>
+          </ion-item>
 
-      <ion-item button (click)="navigateToPage('/matches')" detail="false">
-        <ion-icon slot="start" name="football-outline"></ion-icon>
-        <ion-label>Partidos</ion-label>
-      </ion-item>
+          <ion-item button (click)="navigateToPage('/standings')" detail="false">
+            <ion-icon slot="start" name="trophy-outline"></ion-icon>
+            <ion-label>Clasificación</ion-label>
+          </ion-item>
 
-      <ion-item button (click)="navigateToPage('/standings')" detail="false">
-        <ion-icon slot="start" name="trophy-outline"></ion-icon>
-        <ion-label>Clasificación</ion-label>
-      </ion-item>
+          <ion-item button (click)="navigateToPage('/news')" detail="false">
+            <ion-icon slot="start" name="newspaper-outline"></ion-icon>
+            <ion-label>Noticias</ion-label>
+          </ion-item>
 
-      <ion-item button (click)="navigateToPage('/news')" detail="false">
-        <ion-icon slot="start" name="newspaper-outline"></ion-icon>
-        <ion-label>Noticias</ion-label>
-      </ion-item>
+          <ion-item button (click)="navigateToSettings()" detail="false">
+            <ion-icon slot="start" name="settings-outline"></ion-icon>
+            <ion-label>Configuración</ion-label>
+          </ion-item>
 
-      <ion-item button (click)="navigateToSettings()" detail="false">
-        <ion-icon slot="start" name="settings-outline"></ion-icon>
-        <ion-label>Configuración</ion-label>
-      </ion-item>
-
-      <ion-item button (click)="logout()" detail="false" lines="none" class="logout-item">
-        <ion-icon slot="start" name="log-out-outline" color="danger"></ion-icon>
-        <ion-label color="danger">Cerrar Sesión</ion-label>
-      </ion-item>
-    </ion-list>
+          <ion-item button (click)="logout()" detail="false" lines="none" class="logout-item">
+            <ion-icon slot="start" name="log-out-outline" color="danger"></ion-icon>
+            <ion-label color="danger">Cerrar Sesión</ion-label>
+          </ion-item>
+        </ion-list>
+      </div>
 
     <!-- App Info -->
     <div class="menu-footer">
       <p>Versión 1.0.0</p>
       <p class="footer-copyright">© 2025 Tu Empresa</p>
+    </div>
     </div>
   </ion-content>
 </ion-menu>
@@ -91,7 +92,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="home-content">
+<ion-content [fullscreen]="true" class="home-content" (click)="onContentClick($event)">
   <!-- Welcome Section -->
   <div class="welcome-section">
     <div class="welcome-header">
@@ -224,94 +225,4 @@
     </ion-fab-list>
   </ion-fab>
 
-  <!-- Footer -->
-  <footer class="app-footer">
-    <div class="footer-content">
-      <!-- Footer Top Section -->
-      <div class="footer-top">
-        <div class="footer-brand">
-          <div class="footer-logo">
-            <img src="assets/imagenes/football-scoop.png" alt="Football Scoop Logo" class="footer-logo-img" />
-          </div>
-          <h3>Football Scoop</h3>
-          <p>Tu fuente de noticias deportivas</p>
-        </div>
-
-        <div class="footer-links">
-          <div class="footer-column">
-            <h4>Producto</h4>
-            <ul>
-              <li><a (click)="navigateToPage('/features')">Características</a></li>
-              <li><a (click)="navigateToPage('/pricing')">Precios</a></li>
-              <li><a (click)="navigateToPage('/updates')">Actualizaciones</a></li>
-              <li><a (click)="navigateToPage('/roadmap')">Roadmap</a></li>
-            </ul>
-          </div>
-
-          <div class="footer-column">
-            <h4>Empresa</h4>
-            <ul>
-              <li><a (click)="navigateToPage('/about')">Acerca de</a></li>
-              <li><a (click)="navigateToPage('/team')">Equipo</a></li>
-              <li><a (click)="navigateToPage('/careers')">Carreras</a></li>
-              <li><a (click)="navigateToPage('/contact')">Contacto</a></li>
-            </ul>
-          </div>
-
-          <div class="footer-column">
-            <h4>Soporte</h4>
-            <ul>
-              <li><a (click)="navigateToPage('/help')">Centro de Ayuda</a></li>
-              <li><a (click)="navigateToPage('/docs')">Documentación</a></li>
-              <li><a (click)="navigateToPage('/api')">API</a></li>
-              <li><a (click)="navigateToPage('/status')">Estado</a></li>
-            </ul>
-          </div>
-
-          <div class="footer-column">
-            <h4>Legal</h4>
-            <ul>
-              <li><a (click)="navigateToPage('/privacy')">Privacidad</a></li>
-              <li><a (click)="navigateToPage('/terms')">Términos</a></li>
-              <li><a (click)="navigateToPage('/cookies')">Cookies</a></li>
-              <li><a (click)="navigateToPage('/licenses')">Licencias</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <!-- Footer Divider -->
-      <div class="footer-divider"></div>
-
-      <!-- Footer Bottom Section -->
-      <div class="footer-bottom">
-        <div class="footer-social">
-          <a (click)="openSocialLink('facebook')" class="social-link">
-            <ion-icon name="logo-facebook"></ion-icon>
-          </a>
-          <a (click)="openSocialLink('twitter')" class="social-link">
-            <ion-icon name="logo-twitter"></ion-icon>
-          </a>
-          <a (click)="openSocialLink('instagram')" class="social-link">
-            <ion-icon name="logo-instagram"></ion-icon>
-          </a>
-          <a (click)="openSocialLink('linkedin')" class="social-link">
-            <ion-icon name="logo-linkedin"></ion-icon>
-          </a>
-          <a (click)="openSocialLink('github')" class="social-link">
-            <ion-icon name="logo-github"></ion-icon>
-          </a>
-        </div>
-
-        <div class="footer-copyright">
-          <p>© {{ currentYear }} Football Scoop. Todos los derechos reservados.</p>
-        </div>
-
-        <div class="footer-badges">
-          <span class="badge">Versión 1.0.0</span>
-          <span class="badge badge-success">En línea</span>
-        </div>
-      </div>
-    </div>
-  </footer>
 </ion-content>

@@ -290,6 +290,16 @@ export class HomePage implements OnInit {
   }
 
   /**
+   * Handle content click to close menu
+   */
+  async onContentClick(event: Event) {
+    const isMenuOpen = await this.menuController.isOpen();
+    if (isMenuOpen) {
+      await this.closeMenu();
+    }
+  }
+
+  /**
    * Navigate to home (close menu)
    */
   async navigateToHome() {
