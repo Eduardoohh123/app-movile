@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -8,8 +8,11 @@ import {
   IonInput,
   IonIcon,
   IonCheckbox,
-  IonSpinner
+  IonSpinner,
+  ModalController,
+  ActionSheetController
 } from '@ionic/angular/standalone';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { addIcons } from 'ionicons';
 import {
   arrowBackOutline,
@@ -18,7 +21,16 @@ import {
   mailOutline,
   lockClosedOutline,
   eyeOutline,
-  eyeOffOutline
+  eyeOffOutline,
+  cameraOutline,
+  personCircleOutline,
+  footballOutline,
+  trophyOutline,
+  flameOutline,
+  imagesOutline,
+  closeOutline,
+  syncOutline,
+  trashOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -38,12 +50,19 @@ import {
   ]
 })
 export class RegistrarPage implements OnInit {
+  @Input() inline: boolean = false;
+  @Output() close: EventEmitter<void> = new EventEmitter<void>();
+  
   // Form fields
   fullName: string = '';
   email: string = '';
   password: string = '';
   confirmPassword: string = '';
   acceptTerms: boolean = false;
+
+  // Profile photo
+  profilePhoto: string | null = null;
+  photoPreviewUrl: string | null = null;
 
   // UI state
   showPassword: boolean = false;
@@ -60,7 +79,11 @@ export class RegistrarPage implements OnInit {
   passwordError: string = '';
   confirmPasswordError: string = '';
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router, 
+    private modalController: ModalController,
+    private actionSheetController: ActionSheetController
+  ) {
     addIcons({
       'arrow-back-outline': arrowBackOutline,
       'person-add-outline': personAddOutline,
@@ -68,7 +91,16 @@ export class RegistrarPage implements OnInit {
       'mail-outline': mailOutline,
       'lock-closed-outline': lockClosedOutline,
       'eye-outline': eyeOutline,
-      'eye-off-outline': eyeOffOutline
+      'eye-off-outline': eyeOffOutline,
+      'camera-outline': cameraOutline,
+      'person-circle-outline': personCircleOutline,
+      'football-outline': footballOutline,
+      'trophy-outline': trophyOutline,
+      'flame-outline': flameOutline,
+      'images-outline': imagesOutline,
+      'close-outline': closeOutline,
+      'sync-outline': syncOutline,
+      'trash-outline': trashOutline
     });
   }
 
@@ -78,7 +110,11 @@ export class RegistrarPage implements OnInit {
    * Go back to login
    */
   goBack() {
-    this.router.navigate(['/login']);
+    if (this.inline) {
+      this.modalController.dismiss();
+    } else {
+      this.router.navigate(['/login']);
+    }
   }
 
   /**
@@ -211,9 +247,13 @@ export class RegistrarPage implements OnInit {
       // Simulate API call
       await this.simulateRegister();
 
-      // Navigate to login or home
+      // Navigate to login or close inline form
       alert('¡Cuenta creada exitosamente!');
-      this.router.navigate(['/login']);
+      if (this.inline) {
+        this.modalController.dismiss();
+      } else {
+        this.router.navigate(['/login']);
+      }
     } catch (error) {
       console.error('Register error:', error);
       alert('Error al crear la cuenta. Intenta de nuevo.');
@@ -245,6 +285,81 @@ export class RegistrarPage implements OnInit {
    * Go to login page
    */
   goToLogin() {
-    this.router.navigate(['/login']);
+    if (this.inline) {
+      this.modalController.dismiss();
+    } else {
+      this.router.navigate(['/login']);
+    }
+  }
+
+  /**
+   * Take picture for profile photo
+   */
+  async takePicture() {
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Foto de Perfil',
+      buttons: [
+        {
+          text: 'Tomar Foto',
+          icon: 'camera-outline',
+          handler: () => {
+            this.selectImageSource(CameraSource.Camera);
+          }
+        },
+        {
+          text: 'Elegir de Galería',
+          icon: 'images-outline',
+          handler: () => {
+            this.selectImageSource(CameraSource.Photos);
+          }
+        },
+        {
+          text: 'Cancelar',
+          icon: 'close-outline',
+          role: 'cancel'
+        }
+      ]
+    });
+    await actionSheet.present();
+  }
+
+  /**
+   * Select image from camera or gallery
+   */
+  async selectImageSource(source: CameraSource) {
+    try {
+      const image = await Camera.getPhoto({
+        quality: 80,
+        allowEditing: true,
+        resultType: CameraResultType.Base64,
+        source: source,
+        width: 400,
+        height: 400,
+        correctOrientation: true,
+        presentationStyle: 'fullscreen'
+      });
+
+      if (image.base64String) {
+        this.profilePhoto = image.base64String;
+        this.photoPreviewUrl = `data:image/${image.format};base64,${image.base64String}`;
+      }
+    } catch (error) {
+      console.error('Error al seleccionar imagen:', error);
+    }
+  }
+
+  /**
+   * Remove profile photo
+   */
+  removePhoto() {
+    this.profilePhoto = null;
+    this.photoPreviewUrl = null;
+  }
+
+  /**
+   * Change/update profile photo
+   */
+  changePhoto() {
+    this.takePicture();
   }
 }

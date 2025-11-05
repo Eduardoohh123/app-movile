@@ -8,8 +8,10 @@ import {
   IonIcon, 
   IonButton, 
   IonCheckbox,
-  IonSpinner
+  IonSpinner,
+  ModalController
 } from '@ionic/angular/standalone';
+import { RegistrarPage } from '../registrar/registrar.page';
 import { addIcons } from 'ionicons';
 import { 
   mailOutline, 
@@ -52,7 +54,7 @@ export class LoginPage implements OnInit {
   emailError: string = '';
   passwordError: string = '';
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private modalController: ModalController) {
     // Register icons
     addIcons({
       'mail-outline': mailOutline,
@@ -68,12 +70,135 @@ export class LoginPage implements OnInit {
     });
   }
 
+  // Inline register toggle
+  showRegister: boolean = false;
+
+  // Inline register form fields and state
+  regFullName: string = '';
+  regEmail: string = '';
+  regPassword: string = '';
+  regConfirmPassword: string = '';
+  regAcceptTerms: boolean = false;
+
+  regShowPassword: boolean = false;
+  regShowConfirmPassword: boolean = false;
+  regIsLoading: boolean = false;
+
+  regFullNameTouched: boolean = false;
+  regEmailTouched: boolean = false;
+  regPasswordTouched: boolean = false;
+  regConfirmPasswordTouched: boolean = false;
+
+  regFullNameError: string = '';
+  regEmailError: string = '';
+  regPasswordError: string = '';
+  regConfirmPasswordError: string = '';
+
   ngOnInit() {
     // Load remembered email if exists
     const rememberedEmail = localStorage.getItem('rememberedEmail');
     if (rememberedEmail) {
       this.email = rememberedEmail;
       this.rememberMe = true;
+    }
+  }
+
+  // --- Inline register helpers ---
+  toggleRegPassword() {
+    this.regShowPassword = !this.regShowPassword;
+  }
+
+  toggleRegConfirmPassword() {
+    this.regShowConfirmPassword = !this.regShowConfirmPassword;
+  }
+
+  validateRegFullName() {
+    this.regFullNameTouched = true;
+    this.regFullNameError = '';
+    if (!this.regFullName) {
+      this.regFullNameError = 'El nombre completo es requerido';
+      return false;
+    }
+    if (this.regFullName.trim().length < 3) {
+      this.regFullNameError = 'El nombre debe tener al menos 3 caracteres';
+      return false;
+    }
+    return true;
+  }
+
+  validateRegEmail() {
+    this.regEmailTouched = true;
+    this.regEmailError = '';
+    if (!this.regEmail) {
+      this.regEmailError = 'El correo electrónico es requerido';
+      return false;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.regEmail)) {
+      this.regEmailError = 'Ingresa un correo electrónico válido';
+      return false;
+    }
+    return true;
+  }
+
+  validateRegPassword() {
+    this.regPasswordTouched = true;
+    this.regPasswordError = '';
+    if (!this.regPassword) {
+      this.regPasswordError = 'La contraseña es requerida';
+      return false;
+    }
+    if (this.regPassword.length < 6) {
+      this.regPasswordError = 'La contraseña debe tener al menos 6 caracteres';
+      return false;
+    }
+    const hasUpperCase = /[A-Z]/.test(this.regPassword);
+    const hasLowerCase = /[a-z]/.test(this.regPassword);
+    const hasNumbers = /\d/.test(this.regPassword);
+    if (!hasUpperCase || !hasLowerCase || !hasNumbers) {
+      this.regPasswordError = 'La contraseña debe contener mayúsculas, minúsculas y números';
+      return false;
+    }
+    return true;
+  }
+
+  validateRegConfirmPassword() {
+    this.regConfirmPasswordTouched = true;
+    this.regConfirmPasswordError = '';
+    if (!this.regConfirmPassword) {
+      this.regConfirmPasswordError = 'Confirma tu contraseña';
+      return false;
+    }
+    if (this.regPassword !== this.regConfirmPassword) {
+      this.regConfirmPasswordError = 'Las contraseñas no coinciden';
+      return false;
+    }
+    return true;
+  }
+
+  async onRegisterInline() {
+    const vName = this.validateRegFullName();
+    const vEmail = this.validateRegEmail();
+    const vPass = this.validateRegPassword();
+    const vConfirm = this.validateRegConfirmPassword();
+    if (!vName || !vEmail || !vPass || !vConfirm) return;
+    if (!this.regAcceptTerms) {
+      alert('Debes aceptar los términos y condiciones');
+      return;
+    }
+    this.regIsLoading = true;
+    try {
+      await new Promise((r) => setTimeout(r, 1200));
+      alert('¡Cuenta creada exitosamente!');
+      // close inline form and reset fields
+      this.showRegister = false;
+      this.regFullName = this.regEmail = this.regPassword = this.regConfirmPassword = '';
+      this.regAcceptTerms = false;
+    } catch (e) {
+      console.error(e);
+      alert('Error al crear la cuenta. Intenta de nuevo.');
+    } finally {
+      this.regIsLoading = false;
     }
   }
 
@@ -189,9 +314,22 @@ export class LoginPage implements OnInit {
   /**
    * Handle sign up
    */
-  onSignUp() {
-    console.log('Sign up clicked');
-    this.router.navigate(['/registrar']);
+  async onSignUp() {
+    console.log('Sign up clicked - opening modal');
+    await this.openRegisterModal();
+  }
+
+  /**
+   * Open register modal
+   */
+  async openRegisterModal() {
+    const modal = await this.modalController.create({
+      component: RegistrarPage,
+      componentProps: {
+        inline: true
+      }
+    });
+    await modal.present();
   }
 
   /**
@@ -208,6 +346,14 @@ export class LoginPage implements OnInit {
   async loginWithApple() {
     console.log('Login with Apple clicked');
     this.router.navigate(['/apple']);
+  }
+
+  toggleRegister() {
+    this.showRegister = !this.showRegister;
+  }
+
+  closeRegister() {
+    this.showRegister = false;
   }
 }
 

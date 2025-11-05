@@ -1,4 +1,4 @@
-<ion-content class="register-content">
+<ion-content [fullscreen]="true" class="register-content">
   <div class="register-container">
     <!-- Back Button -->
     <div class="back-button">
@@ -19,6 +19,32 @@
 
     <!-- Register Form -->
     <form class="register-form" (ngSubmit)="onRegister()">
+      <!-- Profile Photo Section -->
+      <div class="profile-photo-section">
+        <div class="photo-placeholder" [class.has-photo]="photoPreviewUrl" (click)="takePicture()">
+          <img *ngIf="photoPreviewUrl" [src]="photoPreviewUrl" alt="Preview" class="photo-preview" />
+          <ion-icon *ngIf="!photoPreviewUrl" name="person-circle-outline"></ion-icon>
+        </div>
+        
+        <div class="photo-actions">
+          <ion-button *ngIf="!photoPreviewUrl" fill="outline" size="small" class="camera-button" (click)="takePicture()">
+            <ion-icon slot="start" name="camera-outline"></ion-icon>
+            Agregar Foto
+          </ion-button>
+          
+          <div *ngIf="photoPreviewUrl" class="photo-buttons">
+            <ion-button fill="outline" size="small" class="change-button" (click)="changePhoto()">
+              <ion-icon slot="start" name="sync-outline"></ion-icon>
+              Cambiar
+            </ion-button>
+            <ion-button fill="outline" size="small" color="danger" class="remove-button" (click)="removePhoto()">
+              <ion-icon slot="start" name="trash-outline"></ion-icon>
+              Eliminar
+            </ion-button>
+          </div>
+        </div>
+      </div>
+
       <!-- Full Name Field -->
       <div class="form-group">
         <label for="fullName">Nombre Completo</label>
