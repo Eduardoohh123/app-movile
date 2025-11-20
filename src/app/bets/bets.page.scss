@@ -1,0 +1,2589 @@
+// ===================================
+// BETS PAGE STYLES
+// ===================================
+
+.custom-header {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      rgba(0, 212, 255, 0.05) 0px,
+      rgba(0, 212, 255, 0.05) 10px,
+      transparent 10px,
+      transparent 20px
+    );
+    animation: diagonalMove 20s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  &::after {
+    content: '🎰';
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    font-size: 2rem;
+    opacity: 0.15;
+    transform: translateY(-50%);
+    z-index: 0;
+    animation: spinIcon 8s linear infinite;
+  }
+
+  ion-toolbar {
+    --background: linear-gradient(135deg, rgba(10, 10, 30, 0.95) 0%, rgba(0, 80, 160, 0.95) 50%, rgba(10, 10, 30, 0.95) 100%);
+    --color: white;
+    --border-width: 0;
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border-bottom: 2px solid rgba(0, 212, 255, 0.4);
+    border-top: 1px solid rgba(0, 212, 255, 0.2);
+    box-shadow: 0 4px 20px rgba(0, 212, 255, 0.25), 0 0 40px rgba(0, 212, 255, 0.1);
+    position: relative;
+    z-index: 1;
+  }
+
+  ion-title {
+    font-weight: 900;
+    font-size: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-family: 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+
+    .title-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+
+      ion-icon {
+        font-size: 1.6rem;
+        color: #4ade80;
+        filter: drop-shadow(0 2px 8px rgba(74, 222, 128, 0.6));
+        animation: coinFlip 3s ease-in-out infinite;
+      }
+
+      span {
+        display: inline-block;
+        background: linear-gradient(135deg, #ffffff 0%, #00d4ff 50%, #ffffff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        filter: drop-shadow(0 3px 6px rgba(0, 212, 255, 0.5)) drop-shadow(0 0 20px rgba(0, 212, 255, 0.3));
+        font-weight: 900;
+        font-style: italic;
+        transform: skewX(-5deg);
+      }
+    }
+  }
+}
+
+.bets-content {
+  --background: linear-gradient(180deg, #0a0e27 0%, #1a1f3a 100%);
+
+  // ========== BALANCE CARD ==========
+  .balance-card {
+    margin: 20px auto;
+    max-width: calc(100% - 32px);
+    background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(255, 20, 147, 0.2));
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 8px 32px rgba(138, 43, 226, 0.3);
+    backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, 
+        transparent 30%, 
+        rgba(255, 255, 255, 0.05) 50%, 
+        transparent 70%);
+      animation: casinoGlow 4s linear infinite;
+    }
+
+    .balance-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .balance-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 12px;
+
+      ion-icon {
+        font-size: 24px;
+        color: #ffd700;
+        filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+      }
+
+      h2 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.7);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+    }
+
+    .balance-amount {
+      font-size: 42px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 8px 0 20px 0;
+      text-align: center;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+      filter: drop-shadow(0 2px 8px rgba(255, 215, 0, 0.4));
+    }
+
+    .balance-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+
+      ion-button {
+        flex: 1;
+        --border-radius: 12px;
+        --padding-top: 14px;
+        --padding-bottom: 14px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        --ripple-color: transparent;
+        --background-focused: transparent;
+        --background-hover: transparent;
+
+        &:first-child {
+          --background: linear-gradient(135deg, #8a2be2, #ff1493);
+          --box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+        }
+
+        &:last-child {
+          --border-color: rgba(138, 43, 226, 0.8);
+          --color: #ffffff;
+        }
+      }
+    }
+  }
+
+  // ========== TABS ==========
+  .bets-tabs {
+    margin: 0 16px 20px 16px;
+
+    ion-segment {
+      --background: rgba(26, 31, 58, 0.5);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 4px;
+
+      ion-segment-button {
+        --background-checked: linear-gradient(135deg, #8a2be2, #ff1493);
+        --color: rgba(255, 255, 255, 0.5);
+        --color-checked: #ffffff;
+        --indicator-height: 0;
+        border-radius: 10px;
+        min-height: 50px;
+        font-weight: 600;
+        font-size: 13px;
+        transition: all 0.3s ease;
+
+        ion-icon {
+          margin-bottom: 4px;
+          font-size: 20px;
+        }
+
+        ion-label {
+          margin-top: 2px;
+        }
+
+        &::part(native) {
+          transition: all 0.3s ease;
+        }
+
+        &.segment-button-checked {
+          box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+        }
+      }
+    }
+  }
+
+  // ========== CATEGORY FILTER ==========
+  .category-filter {
+    display: flex;
+    gap: 8px;
+    padding: 0 16px 16px 16px;
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    ion-chip {
+      --background: rgba(26, 31, 58, 0.6);
+      --color: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(138, 43, 226, 0.3);
+      border-radius: 20px;
+      padding: 8px 16px;
+      height: 36px;
+      font-weight: 600;
+      font-size: 13px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+
+      ion-icon {
+        font-size: 18px;
+        margin-right: 4px;
+      }
+
+      &.active {
+        --background: linear-gradient(135deg, #8a2be2, #ff1493);
+        --color: #ffffff;
+        border-color: transparent;
+        box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+        transform: scale(1.05);
+      }
+    }
+  }
+
+  // ========== BETS LIST ==========
+  .bets-list {
+    padding: 0 16px 20px 16px;
+  }
+
+  // ========== BET CARD (Available) ==========
+  .bet-card {
+    background: rgba(26, 31, 58, 0.6);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(138, 43, 226, 0.3);
+    backdrop-filter: blur(20px);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(138, 43, 226, 0.3);
+    }
+
+    // Featured Card
+    &.featured {
+      border: 2px solid #ffd700;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+      
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, 
+          transparent, 
+          rgba(255, 215, 0, 0.1), 
+          transparent);
+        animation: shimmer 3s infinite;
+      }
+    }
+
+    // Live Card
+    &.live {
+      border-color: #ff1493;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: radial-gradient(circle at top right, 
+          rgba(255, 20, 147, 0.15) 0%, 
+          transparent 50%);
+        pointer-events: none;
+      }
+    }
+
+    .featured-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: linear-gradient(135deg, #ffd700, #ffed4e);
+      color: #1a1f3a;
+      padding: 6px 12px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 10px rgba(255, 215, 0, 0.4);
+      z-index: 2;
+
+      ion-icon {
+        font-size: 14px;
+        animation: starPulse 2s ease-in-out infinite;
+      }
+    }
+
+    .live-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #ff1493;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 15px rgba(255, 20, 147, 0.6);
+      z-index: 2;
+
+      .pulse-dot {
+        width: 8px;
+        height: 8px;
+        background: white;
+        border-radius: 50%;
+        animation: pulse 1.5s ease-in-out infinite;
+      }
+    }
+
+    .bet-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+
+      .bet-league {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .league-badge {
+          font-size: 24px;
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .league-name {
+          font-size: 13px;
+          font-weight: 700;
+          color: rgba(255, 255, 255, 0.9);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+      }
+
+      .bet-time {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.6);
+        background: rgba(138, 43, 226, 0.2);
+        padding: 4px 10px;
+        border-radius: 12px;
+
+        ion-icon {
+          font-size: 14px;
+        }
+      }
+    }
+
+    .bet-match {
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+
+      .match-teams {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+
+        .team {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+
+          &.home-team {
+            align-items: flex-start;
+          }
+
+          &.away-team {
+            align-items: flex-end;
+          }
+
+          .team-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: white;
+            line-height: 1.3;
+          }
+
+          .team-score {
+            font-size: 24px;
+            font-weight: 900;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+          }
+        }
+
+        .vs {
+          flex-shrink: 0;
+          background: linear-gradient(135deg, #8a2be2, #ff1493);
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 900;
+          font-size: 12px;
+          color: white;
+          box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+          letter-spacing: 1px;
+        }
+      }
+    }
+
+    .bet-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+
+      .bet-option {
+        background: rgba(138, 43, 226, 0.15);
+        border: 1px solid rgba(138, 43, 226, 0.3);
+        border-radius: 12px;
+        padding: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+
+        &:active {
+          transform: scale(0.95);
+        }
+
+        &:hover {
+          background: rgba(138, 43, 226, 0.3);
+          border-color: #8a2be2;
+          box-shadow: 0 0 15px rgba(138, 43, 226, 0.4);
+        }
+
+        .option-header {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 4px;
+          margin-bottom: 8px;
+
+          ion-icon {
+            font-size: 18px;
+            color: #8a2be2;
+          }
+
+          .option-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+        }
+
+        .option-odd {
+          font-size: 20px;
+          font-weight: 900;
+          color: #ffd700;
+          text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+      }
+    }
+  }
+
+  // ========== STATS SUMMARY ==========
+  .stats-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+
+    .stat-item {
+      background: rgba(26, 31, 58, 0.6);
+      border: 1px solid rgba(138, 43, 226, 0.3);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      backdrop-filter: blur(20px);
+
+      &.success {
+        border-color: rgba(0, 255, 127, 0.3);
+        
+        ion-icon {
+          color: #00ff7f;
+        }
+      }
+
+      ion-icon {
+        font-size: 28px;
+        color: #8a2be2;
+      }
+
+      .stat-info {
+        text-align: center;
+        
+        .stat-value {
+          display: block;
+          font-size: 20px;
+          font-weight: 900;
+          color: white;
+          margin-bottom: 2px;
+        }
+
+        .stat-label {
+          display: block;
+          font-size: 11px;
+          color: rgba(255, 255, 255, 0.6);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+      }
+    }
+  }
+
+  // ========== ACTIVE BET CARD ==========
+  .active-bet-card {
+    background: rgba(26, 31, 58, 0.6);
+    border: 1px solid rgba(138, 43, 226, 0.3);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    backdrop-filter: blur(20px);
+    position: relative;
+    overflow: hidden;
+
+    .bet-status {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+
+      &.pending {
+        background: rgba(255, 165, 0, 0.2);
+        color: #ffa500;
+        border: 1px solid rgba(255, 165, 0, 0.3);
+      }
+
+      &.live {
+        background: rgba(255, 20, 147, 0.2);
+        color: #ff1493;
+        border: 1px solid rgba(255, 20, 147, 0.3);
+        box-shadow: 0 0 15px rgba(255, 20, 147, 0.3);
+      }
+
+      .pulse-dot {
+        width: 8px;
+        height: 8px;
+        background: currentColor;
+        border-radius: 50%;
+        animation: pulse 1.5s ease-in-out infinite;
+      }
+
+      ion-icon {
+        font-size: 14px;
+      }
+    }
+
+    .bet-match-info {
+      margin-bottom: 16px;
+      padding-right: 100px;
+
+      h3 {
+        font-size: 16px;
+        font-weight: 700;
+        color: white;
+        margin: 0 0 8px 0;
+
+        .vs-small {
+          color: rgba(255, 255, 255, 0.5);
+          font-weight: 600;
+          font-size: 14px;
+          margin: 0 6px;
+        }
+      }
+
+      .league-info {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.7);
+        margin: 0;
+
+        ion-icon {
+          font-size: 16px;
+          color: #ffd700;
+        }
+      }
+    }
+
+    .bet-details {
+      background: rgba(138, 43, 226, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+
+      .detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        &.total {
+          padding-top: 12px;
+          border-top: 1px solid rgba(138, 43, 226, 0.3);
+          margin-top: 12px;
+        }
+
+        .label {
+          font-size: 13px;
+          color: rgba(255, 255, 255, 0.6);
+        }
+
+        .value {
+          font-size: 14px;
+          font-weight: 700;
+          color: white;
+
+          &.highlight {
+            color: #ffd700;
+          }
+        }
+
+        .potential-win {
+          font-size: 18px;
+          font-weight: 900;
+          background: linear-gradient(135deg, #00ff7f, #00d4aa);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+      }
+    }
+
+    .bet-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+
+      .bet-date {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        ion-icon {
+          font-size: 14px;
+        }
+      }
+    }
+
+    .bet-actions {
+      display: flex;
+      justify-content: flex-end;
+
+      ion-button {
+        --padding-start: 12px;
+        --padding-end: 12px;
+        font-size: 12px;
+        font-weight: 600;
+
+        ion-icon {
+          font-size: 16px;
+        }
+      }
+    }
+  }
+
+  // ========== HISTORY STATS ==========
+  .history-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+
+    .stat-card {
+      background: rgba(26, 31, 58, 0.6);
+      border: 1px solid rgba(138, 43, 226, 0.3);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      backdrop-filter: blur(20px);
+
+      &.success {
+        border-color: rgba(0, 255, 127, 0.4);
+        
+        .stat-icon {
+          background: rgba(0, 255, 127, 0.2);
+          
+          ion-icon {
+            color: #00ff7f;
+          }
+        }
+      }
+
+      &.danger {
+        border-color: rgba(255, 69, 58, 0.4);
+        
+        .stat-icon {
+          background: rgba(255, 69, 58, 0.2);
+          
+          ion-icon {
+            color: #ff453a;
+          }
+        }
+      }
+
+      &.primary {
+        border-color: rgba(138, 43, 226, 0.4);
+        
+        .stat-icon {
+          background: rgba(138, 43, 226, 0.2);
+          
+          ion-icon {
+            color: #8a2be2;
+          }
+        }
+      }
+
+      .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        ion-icon {
+          font-size: 28px;
+        }
+      }
+
+      .stat-content {
+        display: flex;
+        flex-direction: column;
+
+        .stat-number {
+          font-size: 24px;
+          font-weight: 900;
+          color: white;
+          line-height: 1;
+          margin-bottom: 4px;
+        }
+
+        .stat-text {
+          font-size: 12px;
+          color: rgba(255, 255, 255, 0.6);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+      }
+    }
+  }
+
+  // ========== PROFIT CARD ==========
+  .profit-card {
+    background: rgba(26, 31, 58, 0.6);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(138, 43, 226, 0.3);
+
+    &.profit {
+      border-color: rgba(0, 255, 127, 0.5);
+      box-shadow: 0 0 20px rgba(0, 255, 127, 0.2);
+      
+      ion-icon {
+        color: #00ff7f;
+        filter: drop-shadow(0 0 10px rgba(0, 255, 127, 0.5));
+      }
+
+      .profit-amount {
+        color: #00ff7f;
+      }
+    }
+
+    &.loss {
+      border-color: rgba(255, 69, 58, 0.5);
+      box-shadow: 0 0 20px rgba(255, 69, 58, 0.2);
+      
+      ion-icon {
+        color: #ff453a;
+        filter: drop-shadow(0 0 10px rgba(255, 69, 58, 0.5));
+      }
+
+      .profit-amount {
+        color: #ff453a;
+      }
+    }
+
+    ion-icon {
+      font-size: 48px;
+    }
+
+    .profit-info {
+      flex: 1;
+      
+      .profit-label {
+        display: block;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+
+      .profit-amount {
+        display: block;
+        font-size: 32px;
+        font-weight: 900;
+        line-height: 1;
+      }
+    }
+  }
+
+  // ========== HISTORY CARD ==========
+  .history-card {
+    background: rgba(26, 31, 58, 0.6);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    backdrop-filter: blur(20px);
+    position: relative;
+    overflow: hidden;
+
+    &.won {
+      border: 1px solid rgba(0, 255, 127, 0.4);
+      box-shadow: 0 0 20px rgba(0, 255, 127, 0.1);
+    }
+
+    &.lost {
+      border: 1px solid rgba(255, 69, 58, 0.4);
+      box-shadow: 0 0 20px rgba(255, 69, 58, 0.1);
+    }
+
+    .result-badge {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+
+      &.won {
+        background: rgba(0, 255, 127, 0.2);
+        color: #00ff7f;
+        border: 1px solid rgba(0, 255, 127, 0.3);
+      }
+
+      &.lost {
+        background: rgba(255, 69, 58, 0.2);
+        color: #ff453a;
+        border: 1px solid rgba(255, 69, 58, 0.3);
+      }
+
+      ion-icon {
+        font-size: 14px;
+      }
+    }
+
+    .history-match {
+      margin-bottom: 16px;
+      padding-right: 100px;
+
+      h3 {
+        font-size: 16px;
+        font-weight: 700;
+        color: white;
+        margin: 0 0 8px 0;
+
+        .vs-small {
+          color: rgba(255, 255, 255, 0.5);
+          font-weight: 600;
+          font-size: 14px;
+          margin: 0 6px;
+        }
+      }
+
+      .league-info {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.7);
+        margin: 0 0 6px 0;
+
+        ion-icon {
+          font-size: 16px;
+          color: #ffd700;
+        }
+      }
+
+      .final-score {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 14px;
+        font-weight: 700;
+        color: white;
+        margin: 0;
+
+        ion-icon {
+          font-size: 16px;
+          color: #8a2be2;
+        }
+      }
+    }
+
+    .history-details {
+      background: rgba(138, 43, 226, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+
+      .detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        &.total {
+          padding-top: 12px;
+          border-top: 1px solid rgba(138, 43, 226, 0.3);
+          margin-top: 12px;
+        }
+
+        .label {
+          font-size: 13px;
+          color: rgba(255, 255, 255, 0.6);
+        }
+
+        .value {
+          font-size: 14px;
+          font-weight: 700;
+          color: white;
+        }
+
+        .result-value {
+          font-size: 18px;
+          font-weight: 900;
+
+          &.profit {
+            color: #00ff7f;
+          }
+
+          &.loss {
+            color: #ff453a;
+          }
+        }
+      }
+    }
+
+    .history-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+
+      .bet-date {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        ion-icon {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+
+  // ========== EMPTY STATE ==========
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+
+    ion-icon {
+      font-size: 80px;
+      color: rgba(138, 43, 226, 0.3);
+      margin-bottom: 20px;
+    }
+
+    h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+      margin: 0 0 10px 0;
+    }
+
+    p {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+      margin: 0 0 24px 0;
+    }
+
+    ion-button {
+      --background: linear-gradient(135deg, #8a2be2, #ff1493);
+      --border-radius: 12px;
+      --padding-top: 14px;
+      --padding-bottom: 14px;
+      --padding-start: 24px;
+      --padding-end: 24px;
+      font-weight: 700;
+    }
+  }
+
+  // ========== INFO BANNER ==========
+  .info-banner {
+    background: rgba(255, 165, 0, 0.1);
+    border: 1px solid rgba(255, 165, 0, 0.3);
+    border-radius: 12px;
+    padding: 16px;
+    margin: 0 16px 20px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    ion-icon {
+      font-size: 24px;
+      color: #ffa500;
+      flex-shrink: 0;
+    }
+
+    p {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.8);
+      margin: 0;
+      line-height: 1.4;
+    }
+  }
+}
+
+// ===================================
+// BALANCE CARD
+// ===================================
+.balance-card {
+  margin: 1rem;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(0, 150, 255, 0.1) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 212, 255, 0.3);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
+    animation: rotate 20s linear infinite;
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.balance-content {
+  position: relative;
+  z-index: 1;
+}
+
+.balance-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+
+  ion-icon {
+    font-size: 1.5rem;
+    color: #00d4ff;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+}
+
+.balance-amount {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: white;
+  margin: 0.5rem 0;
+  text-shadow: 0 2px 10px rgba(0, 212, 255, 0.5);
+}
+
+.balance-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+
+  ion-button {
+    flex: 1;
+    --background: rgba(0, 212, 255, 0.2);
+    --color: #00d4ff;
+    --border-radius: 12px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    font-weight: 600;
+    text-transform: none;
+    border: 1px solid rgba(0, 212, 255, 0.3);
+
+    &:hover {
+      --background: rgba(0, 212, 255, 0.3);
+    }
+  }
+}
+
+// ===================================
+// TABS SEGMENT
+// ===================================
+.bets-tabs {
+  padding: 1rem 1rem 0.5rem;
+
+  ion-segment {
+    --background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 4px;
+
+    ion-segment-button {
+      --color: rgba(255, 255, 255, 0.6);
+      --color-checked: #00d4ff;
+      --indicator-color: rgba(0, 212, 255, 0.2);
+      --indicator-height: 100%;
+      border-radius: 10px;
+      min-height: 40px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: none;
+    }
+  }
+}
+
+// ===================================
+// BET CARDS
+// ===================================
+.bets-list {
+  padding: 1rem;
+}
+
+.bet-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.bet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.bet-league {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  .league-badge {
+    font-size: 1rem;
+  }
+}
+
+.bet-time {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.bet-match {
+  margin-bottom: 1rem;
+}
+
+.match-teams {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+
+  .team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    max-width: 35%;
+
+    .team-name {
+      font-weight: 600;
+      color: white;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+  }
+
+  .vs {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 700;
+  }
+}
+
+// ===================================
+// BET OPTIONS
+// ===================================
+.bet-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.bet-option {
+  background: rgba(0, 212, 255, 0.08);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 12px;
+  padding: 1rem 0.75rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(0, 212, 255, 0.15);
+    border-color: rgba(0, 212, 255, 0.4);
+    transform: translateY(-2px);
+  }
+
+  &.selected {
+    background: rgba(0, 212, 255, 0.25);
+    border-color: #00d4ff;
+    box-shadow: 0 4px 16px rgba(0, 212, 255, 0.3);
+  }
+}
+
+.option-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.option-odd {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #00d4ff;
+}
+
+// ===================================
+// ACTIVE BETS
+// ===================================
+.active-bet-card {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(0, 150, 255, 0.05) 100%);
+  border-left: 3px solid #00d4ff;
+}
+
+.bet-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &.active {
+    background: rgba(0, 212, 255, 0.2);
+    color: #00d4ff;
+  }
+
+  &.won {
+    background: rgba(74, 222, 128, 0.2);
+    color: #4ade80;
+  }
+
+  &.lost {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+  }
+
+  ion-icon {
+    font-size: 1rem;
+  }
+}
+
+.bet-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.bet-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.bet-amount {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+
+  strong {
+    color: white;
+    font-weight: 700;
+  }
+}
+
+.potential-win {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4ade80;
+
+  &.loss {
+    color: #ef4444;
+  }
+}
+
+// ===================================
+// HISTORY
+// ===================================
+.history-card {
+  opacity: 0.8;
+}
+
+.history-result {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+
+  .result-label {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .result-value {
+    font-size: 1rem;
+    font-weight: 700;
+
+    &.win {
+      color: #4ade80;
+    }
+
+    &.loss {
+      color: #ef4444;
+    }
+  }
+}
+
+// ===================================
+// EMPTY STATE
+// ===================================
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+
+  ion-icon {
+    font-size: 4rem;
+    color: rgba(0, 212, 255, 0.3);
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 0.5rem;
+  }
+
+  p {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0;
+  }
+}
+
+// ===================================
+// RESPONSIVE
+// ===================================
+
+// Mobile small (320px - 479px)
+@media (max-width: 479px) {
+  .balance-card {
+    margin: 0.75rem;
+    padding: 1.25rem;
+    border-radius: 16px;
+    min-height: 160px;
+  }
+
+  .balance-header {
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    justify-content: center;
+
+    ion-icon {
+      font-size: 20px;
+    }
+
+    h2 {
+      font-size: 12px;
+    }
+  }
+
+  .balance-amount {
+    font-size: 2rem;
+    margin: 0.5rem 0 1rem 0;
+    text-align: center;
+  }
+
+  .balance-actions {
+    gap: 0.75rem;
+    margin-top: 1rem;
+    flex-direction: column;
+
+    ion-button {
+      --padding-top: 12px;
+      --padding-bottom: 12px;
+      font-size: 0.875rem;
+      width: 100%;
+    }
+  }
+
+  .bets-tabs {
+    padding: 0.75rem;
+
+    ion-segment {
+      ion-segment-button {
+        font-size: 0.7rem;
+        min-height: 44px;
+        padding: 0.25rem;
+
+        ion-icon {
+          font-size: 18px;
+          margin-bottom: 2px;
+        }
+
+        ion-label {
+          font-size: 0.7rem;
+        }
+      }
+    }
+  }
+
+  .bets-list {
+    padding: 0.75rem;
+  }
+
+  .category-filter {
+    padding: 0 0.75rem 1rem 0.75rem;
+    gap: 0.5rem;
+    justify-content: flex-start;
+
+    ion-chip {
+      min-width: auto;
+      height: 32px;
+      padding: 6px 12px;
+      font-size: 0.7rem;
+
+      ion-icon {
+        font-size: 16px;
+      }
+    }
+  }
+
+  .bet-card {
+    padding: 1rem;
+    border-radius: 14px;
+    margin-bottom: 0.875rem;
+  }
+
+  .bet-header {
+    margin-bottom: 0.875rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .bet-league {
+    font-size: 0.7rem;
+    gap: 0.5rem;
+    flex: 1;
+
+    .league-badge {
+      font-size: 18px;
+    }
+
+    .league-name {
+      font-size: 0.7rem;
+    }
+  }
+
+  .bet-time {
+    font-size: 0.65rem;
+    padding: 3px 8px;
+
+    ion-icon {
+      font-size: 12px;
+    }
+  }
+
+  .match-teams {
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+
+    .team {
+      gap: 0.5rem;
+      min-width: 0;
+      flex: 1;
+
+      .team-name {
+        font-size: 0.8rem;
+        text-align: center;
+        word-break: break-word;
+      }
+
+      .team-score {
+        font-size: 1.5rem;
+      }
+    }
+
+    .vs {
+      font-size: 0.7rem;
+      width: 35px;
+      height: 35px;
+      flex-shrink: 0;
+
+      span {
+        font-size: 0.7rem;
+      }
+    }
+  }
+
+  .bet-options {
+    gap: 0.5rem;
+  }
+
+  .bet-option {
+    padding: 0.75rem 0.5rem;
+    border-radius: 10px;
+  }
+
+  .option-label {
+    font-size: 0.65rem;
+  }
+
+  .option-odd {
+    font-size: 1rem;
+  }
+
+  .stats-summary {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0 0.75rem;
+
+    .stat-item {
+      padding: 0.75rem 0.5rem;
+      border-radius: 10px;
+
+      ion-icon {
+        font-size: 20px;
+      }
+
+      .stat-info {
+        .stat-value {
+          font-size: 16px;
+        }
+
+        .stat-label {
+          font-size: 0.65rem;
+        }
+      }
+    }
+  }
+
+  .bet-status {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.65rem;
+    gap: 0.375rem;
+
+    ion-icon {
+      font-size: 0.875rem;
+    }
+  }
+
+  .bet-details {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+  }
+
+  .bet-amount {
+    font-size: 0.75rem;
+  }
+
+  .potential-win {
+    font-size: 0.8rem;
+  }
+
+  .active-bet-card {
+    .bet-status {
+      padding: 5px 10px;
+      font-size: 0.65rem;
+      top: 12px;
+      right: 12px;
+
+      ion-icon {
+        font-size: 12px;
+      }
+    }
+
+    .bet-match-info {
+      padding-right: 90px;
+
+      h3 {
+        font-size: 0.9rem;
+
+        .vs-small {
+          font-size: 0.75rem;
+        }
+      }
+
+      .league-info {
+        font-size: 0.7rem;
+
+        ion-icon {
+          font-size: 14px;
+        }
+      }
+    }
+
+    .bet-details {
+      padding: 0.875rem;
+
+      .detail-row {
+        .label {
+          font-size: 0.7rem;
+        }
+
+        .value {
+          font-size: 0.75rem;
+        }
+
+        .potential-win {
+          font-size: 1rem;
+        }
+      }
+    }
+
+    .bet-info {
+      font-size: 0.65rem;
+    }
+
+    .bet-actions {
+      ion-button {
+        font-size: 0.7rem;
+      }
+    }
+  }
+
+  .empty-state {
+    padding: 2rem 1rem;
+
+    ion-icon {
+      font-size: 3rem;
+    }
+
+    h3 {
+      font-size: 1rem;
+    }
+
+    p {
+      font-size: 0.8rem;
+    }
+  }
+
+  .history-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    padding: 0 0.75rem;
+
+    .stat-card {
+      padding: 0.75rem;
+
+      .stat-icon {
+        width: 40px;
+        height: 40px;
+
+        ion-icon {
+          font-size: 20px;
+        }
+      }
+
+      .stat-content {
+        .stat-number {
+          font-size: 18px;
+        }
+
+        .stat-text {
+          font-size: 0.65rem;
+        }
+      }
+    }
+  }
+
+  .profit-card {
+    margin: 0 0.75rem 1rem 0.75rem;
+    padding: 1rem;
+
+    ion-icon {
+      font-size: 36px;
+    }
+
+    .profit-info {
+      .profit-label {
+        font-size: 0.7rem;
+      }
+
+      .profit-amount {
+        font-size: 1.5rem;
+      }
+    }
+  }
+}
+
+// Mobile medium (480px - 767px)
+@media (min-width: 480px) and (max-width: 767px) {
+  .balance-card {
+    padding: 1.25rem;
+  }
+
+  .balance-amount {
+    font-size: 2rem;
+  }
+
+  .bet-card {
+    padding: 1.125rem;
+  }
+
+  .match-teams {
+    .team {
+      .team-name {
+        font-size: 0.85rem;
+      }
+    }
+  }
+
+  .bet-options {
+    gap: 0.625rem;
+  }
+
+  .bet-option {
+    padding: 0.875rem 0.625rem;
+  }
+
+  .option-odd {
+    font-size: 1.125rem;
+  }
+}
+
+// Tablet (768px - 1023px)
+@media (min-width: 768px) and (max-width: 1023px) {
+  .bets-list {
+    max-width: 750px;
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+
+  .balance-card {
+    max-width: 750px;
+    margin: 1.5rem auto;
+    padding: 2rem;
+  }
+
+  .balance-header {
+    justify-content: center;
+    margin-bottom: 1.5rem;
+
+    ion-icon {
+      font-size: 2rem;
+    }
+
+    h2 {
+      font-size: 1.125rem;
+    }
+  }
+
+  .balance-amount {
+    font-size: 2.75rem;
+    text-align: center;
+    margin: 1rem 0;
+  }
+
+  .balance-actions {
+    flex-direction: row;
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+
+    ion-button {
+      flex: 1;
+      max-width: 250px;
+      --padding-top: 14px;
+      --padding-bottom: 14px;
+      font-size: 1rem;
+
+      ion-icon {
+        font-size: 1.375rem;
+      }
+    }
+  }
+
+  .bets-tabs {
+    padding: 1.25rem;
+
+    ion-segment {
+      max-width: 750px;
+      margin: 0 auto;
+
+      ion-segment-button {
+        min-height: 52px;
+        font-size: 1rem;
+
+        ion-icon {
+          font-size: 1.5rem;
+        }
+
+        ion-label {
+          font-size: 0.95rem;
+        }
+      }
+    }
+  }
+
+  .category-filter {
+    padding: 1.25rem;
+    justify-content: center;
+    max-width: 750px;
+    margin: 0 auto;
+
+    ion-chip {
+      height: 40px;
+      padding: 8px 18px;
+      font-size: 0.9rem;
+
+      ion-icon {
+        font-size: 1.125rem;
+      }
+    }
+  }
+
+  .bet-card {
+    padding: 1.5rem;
+    max-width: 750px;
+    margin: 0 auto 1.25rem;
+  }
+
+  .bet-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .bet-league {
+    font-size: 0.95rem;
+    gap: 0.625rem;
+
+    .league-badge {
+      font-size: 1.375rem;
+    }
+  }
+
+  .bet-time {
+    font-size: 0.9rem;
+  }
+
+  .match-teams {
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+
+    .team {
+      gap: 0.75rem;
+
+      .team-name {
+        font-size: 1.125rem;
+        text-align: center;
+      }
+
+      .team-score {
+        font-size: 2rem;
+      }
+    }
+
+    .vs {
+      width: 50px;
+      height: 50px;
+      font-size: 0.875rem;
+
+      span {
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  .bet-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+
+  .bet-option {
+    padding: 1.25rem 1rem;
+  }
+
+  .option-label {
+    font-size: 0.875rem;
+  }
+
+  .option-odd {
+    font-size: 1.5rem;
+  }
+
+  .stats-summary {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    .stat-item {
+      padding: 1.25rem;
+
+      ion-icon {
+        font-size: 28px;
+      }
+
+      .stat-info {
+        .stat-value {
+          font-size: 22px;
+        }
+
+        .stat-label {
+          font-size: 0.875rem;
+        }
+      }
+    }
+  }
+
+  .active-bet-card {
+    max-width: 750px;
+    margin: 0 auto 1.25rem;
+    padding: 1.5rem;
+
+    .bet-info {
+      padding-right: 120px;
+
+      .bet-time {
+        font-size: 0.9rem;
+      }
+
+      .bet-teams {
+        font-size: 1.125rem;
+      }
+
+      .bet-type {
+        font-size: 0.9rem;
+      }
+    }
+
+    .bet-status {
+      padding: 8px 16px;
+      font-size: 0.875rem;
+      top: 16px;
+      right: 16px;
+
+      ion-icon {
+        font-size: 16px;
+      }
+    }
+
+    .bet-details {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+
+      .detail-item {
+        .detail-label {
+          font-size: 0.875rem;
+        }
+
+        .detail-value {
+          font-size: 1.125rem;
+        }
+      }
+    }
+  }
+
+  .history-stats {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    max-width: 750px;
+    margin: 0 auto 1.5rem;
+
+    .stat-card {
+      padding: 1.25rem;
+
+      .stat-icon {
+        width: 50px;
+        height: 50px;
+
+        ion-icon {
+          font-size: 26px;
+        }
+      }
+
+      .stat-content {
+        .stat-number {
+          font-size: 24px;
+        }
+
+        .stat-text {
+          font-size: 0.875rem;
+        }
+      }
+    }
+  }
+
+  .profit-card {
+    max-width: 750px;
+    margin: 0 auto 1.5rem;
+    padding: 1.5rem;
+
+    ion-icon {
+      font-size: 48px;
+    }
+
+    .profit-info {
+      .profit-label {
+        font-size: 0.95rem;
+      }
+
+      .profit-amount {
+        font-size: 2rem;
+      }
+    }
+  }
+
+  .history-card {
+    max-width: 750px;
+    margin: 0 auto 1.25rem;
+    padding: 1.5rem;
+
+    .bet-header {
+      .bet-status {
+        padding: 6px 14px;
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  .empty-state {
+    padding: 3.5rem 2rem;
+
+    ion-icon {
+      font-size: 4.5rem;
+    }
+
+    h3 {
+      font-size: 1.375rem;
+    }
+
+    p {
+      font-size: 1rem;
+    }
+  }
+}
+
+// Desktop (1024px and up)
+@media (min-width: 1024px) {
+  .bets-list {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .balance-card {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .balance-header {
+    justify-content: center;
+    margin-bottom: 1.5rem;
+
+    ion-icon {
+      font-size: 2.25rem;
+    }
+
+    h2 {
+      font-size: 1.25rem;
+    }
+  }
+
+  .balance-amount {
+    font-size: 3.5rem;
+    text-align: center;
+    margin: 1.25rem 0;
+  }
+
+  .balance-actions {
+    margin-top: 2rem;
+    gap: 1.5rem;
+    flex-direction: row;
+
+    ion-button {
+      flex: 1;
+      max-width: 280px;
+      --padding-top: 16px;
+      --padding-bottom: 16px;
+      font-size: 1.125rem;
+
+      ion-icon {
+        font-size: 1.5rem;
+      }
+    }
+  }
+
+  .bets-tabs {
+    padding: 1.5rem;
+
+    ion-segment {
+      max-width: 1200px;
+      margin: 0 auto;
+
+      ion-segment-button {
+        font-size: 1.125rem;
+        min-height: 56px;
+
+        ion-icon {
+          font-size: 1.75rem;
+        }
+
+        ion-label {
+          font-size: 1.125rem;
+          margin-top: 0.375rem;
+        }
+      }
+    }
+  }
+
+  .category-filter {
+    padding: 1.5rem;
+    justify-content: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 1rem;
+
+    ion-chip {
+      height: 44px;
+      padding: 10px 20px;
+      font-size: 1rem;
+
+      ion-icon {
+        font-size: 1.25rem;
+      }
+    }
+  }
+
+  // Grid layout para bet cards en desktop
+  .bets-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .bet-card {
+    padding: 2rem;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 40px rgba(0, 212, 255, 0.25);
+    }
+  }
+
+  .bet-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .bet-league {
+    font-size: 1rem;
+    gap: 0.75rem;
+
+    .league-badge {
+      font-size: 1.5rem;
+    }
+  }
+
+  .bet-time {
+    font-size: 1rem;
+  }
+
+  .match-teams {
+    gap: 2rem;
+    margin-bottom: 2rem;
+
+    .team {
+      gap: 1rem;
+
+      .team-name {
+        font-size: 1.25rem;
+        text-align: center;
+      }
+
+      .team-score {
+        font-size: 2.5rem;
+      }
+    }
+
+    .vs {
+      width: 60px;
+      height: 60px;
+      font-size: 1rem;
+
+      span {
+        font-size: 1rem;
+      }
+    }
+  }
+
+  .bet-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+
+  .bet-option {
+    padding: 1.5rem 1.25rem;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 8px 24px rgba(0, 212, 255, 0.2);
+    }
+  }
+
+  .option-label {
+    font-size: 1rem;
+  }
+
+  .option-odd {
+    font-size: 1.875rem;
+  }
+
+  .bet-status {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+
+    ion-icon {
+      font-size: 1.25rem;
+    }
+  }
+
+  .bet-details {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+  }
+
+  .bet-amount {
+    font-size: 1.125rem;
+  }
+
+  .potential-win {
+    font-size: 1.25rem;
+  }
+
+  .stats-summary {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+
+    .stat-item {
+      padding: 1.5rem;
+
+      ion-icon {
+        font-size: 32px;
+      }
+
+      .stat-info {
+        .stat-value {
+          font-size: 26px;
+        }
+
+        .stat-label {
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+
+  .active-bet-card {
+    padding: 2rem;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+    }
+
+    .bet-info {
+      padding-right: 150px;
+
+      .bet-time {
+        font-size: 1rem;
+      }
+
+      .bet-teams {
+        font-size: 1.375rem;
+      }
+
+      .bet-type {
+        font-size: 1rem;
+      }
+    }
+
+    .bet-status {
+      padding: 10px 20px;
+      font-size: 1rem;
+      top: 20px;
+      right: 20px;
+
+      ion-icon {
+        font-size: 18px;
+      }
+    }
+
+    .bet-details {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+
+      .detail-item {
+        .detail-label {
+          font-size: 1rem;
+        }
+
+        .detail-value {
+          font-size: 1.375rem;
+        }
+      }
+    }
+  }
+
+  .history-stats {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+    max-width: 1200px;
+    margin: 0 auto 2rem;
+
+    .stat-card {
+      padding: 1.5rem;
+
+      .stat-icon {
+        width: 60px;
+        height: 60px;
+
+        ion-icon {
+          font-size: 32px;
+        }
+      }
+
+      .stat-content {
+        .stat-number {
+          font-size: 28px;
+        }
+
+        .stat-text {
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+
+  .profit-card {
+    max-width: 1200px;
+    margin: 0 auto 2rem;
+    padding: 2rem;
+
+    ion-icon {
+      font-size: 56px;
+    }
+
+    .profit-info {
+      .profit-label {
+        font-size: 1.125rem;
+      }
+
+      .profit-amount {
+        font-size: 2.5rem;
+      }
+    }
+  }
+
+  .history-card {
+    padding: 2rem;
+
+    .bet-header {
+      .bet-status {
+        padding: 8px 16px;
+        font-size: 1rem;
+      }
+    }
+  }
+
+  .empty-state {
+    padding: 5rem 2rem;
+
+    ion-icon {
+      font-size: 6rem;
+    }
+
+    h3 {
+      font-size: 1.5rem;
+    }
+
+    p {
+      font-size: 1.125rem;
+    }
+  }
+
+  .info-banner {
+    max-width: 1200px;
+    margin: 0 auto 1.5rem;
+    padding: 1.5rem;
+    font-size: 1rem;
+    line-height: 1.5;
+
+    ion-icon {
+      font-size: 1.5rem;
+    }
+  }
+}

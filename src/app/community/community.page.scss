@@ -1,0 +1,641 @@
+// ===================================
+// COMMUNITY PAGE STYLES
+// ===================================
+
+.custom-header {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      rgba(0, 212, 255, 0.03) 0px,
+      rgba(0, 212, 255, 0.03) 1px,
+      transparent 1px,
+      transparent 80px
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  &::after {
+    content: '👥';
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    font-size: 2rem;
+    opacity: 0.15;
+    transform: translateY(-50%);
+    z-index: 0;
+    animation: fadeInOut 4s ease-in-out infinite;
+  }
+
+  ion-toolbar {
+    --background: linear-gradient(135deg, rgba(10, 10, 30, 0.95) 0%, rgba(20, 40, 80, 0.95) 50%, rgba(10, 10, 30, 0.95) 100%);
+    --color: white;
+    --border-width: 0;
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border-bottom: 3px double rgba(0, 212, 255, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 212, 255, 0.15);
+    position: relative;
+    z-index: 1;
+  }
+
+  ion-title {
+    font-weight: 900;
+    font-size: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-family: 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+
+    .title-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+
+      ion-icon {
+        font-size: 1.6rem;
+        color: #00d4ff;
+        filter: drop-shadow(0 2px 8px rgba(0, 212, 255, 0.6));
+        animation: communityIconFloat 3s ease-in-out infinite;
+      }
+
+      span {
+        display: inline-block;
+        background: linear-gradient(135deg, #ffffff 0%, #00d4ff 50%, #ffffff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        filter: drop-shadow(0 3px 6px rgba(0, 212, 255, 0.5)) drop-shadow(0 0 20px rgba(0, 212, 255, 0.3));
+        font-weight: 900;
+        font-style: italic;
+        transform: skewX(-5deg);
+      }
+    }
+  }
+
+  ion-buttons {
+    ion-button {
+      position: relative;
+
+      .chat-badge {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        min-width: 18px;
+        height: 18px;
+        border-radius: 9px;
+        font-size: 0.65rem;
+        padding: 0 4px;
+      }
+    }
+  }
+}
+
+.community-content {
+  --background: linear-gradient(180deg, #0a0e27 0%, #1a1f3a 100%);
+}
+
+// ===================================
+// POSTS CONTAINER
+// ===================================
+.posts-container {
+  padding: 1rem;
+  padding-bottom: 100px;
+}
+
+// ===================================
+// POST CARD
+// ===================================
+.post-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 20px;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(138, 43, 226, 0.3);
+    border-color: rgba(138, 43, 226, 0.4);
+  }
+
+  .post-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      .user-avatar {
+        width: 48px;
+        height: 48px;
+        border: 2px solid rgba(138, 43, 226, 0.5);
+      }
+
+      .user-details {
+        .user-name {
+          margin: 0;
+          font-size: 1rem;
+          font-weight: 700;
+          color: white;
+        }
+
+        .post-time {
+          margin: 0.25rem 0 0;
+          font-size: 0.75rem;
+          color: rgba(255, 255, 255, 0.5);
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+
+          ion-icon {
+            font-size: 0.85rem;
+          }
+        }
+      }
+    }
+
+    .more-btn {
+      --color: rgba(255, 255, 255, 0.7);
+    }
+  }
+
+  .post-content {
+    padding: 1.25rem;
+
+    .post-text {
+      margin: 0 0 1rem;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .post-image {
+      margin-bottom: 1rem;
+      border-radius: 12px;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+    }
+
+    .location-chip {
+      margin-bottom: 1rem;
+      --background: rgba(138, 43, 226, 0.2);
+      --color: #8a2be2;
+      border: 1px solid rgba(138, 43, 226, 0.3);
+
+      ion-icon {
+        color: #8a2be2;
+      }
+    }
+
+    .post-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+
+      ion-button {
+        --color: rgba(255, 255, 255, 0.6);
+        font-size: 0.875rem;
+
+        &.liked {
+          --color: #ff1493;
+
+          ion-icon {
+            color: #ff1493;
+            animation: heartBeat 0.3s ease;
+          }
+        }
+
+        &:hover {
+          --color: rgba(255, 255, 255, 0.9);
+        }
+      }
+
+      .bookmark-btn {
+        margin-left: auto;
+      }
+    }
+  }
+}
+
+@keyframes communityIconFloat {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-3deg);
+  }
+  75% {
+    transform: rotate(3deg);
+  }
+}
+
+@keyframes fadeInOut {
+  0%, 100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@keyframes heartBeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+}
+
+// ===================================
+// FLOATING ACTION BUTTON
+// ===================================
+.new-post-fab {
+  ion-fab-button {
+    --background: linear-gradient(135deg, #8a2be2, #ff1493);
+    --box-shadow: 0 8px 24px rgba(138, 43, 226, 0.5);
+
+    &:hover {
+      --box-shadow: 0 12px 32px rgba(138, 43, 226, 0.7);
+      transform: scale(1.1);
+    }
+  }
+}
+
+// ===================================
+// NEW POST MODAL
+// ===================================
+.modal-content {
+  --background: linear-gradient(180deg, #0a0e27 0%, #1a1f3a 100%);
+
+  .new-post-container {
+    padding: 1.5rem;
+
+    .modal-user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+
+      ion-avatar {
+        width: 56px;
+        height: 56px;
+        border: 2px solid rgba(138, 43, 226, 0.5);
+      }
+
+      h3 {
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: white;
+      }
+    }
+
+    .post-textarea {
+      --background: rgba(255, 255, 255, 0.05);
+      --color: white;
+      --padding-start: 1rem;
+      --padding-end: 1rem;
+      --padding-top: 1rem;
+      --padding-bottom: 1rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 1rem;
+      min-height: 150px;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    .image-preview {
+      position: relative;
+      margin-bottom: 1rem;
+      border-radius: 12px;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .remove-image-btn {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        --color: white;
+        --background: rgba(0, 0, 0, 0.7);
+        --border-radius: 50%;
+      }
+    }
+
+    .location-preview {
+      margin-bottom: 1rem;
+    }
+
+    .post-actions-toolbar {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+
+      ion-button {
+        flex: 1;
+        --color: rgba(255, 255, 255, 0.7);
+
+        &:hover {
+          --color: #8a2be2;
+        }
+      }
+    }
+  }
+}
+
+// ===================================
+// LIVE CHAT MODAL
+// ===================================
+.chat-content {
+  --background: linear-gradient(180deg, #0a0e27 0%, #1a1f3a 100%);
+
+  .live-chat-messages {
+    padding: 1rem;
+    height: 100%;
+    overflow-y: auto;
+
+    .chat-message {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      align-items: flex-start;
+
+      &.own-message {
+        flex-direction: row-reverse;
+
+        .message-content {
+          align-items: flex-end;
+
+          .message-text {
+            background: linear-gradient(135deg, #8a2be2, #ff1493);
+            color: white;
+          }
+        }
+      }
+
+      .message-avatar {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+      }
+
+      .message-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+
+        .message-header {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+
+          .message-user {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+          }
+
+          .message-time {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.5);
+          }
+        }
+
+        .message-text {
+          background: rgba(255, 255, 255, 0.1);
+          padding: 0.75rem 1rem;
+          border-radius: 16px;
+          color: white;
+          font-size: 0.9rem;
+          line-height: 1.4;
+          max-width: 80%;
+          word-wrap: break-word;
+        }
+      }
+    }
+  }
+}
+
+.chat-input-toolbar {
+  --background: rgba(10, 14, 39, 0.95);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.5rem;
+
+  .chat-input-item {
+    --background: rgba(255, 255, 255, 0.05);
+    --border-radius: 24px;
+    --padding-start: 1rem;
+    --padding-end: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    ion-input {
+      --color: white;
+      --placeholder-color: rgba(255, 255, 255, 0.5);
+    }
+
+    ion-button {
+      --color: #8a2be2;
+
+      &:disabled {
+        --color: rgba(138, 43, 226, 0.3);
+      }
+    }
+  }
+}
+
+.online-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 4px 12px;
+  border-radius: 12px;
+
+  .pulse-dot {
+    width: 8px;
+    height: 8px;
+    background: #4ade80;
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+// ===================================
+// RESPONSIVE
+// ===================================
+
+// Mobile small (320px - 479px)
+@media (max-width: 479px) {
+  .posts-container {
+    padding: 0.75rem;
+  }
+
+  .post-card {
+    margin-bottom: 1rem;
+
+    .post-header {
+      padding: 0.875rem 1rem;
+
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+      }
+
+      .user-details {
+        .user-name {
+          font-size: 0.9rem;
+        }
+
+        .post-time {
+          font-size: 0.7rem;
+        }
+      }
+    }
+
+    .post-content {
+      padding: 1rem;
+
+      .post-text {
+        font-size: 0.875rem;
+      }
+
+      .post-actions {
+        ion-button {
+          font-size: 0.8rem;
+        }
+      }
+    }
+  }
+
+  .chat-message {
+    .message-avatar {
+      width: 32px;
+      height: 32px;
+    }
+
+    .message-content {
+      .message-text {
+        font-size: 0.85rem;
+        padding: 0.625rem 0.875rem;
+        max-width: 85%;
+      }
+    }
+  }
+}
+
+// Tablet (768px - 1023px)
+@media (min-width: 768px) and (max-width: 1023px) {
+  .posts-container {
+    max-width: 750px;
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+
+  .post-card {
+    .post-header {
+      .user-avatar {
+        width: 52px;
+        height: 52px;
+      }
+    }
+  }
+}
+
+// Desktop (1024px and up)
+@media (min-width: 1024px) {
+  .posts-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .post-card {
+    margin-bottom: 2rem;
+
+    .post-header {
+      padding: 1.5rem;
+
+      .user-avatar {
+        width: 56px;
+        height: 56px;
+      }
+
+      .user-details {
+        .user-name {
+          font-size: 1.125rem;
+        }
+      }
+    }
+
+    .post-content {
+      padding: 1.5rem;
+
+      .post-text {
+        font-size: 1.05rem;
+      }
+
+      .post-actions {
+        ion-button {
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+
+  .chat-message {
+    .message-avatar {
+      width: 40px;
+      height: 40px;
+    }
+
+    .message-content {
+      .message-text {
+        font-size: 1rem;
+        padding: 0.875rem 1.125rem;
+        max-width: 70%;
+      }
+    }
+  }
+}

@@ -13,10 +13,10 @@
       <!-- User Profile Section -->
       <div class="menu-profile" (click)="navigateToProfile()">
         <ion-avatar class="profile-avatar">
-          <img [src]="userAvatar" alt="User avatar" />
+          <img [src]="currentUser?.avatar || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="User avatar" />
         </ion-avatar>
         <div class="profile-info">
-          <h3>{{ userName }}</h3>
+          <h3>{{ currentUser?.name || 'Usuario' }}</h3>
           <p>Ver perfil</p>
         </div>
         <ion-icon name="chevron-forward-outline" class="profile-arrow"></ion-icon>
@@ -43,6 +43,16 @@
           <ion-item button (click)="navigateToPage('/news')" detail="false">
             <ion-icon slot="start" name="newspaper-outline"></ion-icon>
             <ion-label>Noticias</ion-label>
+          </ion-item>
+
+          <ion-item button (click)="navigateToPage('/bets')" detail="false">
+            <ion-icon slot="start" name="cash-outline"></ion-icon>
+            <ion-label>Apuestas</ion-label>
+          </ion-item>
+
+          <ion-item button (click)="navigateToPage('/community')" detail="false">
+            <ion-icon slot="start" name="people-outline"></ion-icon>
+            <ion-label>Comunidad</ion-label>
           </ion-item>
 
           <ion-item button (click)="navigateToSettings()" detail="false">
@@ -85,7 +95,7 @@
       </ion-button>
       <ion-button (click)="openProfile()">
         <ion-avatar class="header-avatar">
-          <img [src]="userAvatar" alt="User avatar" />
+          <img [src]="currentUser?.avatar || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="User avatar" />
         </ion-avatar>
       </ion-button>
     </ion-buttons>

@@ -1,0 +1,175 @@
+<ion-header class="custom-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">
+      <div class="title-wrapper">
+        <ion-icon name="football-outline"></ion-icon>
+        <span>Partidos</span>
+      </div>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="matches-content">
+  
+  <!-- Segment Control -->
+  <div class="segment-wrapper">
+    <ion-segment [(ngModel)]="selectedSegment" (ionChange)="segmentChanged($event)">
+      <ion-segment-button value="live">
+        <ion-label>En Vivo</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="upcoming">
+        <ion-label>Próximos</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="finished">
+        <ion-label>Finalizados</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <!-- Live Matches -->
+  <div *ngIf="selectedSegment === 'live'" class="matches-container">
+    <div class="section-header">
+      <h2>
+        <ion-icon name="radio-outline"></ion-icon>
+        Partidos en Vivo
+      </h2>
+      <span class="live-indicator">●</span>
+    </div>
+
+    <div class="match-card live-match" *ngFor="let match of liveMatches" (click)="openMatchDetail(match.id)">
+      <div class="match-league">
+        <ion-icon name="trophy-outline"></ion-icon>
+        {{ match.league }}
+        <ion-badge color="danger" class="live-badge">EN VIVO</ion-badge>
+      </div>
+      
+      <div class="match-content">
+        <div class="team home-team">
+          <div class="team-name">{{ match.homeTeam }}</div>
+          <div class="team-score">{{ match.homeScore }}</div>
+        </div>
+
+        <div class="match-time">
+          <div class="time-display">{{ match.time }}</div>
+          <ion-icon name="ellipse" class="pulse-icon"></ion-icon>
+        </div>
+
+        <div class="team away-team">
+          <div class="team-score">{{ match.awayScore }}</div>
+          <div class="team-name">{{ match.awayTeam }}</div>
+        </div>
+      </div>
+
+      <div class="match-footer">
+        <ion-button fill="clear" size="small">
+          <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
+          Estadísticas
+        </ion-button>
+        <ion-button fill="clear" size="small">
+          <ion-icon name="play-outline" slot="start"></ion-icon>
+          Ver en vivo
+        </ion-button>
+      </div>
+    </div>
+
+    <div *ngIf="liveMatches.length === 0" class="empty-state">
+      <ion-icon name="football-outline"></ion-icon>
+      <p>No hay partidos en vivo</p>
+    </div>
+  </div>
+
+  <!-- Upcoming Matches -->
+  <div *ngIf="selectedSegment === 'upcoming'" class="matches-container">
+    <div class="section-header">
+      <h2>
+        <ion-icon name="calendar-outline"></ion-icon>
+        Próximos Partidos
+      </h2>
+    </div>
+
+    <div class="match-card upcoming-match" *ngFor="let match of upcomingMatches" (click)="openMatchDetail(match.id)">
+      <div class="match-league">
+        <ion-icon name="trophy-outline"></ion-icon>
+        {{ match.league }}
+      </div>
+      
+      <div class="match-content">
+        <div class="team home-team">
+          <div class="team-name">{{ match.homeTeam }}</div>
+        </div>
+
+        <div class="match-time upcoming">
+          <ion-icon name="time-outline"></ion-icon>
+          <div class="time-display">{{ match.date }}</div>
+          <div class="stadium-name">{{ match.stadium }}</div>
+        </div>
+
+        <div class="team away-team">
+          <div class="team-name">{{ match.awayTeam }}</div>
+        </div>
+      </div>
+
+      <div class="match-footer">
+        <ion-button fill="clear" size="small">
+          <ion-icon name="notifications-outline" slot="start"></ion-icon>
+          Notificarme
+        </ion-button>
+        <ion-button fill="clear" size="small">
+          <ion-icon name="information-circle-outline" slot="start"></ion-icon>
+          Info
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Finished Matches -->
+  <div *ngIf="selectedSegment === 'finished'" class="matches-container">
+    <div class="section-header">
+      <h2>
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        Partidos Finalizados
+      </h2>
+    </div>
+
+    <div class="match-card finished-match" *ngFor="let match of finishedMatches" (click)="openMatchDetail(match.id)">
+      <div class="match-league">
+        <ion-icon name="trophy-outline"></ion-icon>
+        {{ match.league }}
+        <span class="match-date">{{ match.date }}</span>
+      </div>
+      
+      <div class="match-content">
+        <div class="team home-team">
+          <div class="team-name">{{ match.homeTeam }}</div>
+          <div class="team-score">{{ match.homeScore }}</div>
+        </div>
+
+        <div class="match-time">
+          <ion-badge color="medium">FINAL</ion-badge>
+        </div>
+
+        <div class="team away-team">
+          <div class="team-score">{{ match.awayScore }}</div>
+          <div class="team-name">{{ match.awayTeam }}</div>
+        </div>
+      </div>
+
+      <div class="match-footer">
+        <ion-button fill="clear" size="small">
+          <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
+          Resumen
+        </ion-button>
+        <ion-button fill="clear" size="small">
+          <ion-icon name="videocam-outline" slot="start"></ion-icon>
+          Highlights
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+</ion-content>

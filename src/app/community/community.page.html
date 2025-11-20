@@ -1,0 +1,234 @@
+<ion-header class="custom-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">
+      <div class="title-wrapper">
+        <ion-icon name="person-circle"></ion-icon>
+        <span>Comunidad</span>
+      </div>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openLiveChatModal()">
+        <ion-icon name="chatbubble" slot="icon-only"></ion-icon>
+        <ion-badge *ngIf="unreadMessages > 0" class="chat-badge">{{ unreadMessages }}</ion-badge>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="community-content">
+  
+  <!-- Posts Feed -->
+  <div class="posts-container">
+    
+    <!-- Post Card -->
+    <ion-card *ngFor="let post of posts" class="post-card">
+      <!-- Post Header -->
+      <ion-card-header class="post-header">
+        <div class="user-info">
+          <ion-avatar class="user-avatar">
+            <img [src]="post.userAvatar" [alt]="post.userName">
+          </ion-avatar>
+          <div class="user-details">
+            <h3 class="user-name">{{ post.userName }}</h3>
+            <p class="post-time">
+              <ion-icon name="time-outline"></ion-icon>
+              {{ getTimeAgo(post.timestamp) }}
+            </p>
+          </div>
+        </div>
+        <ion-button fill="clear" class="more-btn">
+          <ion-icon name="ellipsis-horizontal" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-card-header>
+
+      <!-- Post Content -->
+      <ion-card-content class="post-content">
+        <!-- Text -->
+        <p *ngIf="post.text" class="post-text">{{ post.text }}</p>
+
+        <!-- Image -->
+        <div *ngIf="post.image" class="post-image">
+          <img [src]="post.image" alt="Post image">
+        </div>
+
+        <!-- Location -->
+        <ion-chip *ngIf="post.location" class="location-chip">
+          <ion-icon name="location-outline"></ion-icon>
+          <ion-label>{{ post.location }}</ion-label>
+        </ion-chip>
+
+        <!-- Actions -->
+        <div class="post-actions">
+          <ion-button 
+            fill="clear" 
+            size="small"
+            [class.liked]="post.isLiked"
+            (click)="toggleLike(post)">
+            <ion-icon name="heart" slot="start"></ion-icon>
+            {{ post.likes }}
+          </ion-button>
+          <ion-button fill="clear" size="small">
+            <ion-icon name="chatbubble" slot="start"></ion-icon>
+            {{ post.comments }}
+          </ion-button>
+          <ion-button fill="clear" size="small">
+            <ion-icon name="share-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" size="small" class="bookmark-btn">
+            <ion-icon name="bookmark-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Infinite Scroll -->
+    <ion-infinite-scroll (ionInfinite)="loadMore($event)">
+      <ion-infinite-scroll-content
+        loadingText="Cargando más publicaciones...">
+      </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+
+  </div>
+
+  <!-- Floating Action Button -->
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="new-post-fab">
+    <ion-fab-button (click)="openNewPostModal()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <!-- New Post Modal -->
+  <ion-modal #newPostModal>
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="newPostModal.dismiss()">Cancelar</ion-button>
+          </ion-buttons>
+          <ion-title>Nueva Publicación</ion-title>
+          <ion-buttons slot="end">
+            <ion-button 
+              (click)="publishPost()" 
+              [disabled]="!newPost.text && !newPost.image"
+              color="primary">
+              Publicar
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="modal-content">
+        <div class="new-post-container">
+          
+          <!-- User Info -->
+          <div class="modal-user-info">
+            <ion-avatar>
+              <img [src]="currentUser?.avatar || 'https://ionicframework.com/docs/img/demos/avatar.svg'" [alt]="currentUser?.name || 'Usuario'">
+            </ion-avatar>
+            <h3>{{ currentUser?.name || 'Usuario' }}</h3>
+          </div>
+
+          <!-- Text Input -->
+          <ion-textarea
+            [(ngModel)]="newPost.text"
+            placeholder="¿Qué está pasando?"
+            rows="6"
+            class="post-textarea"
+            autoGrow="true">
+          </ion-textarea>
+
+          <!-- Image Preview -->
+          <div *ngIf="newPost.image" class="image-preview">
+            <img [src]="newPost.image" alt="Preview">
+            <ion-button 
+              fill="clear" 
+              size="small" 
+              class="remove-image-btn"
+              (click)="removeImage()">
+              <ion-icon name="close-circle" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
+
+          <!-- Location Preview -->
+          <ion-chip *ngIf="newPost.location" class="location-preview" color="primary">
+            <ion-icon name="location-outline"></ion-icon>
+            <ion-label>{{ newPost.location }}</ion-label>
+            <ion-icon name="close-circle" (click)="removeLocation()"></ion-icon>
+          </ion-chip>
+
+          <!-- Action Buttons -->
+          <div class="post-actions-toolbar">
+            <ion-button fill="clear" (click)="selectImage()">
+              <ion-icon name="camera" slot="start"></ion-icon>
+              Foto
+            </ion-button>
+            <ion-button fill="clear" (click)="getLocation()">
+              <ion-icon name="location" slot="start"></ion-icon>
+              Ubicación
+            </ion-button>
+          </div>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Live Chat Modal -->
+  <ion-modal #liveChatModal>
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="liveChatModal.dismiss()">
+              <ion-icon name="close-circle"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+          <ion-title>Chat en Vivo</ion-title>
+          <ion-badge class="online-badge" color="success">
+            <span class="pulse-dot"></span>
+            {{ liveMessages.length }} en línea
+          </ion-badge>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="chat-content">
+        <div class="live-chat-messages">
+          <div 
+            *ngFor="let message of liveMessages" 
+            class="chat-message"
+            [class.own-message]="message.userId === currentUser?.id">
+            <ion-avatar class="message-avatar">
+              <img [src]="message.userAvatar" [alt]="message.userName">
+            </ion-avatar>
+            <div class="message-content">
+              <div class="message-header">
+                <span class="message-user">{{ message.userName }}</span>
+                <span class="message-time">{{ getTimeAgo(message.timestamp) }}</span>
+              </div>
+              <div class="message-text">{{ message.message }}</div>
+            </div>
+          </div>
+        </div>
+      </ion-content>
+      <ion-toolbar class="chat-input-toolbar">
+        <ion-item lines="none" class="chat-input-item">
+          <ion-input
+            [(ngModel)]="newMessage"
+            placeholder="Escribe un mensaje..."
+            (keyup.enter)="sendMessage()">
+          </ion-input>
+          <ion-button 
+            slot="end" 
+            fill="clear" 
+            (click)="sendMessage()"
+            [disabled]="!newMessage.trim()">
+            <ion-icon name="send" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-toolbar>
+    </ng-template>
+  </ion-modal>
+
+</ion-content>

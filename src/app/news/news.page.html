@@ -1,0 +1,80 @@
+<ion-header class="custom-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">
+      <div class="title-wrapper">
+        <ion-icon name="newspaper-outline"></ion-icon>
+        <span>Noticias</span>
+      </div>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button>
+        <ion-icon name="search-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="news-content">
+  
+  <!-- Header Section -->
+  <div class="news-header">
+    <h1>Últimas Noticias</h1>
+    <p>Mantente informado del mundo del fútbol</p>
+  </div>
+
+  <!-- News Cards -->
+  <div class="news-container">
+    
+    <!-- Featured News (First Item) -->
+    <div class="news-card featured" *ngIf="news.length > 0" (click)="openNews(news[0].id)">
+      <div class="news-image">
+        <img [src]="news[0].image" [alt]="news[0].title">
+        <div class="news-overlay">
+          <ion-badge [color]="'danger'" class="news-category">{{ news[0].category }}</ion-badge>
+        </div>
+      </div>
+      <div class="news-content">
+        <h2 class="news-title">{{ news[0].title }}</h2>
+        <p class="news-summary">{{ news[0].summary }}</p>
+        <div class="news-meta">
+          <ion-icon name="time-outline"></ion-icon>
+          <span>{{ news[0].time }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Regular News Cards -->
+    <div class="news-card" *ngFor="let item of news.slice(1)" (click)="openNews(item.id)">
+      <div class="news-image-small">
+        <img [src]="item.image" [alt]="item.title">
+        <ion-badge [color]="getCategoryColor(item.category)" class="category-badge">
+          {{ item.category }}
+        </ion-badge>
+      </div>
+      <div class="news-info">
+        <h3 class="news-title-small">{{ item.title }}</h3>
+        <p class="news-summary-small">{{ item.summary }}</p>
+        <div class="news-meta-small">
+          <ion-icon name="time-outline"></ion-icon>
+          <span>{{ item.time }}</span>
+          <ion-icon name="arrow-forward-outline" class="read-more"></ion-icon>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Load More Button -->
+  <div class="load-more-section">
+    <ion-button expand="block" fill="outline" class="load-more-btn">
+      <ion-icon name="reload-outline" slot="start"></ion-icon>
+      Cargar más noticias
+    </ion-button>
+  </div>
+
+</ion-content>

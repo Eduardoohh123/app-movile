@@ -26,4 +26,28 @@ export const routes: Routes = [
     path: 'apple',
     loadComponent: () => import('./apple/apple.page').then( m => m.ApplePage)
   },
+  {
+    path: 'profile',
+    loadComponent: () => import('./profile/profile.page').then( m => m.ProfilePage)
+  },
+  {
+    path: 'news',
+    loadComponent: () => import('./news/news.page').then( m => m.NewsPage)
+  },
+  {
+    path: 'standings',
+    loadComponent: () => import('./standings/standings.page').then( m => m.StandingsPage)
+  },
+  {
+    path: 'matches',
+    loadComponent: () => import('./matches/matches.page').then( m => m.MatchesPage)
+  },
+  {
+    path: 'bets',
+    loadComponent: () => import('./bets/bets.page').then( m => m.BetsPage)
+  },
+  {
+    path: 'community',
+    loadComponent: () => import('./community/community.page').then( m => m.CommunityPage)
+  },
 ];

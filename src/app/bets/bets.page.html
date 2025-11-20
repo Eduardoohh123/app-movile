@@ -1,0 +1,373 @@
+<ion-header class="custom-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">
+      <div class="title-wrapper">
+        <ion-icon name="cash-outline"></ion-icon>
+        <span>Apuestas</span>
+      </div>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bets-content">
+  
+  <!-- Balance Card con detalles -->
+  <div class="balance-card">
+    <div class="balance-content">
+      <div class="balance-header">
+        <ion-icon name="wallet-outline"></ion-icon>
+        <h2>Saldo Disponible</h2>
+      </div>
+      <div class="balance-amount">${{ currentUser?.balance || 0 | number:'1.2-2' }}</div>
+      <div class="balance-actions">
+        <ion-button expand="block" (click)="showDepositModal()">
+          <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+          Depositar
+        </ion-button>
+        <ion-button expand="block" fill="outline">
+          <ion-icon name="cash-outline" slot="start"></ion-icon>
+          Retirar
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="bets-tabs">
+    <ion-segment [(ngModel)]="selectedTab" (ionChange)="segmentChanged($event)">
+      <ion-segment-button value="available">
+        <ion-icon name="trophy-outline"></ion-icon>
+        <ion-label>Disponibles</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="mybets">
+        <ion-icon name="ticket-outline"></ion-icon>
+        <ion-label>Mis Apuestas</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="history">
+        <ion-icon name="time-outline"></ion-icon>
+        <ion-label>Historial</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <!-- ===================================== -->
+  <!-- AVAILABLE BETS TAB -->
+  <!-- ===================================== -->
+  <div *ngIf="selectedTab === 'available'">
+    
+    <!-- Category Filter -->
+    <div class="category-filter">
+      <ion-chip 
+        *ngFor="let cat of categories" 
+        [class.active]="selectedCategory === cat.id"
+        (click)="filterByCategory(cat.id)">
+        <ion-icon [name]="cat.icon"></ion-icon>
+        <ion-label>{{ cat.name }}</ion-label>
+      </ion-chip>
+    </div>
+
+    <!-- Bets List -->
+    <div class="bets-list">
+      <div class="bet-card" 
+           *ngFor="let bet of getFilteredBets()" 
+           [class.featured]="bet.featured"
+           [class.live]="bet.isLive">
+        
+        <!-- Featured Badge -->
+        <div class="featured-badge" *ngIf="bet.featured">
+          <ion-icon name="star"></ion-icon>
+          <span>Destacado</span>
+        </div>
+
+        <!-- Live Badge -->
+        <div class="live-badge" *ngIf="bet.isLive">
+          <span class="pulse-dot"></span>
+          <span>EN VIVO</span>
+        </div>
+
+        <!-- Bet Header -->
+        <div class="bet-header">
+          <div class="bet-league">
+            <span class="league-badge">{{ bet.leagueBadge }}</span>
+            <span class="league-name">{{ bet.league }}</span>
+          </div>
+          <div class="bet-time">
+            <ion-icon name="time-outline"></ion-icon>
+            <span>{{ bet.date }} {{ bet.time }}</span>
+          </div>
+        </div>
+
+        <!-- Match Info -->
+        <div class="bet-match">
+          <div class="match-teams">
+            <div class="team home-team">
+              <span class="team-name">{{ bet.homeTeam }}</span>
+              <span class="team-score" *ngIf="bet.isLive && bet.score">{{ bet.score.split(' - ')[0] }}</span>
+            </div>
+            <div class="vs">
+              <span>VS</span>
+            </div>
+            <div class="team away-team">
+              <span class="team-score" *ngIf="bet.isLive && bet.score">{{ bet.score.split(' - ')[1] }}</span>
+              <span class="team-name">{{ bet.awayTeam }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Betting Options -->
+        <div class="bet-options">
+          <div class="bet-option" (click)="placeBet(bet, 'home')">
+            <div class="option-header">
+              <ion-icon name="home-outline"></ion-icon>
+              <span class="option-label">Local</span>
+            </div>
+            <div class="option-odd">{{ bet.odds.home }}</div>
+          </div>
+
+          <div class="bet-option" (click)="placeBet(bet, 'draw')" *ngIf="bet.odds.draw > 0">
+            <div class="option-header">
+              <ion-icon name="remove-outline"></ion-icon>
+              <span class="option-label">Empate</span>
+            </div>
+            <div class="option-odd">{{ bet.odds.draw }}</div>
+          </div>
+
+          <div class="bet-option" (click)="placeBet(bet, 'away')">
+            <div class="option-header">
+              <ion-icon name="airplane-outline"></ion-icon>
+              <span class="option-label">Visitante</span>
+            </div>
+            <div class="option-odd">{{ bet.odds.away }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================== -->
+  <!-- MY BETS TAB -->
+  <!-- ===================================== -->
+  <div *ngIf="selectedTab === 'mybets'">
+    
+    <!-- Stats Summary -->
+    <div class="stats-summary" *ngIf="myBets.length > 0">
+      <div class="stat-item">
+        <ion-icon name="ticket-outline"></ion-icon>
+        <div class="stat-info">
+          <span class="stat-value">{{ myBets.length }}</span>
+          <span class="stat-label">Apuestas</span>
+        </div>
+      </div>
+      <div class="stat-item">
+        <ion-icon name="cash-outline"></ion-icon>
+        <div class="stat-info">
+          <span class="stat-value">${{ getTotalStaked() | number:'1.2-2' }}</span>
+          <span class="stat-label">Apostado</span>
+        </div>
+      </div>
+      <div class="stat-item success">
+        <ion-icon name="trending-up-outline"></ion-icon>
+        <div class="stat-info">
+          <span class="stat-value">${{ getTotalPotential() | number:'1.2-2' }}</span>
+          <span class="stat-label">Potencial</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- My Bets List -->
+    <div class="bets-list">
+      <div class="active-bet-card" *ngFor="let bet of myBets">
+        
+        <!-- Status Badge -->
+        <div class="bet-status" [class.live]="bet.status === 'live'" [class.pending]="bet.status === 'pending'">
+          <span class="pulse-dot" *ngIf="bet.status === 'live'"></span>
+          <ion-icon [name]="bet.status === 'live' ? 'radio-outline' : 'time-outline'"></ion-icon>
+          <span>{{ bet.status === 'live' ? 'En Vivo' : 'Pendiente' }}</span>
+        </div>
+
+        <!-- Match Info -->
+        <div class="bet-match-info">
+          <h3>{{ bet.homeTeam }} <span class="vs-small">vs</span> {{ bet.awayTeam }}</h3>
+          <p class="league-info">
+            <ion-icon name="trophy-outline"></ion-icon>
+            {{ bet.league }}
+          </p>
+        </div>
+
+        <!-- Bet Details -->
+        <div class="bet-details">
+          <div class="detail-row">
+            <span class="label">Tu Apuesta:</span>
+            <span class="value highlight">{{ bet.bet }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Cuota:</span>
+            <span class="value">{{ bet.odds }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Monto:</span>
+            <span class="value">${{ bet.amount | number:'1.2-2' }}</span>
+          </div>
+          <div class="detail-row total">
+            <span class="label">Ganancia Potencial:</span>
+            <span class="potential-win">${{ bet.potential | number:'1.2-2' }}</span>
+          </div>
+        </div>
+
+        <!-- Bet Info -->
+        <div class="bet-info">
+          <span class="bet-date">
+            <ion-icon name="calendar-outline"></ion-icon>
+            {{ bet.date }} {{ bet.time }}
+          </span>
+          <span class="bet-id">#{{ bet.id }}</span>
+        </div>
+
+        <!-- Actions -->
+        <div class="bet-actions">
+          <ion-button fill="clear" size="small" color="danger" (click)="cancelBet(bet.id)">
+            <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+            Cancelar Apuesta
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="myBets.length === 0" class="empty-state">
+        <ion-icon name="ticket-outline"></ion-icon>
+        <h3>No tienes apuestas activas</h3>
+        <p>Explora las apuestas disponibles y comienza a ganar</p>
+        <ion-button (click)="selectedTab = 'available'">
+          <ion-icon name="search-outline" slot="start"></ion-icon>
+          Ver Apuestas
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================== -->
+  <!-- HISTORY TAB -->
+  <!-- ===================================== -->
+  <div *ngIf="selectedTab === 'history'">
+    
+    <!-- Stats Overview -->
+    <div class="history-stats">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <ion-icon name="bar-chart-outline"></ion-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-number">{{ stats.totalBets }}</span>
+          <span class="stat-text">Total</span>
+        </div>
+      </div>
+
+      <div class="stat-card success">
+        <div class="stat-icon">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-number">{{ stats.wonBets }}</span>
+          <span class="stat-text">Ganadas</span>
+        </div>
+      </div>
+
+      <div class="stat-card danger">
+        <div class="stat-icon">
+          <ion-icon name="close-circle-outline"></ion-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-number">{{ stats.lostBets }}</span>
+          <span class="stat-text">Perdidas</span>
+        </div>
+      </div>
+
+      <div class="stat-card primary">
+        <div class="stat-icon">
+          <ion-icon name="trophy-outline"></ion-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-number">{{ stats.winRate }}%</span>
+          <span class="stat-text">Efectividad</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Profit/Loss -->
+    <div class="profit-card" [class.profit]="stats.totalProfit > 0" [class.loss]="stats.totalProfit < 0">
+      <ion-icon [name]="stats.totalProfit > 0 ? 'trending-up' : 'trending-down'"></ion-icon>
+      <div class="profit-info">
+        <span class="profit-label">Balance Total</span>
+        <span class="profit-amount">{{ stats.totalProfit > 0 ? '+' : '' }}${{ stats.totalProfit | number:'1.2-2' }}</span>
+      </div>
+    </div>
+
+    <!-- History List -->
+    <div class="bets-list">
+      <div class="history-card" *ngFor="let bet of betHistory" [class.won]="bet.status === 'won'" [class.lost]="bet.status === 'lost'">
+        
+        <!-- Result Badge -->
+        <div class="result-badge" [class.won]="bet.status === 'won'" [class.lost]="bet.status === 'lost'">
+          <ion-icon [name]="bet.status === 'won' ? 'checkmark-circle' : 'close-circle'"></ion-icon>
+          <span>{{ bet.status === 'won' ? 'Ganada' : 'Perdida' }}</span>
+        </div>
+
+        <!-- Match Info -->
+        <div class="history-match">
+          <h3>{{ bet.homeTeam }} <span class="vs-small">vs</span> {{ bet.awayTeam }}</h3>
+          <p class="league-info">
+            <ion-icon name="trophy-outline"></ion-icon>
+            {{ bet.league }}
+          </p>
+          <p class="final-score" *ngIf="bet.finalScore">
+            <ion-icon name="football-outline"></ion-icon>
+            Resultado: {{ bet.finalScore }}
+          </p>
+        </div>
+
+        <!-- Bet Details -->
+        <div class="history-details">
+          <div class="detail-row">
+            <span class="label">Apuesta:</span>
+            <span class="value">{{ bet.bet }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Cuota:</span>
+            <span class="value">{{ bet.odds }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Monto:</span>
+            <span class="value">${{ bet.amount | number:'1.2-2' }}</span>
+          </div>
+          <div class="detail-row total">
+            <span class="label">Resultado:</span>
+            <span class="result-value" [class.profit]="bet.result > 0" [class.loss]="bet.result < 0">
+              {{ bet.result > 0 ? '+' : '' }}${{ bet.result | number:'1.2-2' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Date -->
+        <div class="history-footer">
+          <span class="bet-date">
+            <ion-icon name="calendar-outline"></ion-icon>
+            {{ bet.date }}
+          </span>
+          <span class="bet-id">#{{ bet.id }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Banner -->
+  <div class="info-banner">
+    <ion-icon name="information-circle-outline"></ion-icon>
+    <p>Apuesta responsablemente. Solo mayores de 18 años. El juego puede ser adictivo.</p>
+  </div>
+
+</ion-content>

@@ -1,0 +1,122 @@
+<ion-header class="custom-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">
+      <div class="title-wrapper">
+        <ion-icon name="trophy-outline"></ion-icon>
+        <span>Clasificación</span>
+      </div>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="standings-content">
+  
+  <!-- League Selector -->
+  <div class="league-selector">
+    <ion-segment [(ngModel)]="selectedLeague" (ionChange)="changeLeague($event)" scrollable>
+      <ion-segment-button *ngFor="let league of leagues" [value]="league.id">
+        <span class="league-flag">{{ league.flag }}</span>
+        <ion-label>{{ league.name }}</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <!-- Standings Table -->
+  <div class="standings-container">
+    
+    <!-- Table Header -->
+    <div class="table-header">
+      <div class="col-pos">#</div>
+      <div class="col-team">Equipo</div>
+      <div class="col-stats">PJ</div>
+      <div class="col-stats">DG</div>
+      <div class="col-pts">PTS</div>
+    </div>
+
+    <!-- Table Rows -->
+    <div class="table-row" 
+         *ngFor="let team of standings" 
+         [class.champions]="team.position <= 4"
+         [class.europa]="team.position === 5"
+         [class.relegation]="team.position > 17"
+         (click)="openTeamDetail(team.team)">
+      
+      <div class="col-pos">
+        <span class="position-number">{{ team.position }}</span>
+        <div class="position-indicator" 
+             [class.green]="team.position <= 4"
+             [class.orange]="team.position === 5"
+             [class.red]="team.position > 17"></div>
+      </div>
+
+      <div class="col-team">
+        <div class="team-info">
+          <span class="team-name">{{ team.team }}</span>
+        </div>
+      </div>
+
+      <div class="col-stats">{{ team.played }}</div>
+      <div class="col-stats" [class.positive]="team.gd > 0" [class.negative]="team.gd < 0">
+        {{ team.gd > 0 ? '+' : '' }}{{ team.gd }}
+      </div>
+      <div class="col-pts">
+        <span class="points">{{ team.points }}</span>
+      </div>
+
+      <!-- Form (Mobile) -->
+      <div class="team-form">
+        <span *ngFor="let result of team.form" 
+              class="form-badge"
+              [class.win]="result === 'W'"
+              [class.draw]="result === 'D'"
+              [class.loss]="result === 'L'">
+          {{ result }}
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Legend -->
+  <div class="legend-container">
+    <h3>Leyenda</h3>
+    <div class="legend-items">
+      <div class="legend-item">
+        <div class="legend-color green"></div>
+        <span>Champions League</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color orange"></div>
+        <span>Europa League</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color red"></div>
+        <span>Descenso</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Summary -->
+  <div class="stats-summary">
+    <div class="stat-card">
+      <ion-icon name="trophy-outline"></ion-icon>
+      <div class="stat-info">
+        <span class="stat-value">{{ standings[0]?.team }}</span>
+        <span class="stat-label">Líder</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <ion-icon name="trending-up-outline"></ion-icon>
+      <div class="stat-info">
+        <span class="stat-value">{{ standings[0]?.points }}</span>
+        <span class="stat-label">Puntos</span>
+      </div>
+    </div>
+  </div>
+
+</ion-content>

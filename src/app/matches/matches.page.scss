@@ -1,0 +1,513 @@
+// ===================================
+// MATCHES PAGE STYLES
+// ===================================
+
+.custom-header {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(0, 212, 255, 0.1) 50%, transparent 100%);
+    animation: scanLine 3s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  &::after {
+    content: '⚽';
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    font-size: 2rem;
+    opacity: 0.1;
+    transform: translateY(-50%);
+    z-index: 0;
+  }
+
+  ion-toolbar {
+    --background: linear-gradient(135deg, rgba(10, 10, 30, 0.95) 0%, rgba(0, 51, 102, 0.95) 100%);
+    --color: white;
+    --border-width: 0;
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border-bottom: 2px solid rgba(0, 212, 255, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 212, 255, 0.15), inset 0 -1px 0 rgba(0, 212, 255, 0.2);
+    position: relative;
+    z-index: 1;
+  }
+
+  ion-title {
+    font-weight: 900;
+    font-size: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-family: 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+
+    .title-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+
+      ion-icon {
+        font-size: 1.5rem;
+        color: #00d4ff;
+        filter: drop-shadow(0 2px 8px rgba(0, 212, 255, 0.6));
+        animation: rotateBall 4s linear infinite;
+      }
+
+      span {
+        display: inline-block;
+        background: linear-gradient(135deg, #ffffff 0%, #00d4ff 50%, #ffffff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        filter: drop-shadow(0 3px 6px rgba(0, 212, 255, 0.5)) drop-shadow(0 0 20px rgba(0, 212, 255, 0.3));
+        font-weight: 900;
+        font-style: italic;
+        transform: skewX(-5deg);
+      }
+    }
+  }
+
+  ion-back-button {
+    --color: #00d4ff;
+    --icon-font-size: 1.5rem;
+    
+    &:hover {
+      --color: #00e5ff;
+    }
+  }
+}
+
+@keyframes rotateBall {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.matches-content {
+  --background: linear-gradient(135deg, #0a0a1e 0%, #1a1a2e 50%, #0a0a1e 100%);
+}
+
+// ===================================
+// SEGMENT CONTROL
+// ===================================
+.segment-wrapper {
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+
+  ion-segment {
+    --background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 4px;
+
+    ion-segment-button {
+      --color: rgba(255, 255, 255, 0.6);
+      --color-checked: #00d4ff;
+      --indicator-color: rgba(0, 212, 255, 0.2);
+      --indicator-height: 100%;
+      border-radius: 10px;
+      min-height: 36px;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+  }
+}
+
+// ===================================
+// MATCHES CONTAINER
+// ===================================
+.matches-container {
+  padding: 1rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+
+    ion-icon {
+      font-size: 1.5rem;
+      color: #00d4ff;
+    }
+  }
+
+  .live-indicator {
+    font-size: 1.5rem;
+    color: #ff3b30;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+}
+
+// ===================================
+// MATCH CARDS
+// ===================================
+.match-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 212, 255, 0.2);
+    border-color: rgba(0, 212, 255, 0.3);
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.match-league {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 1rem;
+
+  ion-icon {
+    font-size: 1rem;
+    color: #00d4ff;
+  }
+
+  .match-date {
+    margin-left: auto;
+    color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+.live-badge {
+  margin-left: auto;
+  font-weight: 700;
+  font-size: 0.7rem;
+}
+
+.match-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.team {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  &.home-team {
+    flex-direction: row;
+  }
+
+  &.away-team {
+    flex-direction: row-reverse;
+  }
+}
+
+.team-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: white;
+  flex: 1;
+}
+
+.team-score {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #00d4ff;
+  min-width: 40px;
+  text-align: center;
+}
+
+.match-time {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 1rem;
+
+  &.upcoming {
+    gap: 0.25rem;
+  }
+
+  .time-display {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #00d4ff;
+  }
+
+  .stadium-name {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+  }
+
+  .pulse-icon {
+    font-size: 0.5rem;
+    color: #ff3b30;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  ion-badge {
+    font-weight: 700;
+  }
+}
+
+.match-footer {
+  display: flex;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+  ion-button {
+    flex: 1;
+    --color: #00d4ff;
+    font-size: 0.8rem;
+    font-weight: 600;
+
+    ion-icon {
+      font-size: 1rem;
+    }
+  }
+}
+
+// ===================================
+// EMPTY STATE
+// ===================================
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: rgba(255, 255, 255, 0.5);
+
+  ion-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+  }
+
+  p {
+    font-size: 1rem;
+    margin: 0;
+  }
+}
+
+// ===================================
+// ANIMATIONS
+// ===================================
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+// ===================================
+// RESPONSIVE
+// ===================================
+
+// Mobile small (320px - 479px)
+@media (max-width: 479px) {
+  .segment-wrapper {
+    padding: 0.75rem;
+
+    ion-segment {
+      ion-segment-button {
+        font-size: 0.75rem;
+        min-height: 32px;
+      }
+    }
+  }
+
+  .matches-container {
+    padding: 0.75rem;
+  }
+
+  .section-header {
+    margin-bottom: 1rem;
+
+    h2 {
+      font-size: 1.1rem;
+
+      ion-icon {
+        font-size: 1.25rem;
+      }
+    }
+  }
+
+  .match-card {
+    padding: 0.875rem;
+  }
+
+  .match-league {
+    font-size: 0.7rem;
+    margin-bottom: 0.75rem;
+
+    ion-icon {
+      font-size: 0.875rem;
+    }
+  }
+
+  .team-name {
+    font-size: 0.85rem;
+  }
+
+  .team-score {
+    font-size: 1.5rem;
+    min-width: 35px;
+  }
+
+  .match-time {
+    padding: 0 0.5rem;
+
+    .time-display {
+      font-size: 0.95rem;
+    }
+
+    .stadium-name {
+      font-size: 0.65rem;
+    }
+  }
+
+  .match-footer {
+    padding-top: 0.75rem;
+
+    ion-button {
+      font-size: 0.7rem;
+
+      ion-icon {
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  .empty-state {
+    padding: 2rem 0.75rem;
+
+    ion-icon {
+      font-size: 3rem;
+    }
+
+    p {
+      font-size: 0.9rem;
+    }
+  }
+}
+
+// Mobile medium (480px - 767px)
+@media (min-width: 480px) and (max-width: 767px) {
+  .match-card {
+    padding: 1rem;
+  }
+
+  .team-name {
+    font-size: 0.9rem;
+  }
+
+  .team-score {
+    font-size: 1.625rem;
+  }
+}
+
+// Tablet (768px - 1023px)
+@media (min-width: 768px) and (max-width: 1023px) {
+  .matches-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 1.25rem;
+  }
+
+  .match-card {
+    padding: 1.375rem;
+  }
+
+  .team-name {
+    font-size: 1.05rem;
+  }
+
+  .team-score {
+    font-size: 1.875rem;
+  }
+}
+
+// Desktop (1024px and up)
+@media (min-width: 1024px) {
+  .matches-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+
+  .match-card {
+    padding: 1.75rem;
+
+    &:hover {
+      transform: translateY(-4px);
+    }
+  }
+
+  .section-header {
+    h2 {
+      font-size: 1.5rem;
+
+      ion-icon {
+        font-size: 1.75rem;
+      }
+    }
+  }
+
+  .match-league {
+    font-size: 0.875rem;
+
+    ion-icon {
+      font-size: 1.125rem;
+    }
+  }
+
+  .team-name {
+    font-size: 1.2rem;
+  }
+
+  .team-score {
+    font-size: 2.25rem;
+    min-width: 50px;
+  }
+
+  .match-time {
+    padding: 0 1.5rem;
+
+    .time-display {
+      font-size: 1.25rem;
+    }
+
+    .stadium-name {
+      font-size: 0.8rem;
+    }
+  }
+}

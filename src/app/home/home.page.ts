@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
+import { UserService, User } from '../services/user.service';
+import { Subscription } from 'rxjs';
 import { 
   IonHeader,
   IonToolbar,
@@ -61,7 +63,8 @@ import {
   newspaperOutline,
   swapHorizontalOutline,
   megaphoneOutline,
-  videocamOutline
+  videocamOutline,
+  cashOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -89,10 +92,10 @@ import {
     IonLabel
   ],
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
   // User data
-  userName: string = 'Eduardo Johnson';
-  userAvatar: string = 'https://i.pravatar.cc/150?img=12';
+  currentUser: User | null = null;
+  private userSubscription?: Subscription;
   notificationCount: number = 3;
   currentDate: Date = new Date();
   currentYear: number = new Date().getFullYear();
@@ -210,7 +213,8 @@ export class HomePage implements OnInit {
 
   constructor(
     private router: Router,
-    private menuController: MenuController
+    private menuController: MenuController,
+    private userService: UserService
   ) {
     // Register icons
     addIcons({
@@ -253,15 +257,22 @@ export class HomePage implements OnInit {
       'newspaper-outline': newspaperOutline,
       'swap-horizontal-outline': swapHorizontalOutline,
       'megaphone-outline': megaphoneOutline,
-      'videocam-outline': videocamOutline
+      'videocam-outline': videocamOutline,
+      'cash-outline': cashOutline
     });
   }
 
   ngOnInit() {
-    // Load user data from storage or API
-    const savedUserName = localStorage.getItem('userName');
-    if (savedUserName) {
-      this.userName = savedUserName;
+    // Load user data from UserService
+    this.currentUser = this.userService.getCurrentUser();
+    this.userSubscription = this.userService.user$.subscribe(user => {
+      this.currentUser = user;
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
     }
   }
 
@@ -273,6 +284,14 @@ export class HomePage implements OnInit {
     if (hour < 12) return '¡Buenos días!';
     if (hour < 18) return '¡Buenas tardes!';
     return '¡Buenas noches!';
+  }
+
+  /**
+   * Load user profile from localStorage
+   */
+  loadUserProfile() {
+    // Ya no es necesario, se maneja con el servicio
+    this.currentUser = this.userService.getCurrentUser();
   }
 
   /**
@@ -320,10 +339,7 @@ export class HomePage implements OnInit {
    */
   async navigateToProfile() {
     await this.closeMenu();
-    console.log('Navigating to profile...');
-    // TODO: Create profile page and navigate
-    // this.router.navigate(['/profile']);
-    alert('La página de perfil estará disponible próximamente');
+    this.router.navigate(['/profile']);
   }
 
   /**
@@ -434,10 +450,9 @@ export class HomePage implements OnInit {
   /**
    * Navigate to a specific page
    */
-  navigateToPage(page: string) {
-    console.log('Navigating to:', page);
-    // TODO: Implement navigation
-    alert(`Navegando a: ${page}`);
+  async navigateToPage(page: string) {
+    await this.closeMenu();
+    this.router.navigate([page]);
   }
 
   /**

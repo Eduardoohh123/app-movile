@@ -1,0 +1,739 @@
+// ===================================
+// STANDINGS PAGE STYLES
+// ===================================
+
+.custom-header {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(90deg, 
+      transparent 0%, 
+      rgba(74, 222, 128, 0.1) 33%, 
+      rgba(251, 191, 36, 0.1) 66%, 
+      rgba(239, 68, 68, 0.1) 100%
+    );
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  &::after {
+    content: '🏆';
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    font-size: 2rem;
+    opacity: 0.15;
+    transform: translateY(-50%);
+    z-index: 0;
+    animation: trophyBounce 3s ease-in-out infinite;
+  }
+
+  ion-toolbar {
+    --background: linear-gradient(135deg, rgba(10, 10, 30, 0.95) 0%, rgba(30, 60, 90, 0.95) 100%);
+    --color: white;
+    --border-width: 0;
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border-bottom: 2px solid rgba(0, 212, 255, 0.4);
+    box-shadow: 0 4px 20px rgba(0, 212, 255, 0.2), 0 2px 10px rgba(74, 222, 128, 0.1);
+    position: relative;
+    z-index: 1;
+  }
+
+  ion-title {
+    font-weight: 900;
+    font-size: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-family: 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+
+    .title-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+
+      ion-icon {
+        font-size: 1.6rem;
+        color: #fbbf24;
+        filter: drop-shadow(0 2px 8px rgba(251, 191, 36, 0.6));
+        animation: trophyShine 2s ease-in-out infinite;
+      }
+
+      span {
+        display: inline-block;
+        background: linear-gradient(135deg, #ffffff 0%, #00d4ff 50%, #ffffff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        filter: drop-shadow(0 3px 6px rgba(0, 212, 255, 0.5)) drop-shadow(0 0 20px rgba(0, 212, 255, 0.3));
+        font-weight: 900;
+        font-style: italic;
+        transform: skewX(-5deg);
+      }
+    }
+  }
+
+  ion-back-button {
+    --color: #00d4ff;
+    --icon-font-size: 1.5rem;
+    
+    &:hover {
+      --color: #00e5ff;
+    }
+  }
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.standings-content {
+  --background: linear-gradient(135deg, #0a0a1e 0%, #1a1a2e 50%, #0a0a1e 100%);
+}
+
+// ===================================
+// LEAGUE SELECTOR
+// ===================================
+.league-selector {
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+  ion-segment {
+    --background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 4px;
+
+    ion-segment-button {
+      --color: rgba(255, 255, 255, 0.6);
+      --color-checked: #00d4ff;
+      --indicator-color: rgba(0, 212, 255, 0.2);
+      --indicator-height: 100%;
+      border-radius: 10px;
+      min-height: 40px;
+      font-weight: 600;
+      font-size: 0.8rem;
+
+      .league-flag {
+        font-size: 1.25rem;
+        margin-right: 0.25rem;
+      }
+    }
+  }
+}
+
+// ===================================
+// STANDINGS TABLE
+// ===================================
+.standings-container {
+  padding: 1rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 50px 1fr 45px 45px 50px;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(0, 212, 255, 0.1);
+  border-radius: 12px 12px 0 0;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: #00d4ff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 50px 1fr 45px 45px 50px;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateX(4px);
+  }
+
+  &:last-child {
+    border-radius: 0 0 12px 12px;
+  }
+
+  &.champions {
+    border-left: 3px solid #4ade80;
+  }
+
+  &.europa {
+    border-left: 3px solid #fbbf24;
+  }
+
+  &.relegation {
+    border-left: 3px solid #ef4444;
+  }
+}
+
+.col-pos {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  color: white;
+  text-align: center;
+  justify-content: center;
+
+  .position-number {
+    font-size: 1rem;
+  }
+
+  .position-indicator {
+    width: 4px;
+    height: 20px;
+    border-radius: 2px;
+    background: transparent;
+
+    &.green {
+      background: #4ade80;
+    }
+
+    &.orange {
+      background: #fbbf24;
+    }
+
+    &.red {
+      background: #ef4444;
+    }
+  }
+}
+
+.col-team {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+
+  .team-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .team-name {
+    font-weight: 600;
+    color: white;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.col-stats {
+  text-align: center;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+
+  &.positive {
+    color: #4ade80;
+  }
+
+  &.negative {
+    color: #ef4444;
+  }
+}
+
+.col-pts {
+  text-align: center;
+
+  .points {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #00d4ff;
+  }
+}
+
+.team-form {
+  display: none;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+  grid-column: 2 / -1;
+}
+
+.form-badge {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+
+  &.win {
+    background: #4ade80;
+  }
+
+  &.draw {
+    background: #fbbf24;
+  }
+
+  &.loss {
+    background: #ef4444;
+  }
+}
+
+// ===================================
+// LEGEND
+// ===================================
+.legend-container {
+  margin: 2rem 1rem 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  h3 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+
+  &.green {
+    background: #4ade80;
+  }
+
+  &.orange {
+    background: #fbbf24;
+  }
+
+  &.red {
+    background: #ef4444;
+  }
+}
+
+// ===================================
+// STATS SUMMARY
+// ===================================
+.stats-summary {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  padding: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: rgba(0, 212, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+
+  ion-icon {
+    font-size: 2rem;
+    color: #00d4ff;
+  }
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  .stat-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+}
+
+// ===================================
+// RESPONSIVE
+// ===================================
+
+// Mobile small (320px - 479px)
+@media (max-width: 479px) {
+  .league-selector {
+    padding: 0.75rem;
+
+    ion-segment {
+      padding: 3px;
+
+      ion-segment-button {
+        font-size: 0.7rem;
+        min-height: 36px;
+
+        .league-flag {
+          font-size: 1rem;
+          margin-right: 0.15rem;
+        }
+      }
+    }
+  }
+
+  .standings-container {
+    padding: 0.75rem;
+  }
+
+  .table-header {
+    grid-template-columns: 40px 1fr 35px 35px 40px;
+    gap: 0.375rem;
+    padding: 0.75rem 0.5rem;
+    font-size: 0.65rem;
+    border-radius: 10px 10px 0 0;
+  }
+
+  .table-row {
+    grid-template-columns: 40px 1fr 35px 35px 40px;
+    gap: 0.375rem;
+    padding: 0.75rem 0.5rem;
+
+    &:last-child {
+      border-radius: 0 0 10px 10px;
+    }
+
+    &.champions,
+    &.europa,
+    &.relegation {
+      border-left-width: 2px;
+    }
+  }
+
+  .col-pos {
+    .position-number {
+      font-size: 0.85rem;
+    }
+
+    .position-indicator {
+      width: 3px;
+      height: 16px;
+    }
+  }
+
+  .col-team {
+    gap: 0.5rem;
+
+    .team-name {
+      font-size: 0.75rem;
+    }
+  }
+
+  .col-stats {
+    font-size: 0.75rem;
+  }
+
+  .col-pts {
+    .points {
+      font-size: 0.875rem;
+    }
+  }
+
+  .form-badge {
+    width: 18px;
+    height: 18px;
+    font-size: 0.6rem;
+    border-radius: 3px;
+  }
+
+  .legend-container {
+    margin: 1.5rem 0.75rem 0.75rem;
+    padding: 0.875rem;
+    border-radius: 10px;
+
+    h3 {
+      font-size: 0.8rem;
+      margin-bottom: 0.625rem;
+    }
+  }
+
+  .legend-items {
+    gap: 0.75rem;
+  }
+
+  .legend-item {
+    font-size: 0.75rem;
+    gap: 0.375rem;
+  }
+
+  .legend-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+  }
+
+  .stats-summary {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat-card {
+    padding: 0.875rem;
+
+    ion-icon {
+      font-size: 1.5rem;
+    }
+  }
+
+  .stat-info {
+    .stat-value {
+      font-size: 0.9rem;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+    }
+  }
+}
+
+// Mobile medium (480px - 767px)
+@media (min-width: 480px) and (max-width: 767px) {
+  .table-header {
+    grid-template-columns: 45px 1fr 40px 40px 45px;
+    font-size: 0.7rem;
+  }
+
+  .table-row {
+    grid-template-columns: 45px 1fr 40px 40px 45px;
+  }
+
+  .col-team {
+    .team-name {
+      font-size: 0.8rem;
+    }
+  }
+
+  .col-stats {
+    font-size: 0.8rem;
+  }
+
+  .stats-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+// Tablet (768px - 1023px)
+@media (min-width: 768px) and (max-width: 1023px) {
+  .standings-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 1.25rem;
+  }
+
+  .table-row {
+    grid-template-columns: 55px 1fr 55px 55px 65px;
+  }
+
+  .table-header {
+    grid-template-columns: 55px 1fr 55px 55px 65px;
+    font-size: 0.8rem;
+  }
+
+  .team-form {
+    display: flex;
+  }
+
+  .col-team .team-name {
+    font-size: 0.95rem;
+  }
+
+  .legend-container {
+    max-width: 700px;
+    margin: 2rem auto 1rem;
+  }
+
+  .stats-summary {
+    max-width: 700px;
+    margin: 0 auto 2rem;
+  }
+}
+
+// Desktop (1024px and up)
+@media (min-width: 1024px) {
+  .league-selector {
+    padding: 1.25rem;
+
+    ion-segment {
+      padding: 5px;
+      max-width: 900px;
+      margin: 0 auto;
+
+      ion-segment-button {
+        font-size: 0.875rem;
+        min-height: 44px;
+
+        .league-flag {
+          font-size: 1.5rem;
+        }
+      }
+    }
+  }
+
+  .standings-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+
+  .table-header {
+    grid-template-columns: 70px 1fr 70px 70px 80px;
+    gap: 0.75rem;
+    padding: 1.25rem;
+    font-size: 0.9rem;
+  }
+
+  .table-row {
+    grid-template-columns: 70px 1fr 70px 70px 80px;
+    gap: 0.75rem;
+    padding: 1.25rem;
+
+    &:hover {
+      transform: translateX(6px);
+    }
+  }
+
+  .col-pos {
+    .position-number {
+      font-size: 1.125rem;
+    }
+
+    .position-indicator {
+      width: 5px;
+      height: 24px;
+    }
+  }
+
+  .col-team {
+    gap: 1rem;
+
+    .team-name {
+      font-size: 1.1rem;
+    }
+  }
+
+  .col-stats {
+    font-size: 0.95rem;
+  }
+
+  .col-pts {
+    .points {
+      font-size: 1.125rem;
+    }
+  }
+
+  .team-form {
+    display: flex;
+    gap: 0.375rem;
+  }
+
+  .form-badge {
+    width: 24px;
+    height: 24px;
+    font-size: 0.75rem;
+    border-radius: 5px;
+  }
+
+  .legend-container {
+    max-width: 1100px;
+    margin: 2.5rem auto 1.5rem;
+    padding: 1.5rem;
+
+    h3 {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+  }
+
+  .legend-items {
+    gap: 1.5rem;
+  }
+
+  .legend-item {
+    font-size: 0.95rem;
+  }
+
+  .legend-color {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+  }
+
+  .stats-summary {
+    max-width: 700px;
+    margin: 0 auto 2.5rem;
+    gap: 1.25rem;
+  }
+
+  .stat-card {
+    padding: 1.25rem;
+
+    ion-icon {
+      font-size: 2.5rem;
+    }
+  }
+
+  .stat-info {
+    .stat-value {
+      font-size: 1.125rem;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+    }
+  }
+}

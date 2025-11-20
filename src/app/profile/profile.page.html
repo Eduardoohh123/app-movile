@@ -1,0 +1,139 @@
+<ion-header class="custom-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">
+      <div class="title-wrapper">
+        <ion-icon name="person-circle-outline"></ion-icon>
+        <span>Mi Perfil</span>
+      </div>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="saveProfile()" [disabled]="!isEditing">
+        <ion-icon name="checkmark" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="profile-content">
+  <div class="profile-wrapper">
+    
+    <!-- Avatar Section -->
+    <div class="avatar-section">
+      <div class="avatar-container" (click)="changePhoto()">
+        <ion-avatar class="profile-avatar">
+          <img [src]="profileData.avatar" alt="Profile">
+        </ion-avatar>
+        <div class="camera-overlay">
+          <ion-icon name="camera"></ion-icon>
+          <span>Cambiar foto</span>
+        </div>
+      </div>
+      <h2 class="profile-name">{{ profileData.name }}</h2>
+      <p class="profile-email">{{ profileData.email }}</p>
+    </div>
+
+    <!-- Profile Form -->
+    <div class="profile-form">
+      
+      <!-- Información Personal -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <ion-icon name="person"></ion-icon>
+          Información Personal
+        </h3>
+        
+        <ion-item class="custom-item">
+          <ion-label position="stacked">Nombre completo</ion-label>
+          <ion-input 
+            [(ngModel)]="profileData.name" 
+            [readonly]="!isEditing"
+            placeholder="Ingresa tu nombre">
+          </ion-input>
+        </ion-item>
+
+        <ion-item class="custom-item">
+          <ion-label position="stacked">Correo electrónico</ion-label>
+          <ion-input 
+            [(ngModel)]="profileData.email" 
+            [readonly]="!isEditing"
+            type="email"
+            placeholder="correo@ejemplo.com">
+          </ion-input>
+        </ion-item>
+
+        <ion-item class="custom-item">
+          <ion-label position="stacked">Teléfono</ion-label>
+          <ion-input 
+            [(ngModel)]="profileData.phone" 
+            [readonly]="!isEditing"
+            type="tel"
+            placeholder="+52 123 456 7890">
+          </ion-input>
+        </ion-item>
+
+        <ion-item class="custom-item">
+          <ion-label position="stacked">Fecha de nacimiento</ion-label>
+          <ion-input 
+            [(ngModel)]="profileData.birthdate" 
+            [readonly]="!isEditing"
+            type="date">
+          </ion-input>
+        </ion-item>
+      </div>
+
+      <!-- Información Adicional -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <ion-icon name="location"></ion-icon>
+          Información Adicional
+        </h3>
+        
+        <ion-item class="custom-item">
+          <ion-label position="stacked">Ciudad</ion-label>
+          <ion-input 
+            [(ngModel)]="profileData.city" 
+            [readonly]="!isEditing"
+            placeholder="Tu ciudad">
+          </ion-input>
+        </ion-item>
+
+        <ion-item class="custom-item">
+          <ion-label position="stacked">País</ion-label>
+          <ion-input 
+            [(ngModel)]="profileData.country" 
+            [readonly]="!isEditing"
+            placeholder="Tu país">
+          </ion-input>
+        </ion-item>
+
+        <ion-item class="custom-item">
+          <ion-label position="stacked">Biografía</ion-label>
+          <ion-textarea 
+            [(ngModel)]="profileData.bio" 
+            [readonly]="!isEditing"
+            rows="4"
+            placeholder="Cuéntanos sobre ti...">
+          </ion-textarea>
+        </ion-item>
+      </div>
+
+      <!-- Botón de edición -->
+      <div class="action-buttons">
+        <ion-button 
+          expand="block" 
+          class="edit-button"
+          (click)="toggleEdit()"
+          [color]="isEditing ? 'danger' : 'primary'">
+          <ion-icon [name]="isEditing ? 'close' : 'create'" slot="start"></ion-icon>
+          {{ isEditing ? 'Cancelar' : 'Editar Perfil' }}
+        </ion-button>
+      </div>
+
+    </div>
+  </div>
+</ion-content>
