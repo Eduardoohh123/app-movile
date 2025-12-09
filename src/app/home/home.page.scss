@@ -7,35 +7,109 @@
 // ===================================
 .custom-menu {
   --width: 320px;
-  --background: rgba(10, 10, 30, 0.85);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
+  --background: #0a0a1e;
 
-  ion-header ion-toolbar {
-    --background: rgba(10, 10, 30, 0.85);
-    --color: white;
-    --border-width: 0;
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
-    border-bottom: none;
-    --padding-top: 0.75rem;
-    --padding-bottom: 0.75rem;
-  }
-
-  ion-content {
-    --background: transparent;
+  ion-header {
+    background: #0a0a1e !important;
+    
+    &::after {
+      display: none;
+    }
   }
 }
 
+.menu-header-custom {
+  background: #0a0a1e !important;
+  --background: #0a0a1e !important;
+  
+  &::before,
+  &::after {
+    display: none !important;
+  }
+  
+  ion-toolbar {
+    --background: #0a0a1e !important;
+    --border-width: 0 !important;
+    --padding-top: 0;
+    --padding-bottom: 0;
+    --min-height: auto;
+    background: #0a0a1e !important;
+  }
+}
+
+// Penetrar el Shadow DOM para forzar estilos
+::ng-deep ion-menu.custom-menu {
+  .menu-header-custom {
+    ion-toolbar {
+      .toolbar-container {
+        background: #0a0a1e !important;
+        
+        .toolbar-content {
+          background: #0a0a1e !important;
+        }
+      }
+    }
+  }
+}
+
+.menu-header {
+  background: #0a0a1e;
+  
+  ion-toolbar {
+    --background: #0a0a1e;
+    --color: #ffffff;
+    --border-width: 0;
+    --padding-top: 0.75rem;
+    --padding-bottom: 0.75rem;
+  }
+}
+
+.menu-toolbar {
+  --background: #0a0a1e !important;
+  --border-width: 0 !important;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --min-height: auto;
+  background: #0a0a1e !important;
+  
+  &::part(container) {
+    background: #0a0a1e !important;
+  }
+  
+  &::part(content) {
+    background: #0a0a1e !important;
+  }
+  
+  .toolbar-container {
+    background: #0a0a1e !important;
+  }
+  
+  .toolbar-content {
+    background: #0a0a1e !important;
+  }
+}
+
+.menu-logo-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem 0;
+  background: #0a0a1e;
+}
+
 .menu-content {
-  --background: transparent;
-  background: transparent;
+  --background: #0a0a1e;
+  background: #0a0a1e;
+  --color: #ffffff;
+  color: #ffffff;
 }
 
 .menu-content-wrapper {
   display: flex;
   flex-direction: column;
   min-height: 100%;
+  background: transparent;
 }
 
 .menu-profile {
@@ -45,8 +119,8 @@
   padding: 0.5rem 0.75rem;
   background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(0, 102, 255, 0.1) 100%);
   margin: 0.5rem 0.5rem 0.5rem 0.5rem;
-  border-radius: 1px;
-  border: px solid rgba(0, 212, 255, 0.2);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 212, 255, 0.2);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -62,9 +136,7 @@
 .profile-avatar {
   width: 34px;
   height: 34px;
-  border: 2px solid #00d4ff;
   flex-shrink: 0;
-  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.1);
 }
 
 .profile-info {
@@ -104,6 +176,7 @@
 
   ion-item {
     --background: transparent;
+    --color: #ffffff;
     --padding-start: 0.75rem;
     --padding-end: 0.75rem;
     --inner-padding-end: 0;
@@ -137,19 +210,17 @@
       transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       filter: drop-shadow(0 2px 4px rgba(0, 212, 255, 0.3));
     }
+    
+    ion-label {
+      color: #ffffff;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
 
     &:hover ion-icon {
       transform: scale(1.15) rotate(5deg);
       color: #00e5ff;
       filter: drop-shadow(0 4px 8px rgba(0, 212, 255, 0.5));
-    }
-
-    ion-label {
-      font-size: 0.75rem;
-      color: #ffffff;
-      font-weight: 600;
-      letter-spacing: 0.4px;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     }
   }
 }
@@ -208,12 +279,32 @@
   color: #00d4ff;
 }
 
+.menu-logo-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 0;
+  min-height: 120px;
+  background: #0a0a1e !important;
+  width: 100%;
+}
+
 .menu-logo {
-  height: 32px;
+  height: 70px;
   width: auto;
   object-fit: contain;
   display: block;
-  margin: 0 auto;
+  filter: brightness(1.2) drop-shadow(0 4px 8px rgba(0, 212, 255, 0.3));
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 // ===================================
@@ -239,6 +330,42 @@
     ion-icon {
       font-size: 1.75rem;
     }
+  }
+
+  // Estilos para el botón de notificaciones
+  .notification-button {
+    position: relative;
+
+    .notification-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 4px;
+      border-radius: 9px;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ff3b30;
+      color: white;
+      border: 2px solid rgba(0, 0, 0, 0.5);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      animation: pulse-badge 2s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes pulse-badge {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(255, 59, 48, 0.6);
   }
 }
 
@@ -301,7 +428,6 @@
   --background: #f44336;
   --color: white;
   font-weight: 700;
-  border: 2px solid #00d4ff;
 }
 
 // ===================================

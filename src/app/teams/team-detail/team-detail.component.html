@@ -1,0 +1,186 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ isEditMode ? 'Editar Equipo' : 'Nuevo Equipo' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="save()" [strong]="true">
+        Guardar
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="team-detail-content">
+  <div class="form-container">
+    <!-- Logo Section -->
+    <div class="logo-section">
+      <div class="logo-preview" [style.background]="'linear-gradient(135deg, ' + formData.colors.primary + ', ' + formData.colors.secondary + ')'">
+        <span class="logo-text">{{ formData.logo }}</span>
+      </div>
+      <ion-button fill="outline" size="small" (click)="selectLogo()">
+        <ion-icon name="image-outline" slot="start"></ion-icon>
+        Cambiar Logo
+      </ion-button>
+    </div>
+
+    <!-- Basic Information -->
+    <div class="form-section">
+      <h3 class="section-title">Información Básica</h3>
+      
+      <ion-item>
+        <ion-label position="stacked">Nombre del Equipo *</ion-label>
+        <ion-input
+          [(ngModel)]="formData.name"
+          placeholder="Ej: Real Madrid"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Nombre Corto *</ion-label>
+        <ion-input
+          [(ngModel)]="formData.shortName"
+          placeholder="Ej: RMA"
+          maxlength="5"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Liga</ion-label>
+        <ion-select [(ngModel)]="formData.league" interface="popover">
+          <ion-select-option *ngFor="let league of leagues" [value]="league.id">
+            {{ league.name }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </div>
+
+    <!-- Location -->
+    <div class="form-section">
+      <h3 class="section-title">Ubicación</h3>
+      
+      <ion-item>
+        <ion-label position="stacked">País</ion-label>
+        <ion-input
+          [(ngModel)]="formData.country"
+          placeholder="Ej: España"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Ciudad</ion-label>
+        <ion-input
+          [(ngModel)]="formData.city"
+          placeholder="Ej: Madrid"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Estadio</ion-label>
+        <ion-input
+          [(ngModel)]="formData.stadium"
+          placeholder="Ej: Santiago Bernabéu"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Año de Fundación</ion-label>
+        <ion-input
+          type="number"
+          [(ngModel)]="formData.founded"
+          placeholder="1902"
+          min="1800"
+          [max]="2025"
+        ></ion-input>
+      </ion-item>
+    </div>
+
+    <!-- Colors -->
+    <div class="form-section">
+      <h3 class="section-title">Colores del Equipo</h3>
+      
+      <div class="color-pickers">
+        <div class="color-picker-item">
+          <ion-label>Color Primario</ion-label>
+          <input type="color" [(ngModel)]="formData.colors.primary" class="color-input">
+          <span class="color-value">{{ formData.colors.primary }}</span>
+        </div>
+        
+        <div class="color-picker-item">
+          <ion-label>Color Secundario</ion-label>
+          <input type="color" [(ngModel)]="formData.colors.secondary" class="color-input">
+          <span class="color-value">{{ formData.colors.secondary }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="form-section">
+      <h3 class="section-title">Estadísticas</h3>
+      
+      <div class="stats-grid">
+        <ion-item>
+          <ion-label position="stacked">Victorias</ion-label>
+          <ion-input
+            type="number"
+            [(ngModel)]="formData.stats.wins"
+            min="0"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Empates</ion-label>
+          <ion-input
+            type="number"
+            [(ngModel)]="formData.stats.draws"
+            min="0"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Derrotas</ion-label>
+          <ion-input
+            type="number"
+            [(ngModel)]="formData.stats.losses"
+            min="0"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Goles a Favor</ion-label>
+          <ion-input
+            type="number"
+            [(ngModel)]="formData.stats.goalsFor"
+            min="0"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Goles en Contra</ion-label>
+          <ion-input
+            type="number"
+            [(ngModel)]="formData.stats.goalsAgainst"
+            min="0"
+          ></ion-input>
+        </ion-item>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <ion-button expand="block" (click)="save()" color="primary">
+        <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+        {{ isEditMode ? 'Actualizar' : 'Crear' }} Equipo
+      </ion-button>
+      
+      <ion-button expand="block" fill="outline" (click)="close()">
+        Cancelar
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

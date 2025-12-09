@@ -59,7 +59,12 @@
         <!-- Location -->
         <ion-chip *ngIf="post.location" class="location-chip">
           <ion-icon name="location-outline"></ion-icon>
-          <ion-label>{{ post.location }}</ion-label>
+          <ion-label>
+            {{ post.location }}
+            <small *ngIf="post.coordinates" class="coordinates-text">
+              {{ formatCoordinates(post.coordinates.lat, post.coordinates.lon) }}
+            </small>
+          </ion-label>
         </ion-chip>
 
         <!-- Actions -->
@@ -105,17 +110,25 @@
   <!-- New Post Modal -->
   <ion-modal #newPostModal>
     <ng-template>
-      <ion-header>
+      <ion-header class="custom-header">
         <ion-toolbar>
           <ion-buttons slot="start">
-            <ion-button (click)="newPostModal.dismiss()">Cancelar</ion-button>
+            <ion-button (click)="newPostModal.dismiss()">
+              <ion-icon name="close-circle" slot="icon-only"></ion-icon>
+            </ion-button>
           </ion-buttons>
-          <ion-title>Nueva Publicación</ion-title>
+          <ion-title class="ion-text-center">
+            <div class="title-wrapper">
+              <ion-icon name="add"></ion-icon>
+              <span>Nueva Publicación</span>
+            </div>
+          </ion-title>
           <ion-buttons slot="end">
             <ion-button 
               (click)="publishPost()" 
               [disabled]="!newPost.text && !newPost.image"
-              color="primary">
+              class="publish-btn">
+              <ion-icon name="send" slot="start"></ion-icon>
               Publicar
             </ion-button>
           </ion-buttons>
@@ -156,9 +169,86 @@
           <!-- Location Preview -->
           <ion-chip *ngIf="newPost.location" class="location-preview" color="primary">
             <ion-icon name="location-outline"></ion-icon>
-            <ion-label>{{ newPost.location }}</ion-label>
+            <ion-label>
+              {{ newPost.location }}
+              <small *ngIf="newPost.coordinates" class="coordinates-text">
+                <br>{{ formatCoordinates(newPost.coordinates.lat, newPost.coordinates.lon) }}
+              </small>
+            </ion-label>
             <ion-icon name="close-circle" (click)="removeLocation()"></ion-icon>
           </ion-chip>
+
+          <!-- Location Search Section -->
+          <div *ngIf="showLocationSearch" class="location-search-container">
+            <div class="search-header">
+              <ion-button fill="clear" size="small" (click)="closeLocationSelector()">
+                <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+              </ion-button>
+              <h3>Seleccionar Ubicación</h3>
+            </div>
+
+            <!-- Search Input -->
+            <ion-item class="search-input-item" lines="none">
+              <ion-icon name="search-outline" slot="start"></ion-icon>
+              <ion-input
+                [(ngModel)]="locationSearchQuery"
+                (ionInput)="onLocationSearchChange($event)"
+                placeholder="Buscar lugar, comuna, región..."
+                type="text">
+              </ion-input>
+            </ion-item>
+
+            <!-- Quick Action Buttons -->
+            <div class="location-quick-actions">
+              <ion-button fill="outline" size="small" (click)="getLocation()">
+                <ion-icon name="navigate-outline" slot="start"></ion-icon>
+                Ubicación Actual
+              </ion-button>
+              <ion-button fill="outline" size="small" (click)="getNearbyPlaces()">
+                <ion-icon name="location-outline" slot="start"></ion-icon>
+                Lugares Cercanos
+              </ion-button>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div *ngIf="isSearchingLocation" class="search-loading">
+              <ion-spinner name="crescent"></ion-spinner>
+              <p>Buscando lugares...</p>
+            </div>
+
+            <!-- Suggestions List -->
+            <div *ngIf="!isSearchingLocation && locationSuggestions.length > 0" class="suggestions-list">
+              <ion-item
+                *ngFor="let suggestion of locationSuggestions"
+                button
+                (click)="selectLocation(suggestion)"
+                class="suggestion-item"
+                lines="full">
+                <ion-icon name="location-outline" slot="start" color="primary"></ion-icon>
+                <ion-label>
+                  <h3>{{ locationService.formatLocationResult(suggestion) }}</h3>
+                  <p class="suggestion-details">{{ suggestion.displayName }}</p>
+                </ion-label>
+                <ion-badge *ngIf="suggestion.distance !== undefined" slot="end" color="success" class="distance-badge">
+                  {{ locationService.formatDistance(suggestion.distance) }}
+                </ion-badge>
+              </ion-item>
+            </div>
+
+            <!-- Empty State -->
+            <div *ngIf="!isSearchingLocation && locationSearchQuery && locationSuggestions.length === 0" class="empty-suggestions">
+              <ion-icon name="search-outline"></ion-icon>
+              <p>No se encontraron lugares</p>
+              <small>Intenta con otro término de búsqueda</small>
+            </div>
+
+            <!-- Initial State -->
+            <div *ngIf="!isSearchingLocation && !locationSearchQuery && locationSuggestions.length === 0" class="initial-state">
+              <ion-icon name="location-outline"></ion-icon>
+              <p>Busca tu ubicación</p>
+              <small>Escribe el nombre de un lugar, comuna o región</small>
+            </div>
+          </div>
 
           <!-- Action Buttons -->
           <div class="post-actions-toolbar">
@@ -166,7 +256,7 @@
               <ion-icon name="camera" slot="start"></ion-icon>
               Foto
             </ion-button>
-            <ion-button fill="clear" (click)="getLocation()">
+            <ion-button fill="clear" (click)="openLocationSelector()">
               <ion-icon name="location" slot="start"></ion-icon>
               Ubicación
             </ion-button>
@@ -179,18 +269,25 @@
   <!-- Live Chat Modal -->
   <ion-modal #liveChatModal>
     <ng-template>
-      <ion-header>
+      <ion-header class="custom-header">
         <ion-toolbar>
           <ion-buttons slot="start">
             <ion-button (click)="liveChatModal.dismiss()">
-              <ion-icon name="close-circle"></ion-icon>
+              <ion-icon name="close-circle" slot="icon-only"></ion-icon>
             </ion-button>
           </ion-buttons>
-          <ion-title>Chat en Vivo</ion-title>
-          <ion-badge class="online-badge" color="success">
-            <span class="pulse-dot"></span>
-            {{ liveMessages.length }} en línea
-          </ion-badge>
+          <ion-title class="ion-text-center">
+            <div class="title-wrapper">
+              <ion-icon name="chatbubble"></ion-icon>
+              <span>Chat en Vivo</span>
+            </div>
+          </ion-title>
+          <ion-buttons slot="end">
+            <ion-badge class="online-badge" color="success">
+              <span class="pulse-dot"></span>
+              {{ liveMessages.length }}
+            </ion-badge>
+          </ion-buttons>
         </ion-toolbar>
       </ion-header>
       <ion-content class="chat-content">

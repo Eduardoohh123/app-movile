@@ -1,81 +1,3 @@
-<!-- Side Menu -->
-<ion-menu contentId="main-content" type="overlay" class="custom-menu" [swipeGesture]="true">
-  <ion-header>
-    <ion-toolbar>
-      <div style="display: flex; justify-content: center; align-items: center; padding: 0.5rem 0;">
-        <img src="assets/imagenes/football-scoop.png" alt="Football Scoop" class="menu-logo" />
-      </div>
-    </ion-toolbar>
-  </ion-header>
-  
-  <ion-content class="menu-content">
-    <div class="menu-content-wrapper">
-      <!-- User Profile Section -->
-      <div class="menu-profile" (click)="navigateToProfile()">
-        <ion-avatar class="profile-avatar">
-          <img [src]="currentUser?.avatar || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="User avatar" />
-        </ion-avatar>
-        <div class="profile-info">
-          <h3>{{ currentUser?.name || 'Usuario' }}</h3>
-          <p>Ver perfil</p>
-        </div>
-        <ion-icon name="chevron-forward-outline" class="profile-arrow"></ion-icon>
-      </div>
-
-      <!-- Menu Items -->
-      <div class="menu-items-wrapper">
-        <ion-list class="menu-list">
-          <ion-item button (click)="navigateToLogin()" detail="false">
-            <ion-icon slot="start" name="log-in-outline"></ion-icon>
-            <ion-label>Iniciar Sesión</ion-label>
-          </ion-item>
-
-          <ion-item button (click)="navigateToPage('/matches')" detail="false">
-            <ion-icon slot="start" name="football-outline"></ion-icon>
-            <ion-label>Partidos</ion-label>
-          </ion-item>
-
-          <ion-item button (click)="navigateToPage('/standings')" detail="false">
-            <ion-icon slot="start" name="trophy-outline"></ion-icon>
-            <ion-label>Clasificación</ion-label>
-          </ion-item>
-
-          <ion-item button (click)="navigateToPage('/news')" detail="false">
-            <ion-icon slot="start" name="newspaper-outline"></ion-icon>
-            <ion-label>Noticias</ion-label>
-          </ion-item>
-
-          <ion-item button (click)="navigateToPage('/bets')" detail="false">
-            <ion-icon slot="start" name="cash-outline"></ion-icon>
-            <ion-label>Apuestas</ion-label>
-          </ion-item>
-
-          <ion-item button (click)="navigateToPage('/community')" detail="false">
-            <ion-icon slot="start" name="people-outline"></ion-icon>
-            <ion-label>Comunidad</ion-label>
-          </ion-item>
-
-          <ion-item button (click)="navigateToSettings()" detail="false">
-            <ion-icon slot="start" name="settings-outline"></ion-icon>
-            <ion-label>Configuración</ion-label>
-          </ion-item>
-
-          <ion-item button (click)="logout()" detail="false" lines="none" class="logout-item">
-            <ion-icon slot="start" name="log-out-outline" color="danger"></ion-icon>
-            <ion-label color="danger">Cerrar Sesión</ion-label>
-          </ion-item>
-        </ion-list>
-      </div>
-
-    <!-- App Info -->
-    <div class="menu-footer">
-      <p>Versión 1.0.0</p>
-      <p class="footer-copyright">© 2025 Tu Empresa</p>
-    </div>
-    </div>
-  </ion-content>
-</ion-menu>
-
 <ion-header [translucent]="true" class="custom-header" id="main-content">
   <ion-toolbar>
     <ion-buttons slot="start">
@@ -87,20 +9,36 @@
       <img src="assets/imagenes/football-scoop.png" alt="Football Scoop Logo" class="header-logo" />
     </ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="openNotifications()">
-        <ion-icon name="notifications-outline"></ion-icon>
-        <ion-badge *ngIf="notificationCount > 0" class="notification-badge">
-          {{ notificationCount }}
-        </ion-badge>
-      </ion-button>
-      <ion-button (click)="openProfile()">
-        <ion-avatar class="header-avatar">
-          <img [src]="currentUser?.avatar || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="User avatar" />
-        </ion-avatar>
+      <!-- Botones para usuarios autenticados -->
+      <ng-container *ngIf="isAuthenticated">
+        <ion-button (click)="openNotifications()" class="notification-button">
+          <ion-icon name="notifications-outline"></ion-icon>
+          <ion-badge *ngIf="unreadCount > 0" class="notification-badge">
+            {{ unreadCount }}
+          </ion-badge>
+        </ion-button>
+        <ion-button (click)="openProfile()">
+          <ion-avatar class="header-avatar">
+            <img [src]="currentUser?.avatar || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="User avatar" />
+          </ion-avatar>
+        </ion-button>
+      </ng-container>
+      
+      <!-- Botón de login para invitados -->
+      <ion-button *ngIf="!isAuthenticated" (click)="navigateToLogin()" color="primary">
+        <ion-icon slot="start" name="log-in-outline"></ion-icon>
+        Iniciar Sesión
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
+
+<!-- Fab Button para generar notificaciones de prueba (SOLO DESARROLLO - solo si está autenticado) -->
+<ion-fab *ngIf="isAuthenticated" vertical="bottom" horizontal="end" slot="fixed" style="margin-bottom: 80px;">
+  <ion-fab-button (click)="generateTestNotifications()" size="small" color="secondary">
+    <ion-icon name="notifications-outline"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
 
 <ion-content [fullscreen]="true" class="home-content" (click)="onContentClick($event)">
   <!-- Welcome Section -->
@@ -108,7 +46,7 @@
     <div class="welcome-header">
       <div class="greeting-text">
         <h1>{{ getGreeting() }}</h1>
-        <p>Bienvenido a Football Scoop</p>
+        <p>{{ isAuthenticated ? 'Bienvenido, ' + (currentUser?.name || 'Usuario') : 'Bienvenido a Football Scoop' }}</p>
       </div>
       <div class="date-badge">
         <ion-icon name="calendar-outline"></ion-icon>
@@ -191,25 +129,25 @@
     </div>
 
     <div class="featured-cards">
-      <div class="featured-card" *ngFor="let item of featuredItems" (click)="openFeatured(item.id)">
+      <div class="featured-card" *ngFor="let item of featuredItems" (click)="navigateToPage('/news')">
         <div class="featured-image">
           <img [src]="item.image" [alt]="item.title" />
           <div class="featured-overlay"></div>
-          <ion-badge class="featured-badge" [color]="item.badgeColor">
-            {{ item.badge }}
+          <ion-badge class="featured-badge" [color]="newsService.getCategoryColor(item.category)">
+            {{ item.category }}
           </ion-badge>
         </div>
         <div class="featured-content">
           <h3>{{ item.title }}</h3>
-          <p>{{ item.description }}</p>
+          <p>{{ item.summary }}</p>
           <div class="featured-meta">
             <span class="meta-item">
               <ion-icon name="time-outline"></ion-icon>
-              {{ item.duration }}
+              {{ item.time }}
             </span>
             <span class="meta-item">
-              <ion-icon name="star-outline"></ion-icon>
-              {{ item.rating }}
+              <ion-icon name="newspaper-outline"></ion-icon>
+              Noticia
             </span>
           </div>
         </div>

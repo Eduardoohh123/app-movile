@@ -3,20 +3,23 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService, User } from '../services/user.service';
+import { CameraService } from '../services/camera.service';
 import { Subscription } from 'rxjs';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton,
   IonIcon, IonFab, IonFabButton, IonModal, IonCard, IonCardHeader,
   IonCardContent, IonAvatar, IonChip, IonTextarea, IonItem, IonLabel,
-  IonInput, ActionSheetController, ToastController, IonBadge,
-  IonInfiniteScroll, IonInfiniteScrollContent
+  IonInput, IonBadge, IonInfiniteScroll, IonInfiniteScrollContent, IonSpinner,
+  ActionSheetController, ToastController
 } from '@ionic/angular/standalone';
 import { Geolocation } from '@capacitor/geolocation';
+import { LocationService, LocationResult } from '../services/location.service';
 import { addIcons } from 'ionicons';
 import {
   add, arrowBack, camera, location, send, heart, chatbubble,
   shareOutline, bookmarkOutline, ellipsisHorizontal, personCircle,
-  timeOutline, locationOutline, closeCircle, image, trash
+  timeOutline, locationOutline, closeCircle, image, trash, searchOutline,
+  navigateOutline
 } from 'ionicons/icons';
 
 interface Post {
@@ -27,6 +30,7 @@ interface Post {
   image?: string;
   text: string;
   location?: string;
+  coordinates?: { lat: number; lon: number };
   timestamp: Date;
   likes: number;
   comments: number;
@@ -51,7 +55,7 @@ interface LiveMessage {
     IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton,
     IonIcon, IonFab, IonFabButton, IonModal, IonCard, IonCardHeader,
     IonCardContent, IonAvatar, IonChip, IonTextarea, IonItem, IonLabel,
-    IonInput, IonBadge, IonInfiniteScroll, IonInfiniteScrollContent
+    IonInput, IonBadge, IonInfiniteScroll, IonInfiniteScrollContent, IonSpinner
   ],
   templateUrl: './community.page.html',
   styleUrls: ['./community.page.scss']
@@ -70,19 +74,30 @@ export class CommunityPage implements OnInit, OnDestroy {
   newPost = {
     text: '',
     image: null as string | null,
-    location: ''
+    location: '',
+    coordinates: null as { lat: number; lon: number } | null
   };
+
+  // Location search
+  locationSearchQuery: string = '';
+  locationSuggestions: LocationResult[] = [];
+  showLocationSearch: boolean = false;
+  isSearchingLocation: boolean = false;
+  userCurrentLocation: { lat: number, lon: number } | null = null;
 
   constructor(
     private router: Router,
     private actionSheetController: ActionSheetController,
     private toastController: ToastController,
-    private userService: UserService
+    private userService: UserService,
+    public locationService: LocationService,
+    private cameraService: CameraService
   ) {
     addIcons({
       add, arrowBack, camera, location, send, heart, chatbubble,
       shareOutline, bookmarkOutline, ellipsisHorizontal, personCircle,
-      timeOutline, locationOutline, closeCircle, image, trash
+      timeOutline, locationOutline, closeCircle, image, trash, searchOutline,
+      navigateOutline
     });
   }
 
@@ -188,7 +203,10 @@ export class CommunityPage implements OnInit, OnDestroy {
   }
 
   async openNewPostModal() {
-    this.newPost = { text: '', image: null, location: '' };
+    this.newPost = { text: '', image: null, location: '', coordinates: null };
+    this.locationSearchQuery = '';
+    this.locationSuggestions = [];
+    this.showLocationSearch = false;
     await this.newPostModal.present();
   }
 
@@ -226,31 +244,192 @@ export class CommunityPage implements OnInit, OnDestroy {
     await actionSheet.present();
   }
 
-  openCamera() {
-    const mockImages = [
-      'https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=800',
-      'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800',
-      'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800'
-    ];
-    this.newPost.image = mockImages[Math.floor(Math.random() * mockImages.length)];
-    this.showToast('Foto capturada', 'success');
+  async openCamera() {
+    try {
+      const result = await this.cameraService.takePicture({
+        quality: 80,
+        allowEditing: true
+      });
+
+      if (result.success && result.dataUrl) {
+        this.newPost.image = result.dataUrl;
+        this.showToast('Foto capturada', 'success');
+      } else if (result.error) {
+        this.showToast(result.error, 'danger');
+      }
+    } catch (error) {
+      console.error('Error al abrir cámara:', error);
+      this.showToast('Error al abrir cámara', 'danger');
+    }
   }
 
-  openGallery() {
-    const mockImages = [
-      'https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=800',
-      'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800',
-      'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800'
-    ];
-    this.newPost.image = mockImages[Math.floor(Math.random() * mockImages.length)];
-    this.showToast('Imagen seleccionada', 'success');
+  async openGallery() {
+    try {
+      const result = await this.cameraService.selectFromGallery({
+        quality: 80,
+        allowEditing: true
+      });
+
+      if (result.success && result.dataUrl) {
+        this.newPost.image = result.dataUrl;
+        this.showToast('Foto seleccionada', 'success');
+      } else if (result.error) {
+        this.showToast(result.error, 'danger');
+      }
+    } catch (error) {
+      console.error('Error al abrir galería:', error);
+      this.showToast('Error al abrir galería', 'danger');
+    }
   }
 
   removeImage() {
     this.newPost.image = null;
   }
 
+  /**
+   * Abre el selector de ubicación
+   */
+  openLocationSelector() {
+    this.showLocationSearch = true;
+    this.locationSuggestions = [];
+    this.locationSearchQuery = '';
+  }
+
+  /**
+   * Cierra el selector de ubicación
+   */
+  closeLocationSelector() {
+    this.showLocationSearch = false;
+    this.locationSuggestions = [];
+    this.locationSearchQuery = '';
+  }
+
+  /**
+   * Busca lugares mientras el usuario escribe
+   */
+  async onLocationSearchChange(event: any) {
+    const query = event.detail.value;
+    this.locationSearchQuery = query;
+
+    if (!query || query.trim().length < 3) {
+      this.locationSuggestions = [];
+      return;
+    }
+
+    this.isSearchingLocation = true;
+
+    try {
+      // Buscar lugares usando el servicio
+      const results = await this.locationService.searchPlaces(
+        query,
+        this.userCurrentLocation?.lat,
+        this.userCurrentLocation?.lon
+      );
+
+      this.locationSuggestions = results;
+    } catch (error) {
+      console.error('Error buscando lugares:', error);
+      await this.showToast('Error al buscar lugares', 'danger');
+    } finally {
+      this.isSearchingLocation = false;
+    }
+  }
+
+  /**
+   * Selecciona un lugar de las sugerencias
+   */
+  selectLocation(result: LocationResult) {
+    this.newPost.location = this.locationService.formatLocationResult(result);
+    this.newPost.coordinates = {
+      lat: result.lat,
+      lon: result.lon
+    };
+    this.closeLocationSelector();
+    this.showToast('Ubicación agregada', 'success');
+  }
+
+  /**
+   * Obtiene la ubicación actual del dispositivo
+   */
   async getLocation() {
+    await this.showToast('Obteniendo ubicación...', 'success');
+
+    try {
+      const locationData = await this.locationService.getCurrentPosition();
+
+      if (locationData) {
+        this.newPost.location = locationData.address;
+        this.newPost.coordinates = {
+          lat: locationData.latitude,
+          lon: locationData.longitude
+        };
+        this.userCurrentLocation = {
+          lat: locationData.latitude,
+          lon: locationData.longitude
+        };
+        await this.showToast('Ubicación agregada', 'success');
+      }
+    } catch (error: any) {
+      console.error('Error obteniendo ubicación:', error);
+
+      if (error.message?.includes('denied') || error.message?.includes('denegad')) {
+        await this.showToast('Permisos de ubicación denegados', 'danger');
+      } else {
+        await this.showToast('No se pudo obtener la ubicación', 'warning');
+      }
+    }
+  }
+
+  /**
+   * Obtiene lugares cercanos
+   */
+  async getNearbyPlaces() {
+    if (!this.userCurrentLocation) {
+      // Primero obtener ubicación actual
+      try {
+        const locationData = await this.locationService.getCurrentPosition();
+        if (locationData) {
+          this.userCurrentLocation = {
+            lat: locationData.latitude,
+            lon: locationData.longitude
+          };
+        } else {
+          await this.showToast('No se pudo obtener tu ubicación', 'warning');
+          return;
+        }
+      } catch (error) {
+        await this.showToast('Error al obtener ubicación', 'danger');
+        return;
+      }
+    }
+
+    this.isSearchingLocation = true;
+
+    try {
+      // Buscar estadios y lugares deportivos cercanos
+      const places = await this.locationService.searchNearby(
+        this.userCurrentLocation.lat,
+        this.userCurrentLocation.lon,
+        'stadium',
+        10000 // 10km de radio
+      );
+
+      if (places.length > 0) {
+        this.locationSuggestions = places;
+        this.showLocationSearch = true;
+        await this.showToast(`${places.length} lugares encontrados cerca`, 'success');
+      } else {
+        await this.showToast('No se encontraron lugares cercanos', 'warning');
+      }
+    } catch (error) {
+      console.error('Error buscando lugares cercanos:', error);
+      await this.showToast('Error al buscar lugares cercanos', 'danger');
+    } finally {
+      this.isSearchingLocation = false;
+    }
+  }
+
+  async getLocationOld() {
     await this.showToast('Obteniendo ubicación...', 'success');
     
     const locationData = await this.getCurrentLocation();
@@ -263,6 +442,7 @@ export class CommunityPage implements OnInit, OnDestroy {
 
   removeLocation() {
     this.newPost.location = '';
+    this.newPost.coordinates = null;
   }
 
   async getCurrentLocation(): Promise<{ lat: number, lng: number, address: string } | null> {
@@ -340,6 +520,7 @@ export class CommunityPage implements OnInit, OnDestroy {
       image: this.newPost.image || undefined,
       text: this.newPost.text,
       location: this.newPost.location || undefined,
+      coordinates: this.newPost.coordinates || undefined,
       timestamp: new Date(),
       likes: 0,
       comments: 0,
@@ -414,6 +595,15 @@ export class CommunityPage implements OnInit, OnDestroy {
       position: 'top'
     });
     await toast.present();
+  }
+
+  /**
+   * Formatea las coordenadas para mostrarlas de forma legible
+   */
+  formatCoordinates(lat: number, lon: number): string {
+    const latDir = lat >= 0 ? 'N' : 'S';
+    const lonDir = lon >= 0 ? 'E' : 'O';
+    return `${Math.abs(lat).toFixed(6)}°${latDir}, ${Math.abs(lon).toFixed(6)}°${lonDir}`;
   }
 
   loadMore(event: any) {

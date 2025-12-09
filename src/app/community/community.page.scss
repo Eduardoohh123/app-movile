@@ -205,6 +205,19 @@
       ion-icon {
         color: #8a2be2;
       }
+
+      ion-label {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+
+        .coordinates-text {
+          font-size: 0.7rem;
+          opacity: 0.7;
+          font-family: 'Courier New', monospace;
+          color: rgba(138, 43, 226, 0.8);
+        }
+      }
     }
 
     .post-actions {
@@ -287,6 +300,39 @@
 // ===================================
 // NEW POST MODAL
 // ===================================
+
+// Estilos para el header del modal (reutiliza .custom-header)
+ion-modal {
+  .custom-header {
+    ion-toolbar {
+      ion-buttons {
+        ion-button {
+          &.publish-btn {
+            font-weight: 600;
+            --color: #00d4ff;
+            transition: all 0.3s ease;
+            
+            &:hover:not(:disabled) {
+              --color: #ffffff;
+              transform: scale(1.05);
+            }
+
+            &:disabled {
+              --color: rgba(255, 255, 255, 0.3);
+              opacity: 0.5;
+            }
+
+            ion-icon {
+              font-size: 1.1rem;
+              margin-right: 4px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 .modal-content {
   --background: linear-gradient(180deg, #0a0e27 0%, #1a1f3a 100%);
 
@@ -352,6 +398,20 @@
 
     .location-preview {
       margin-bottom: 1rem;
+
+      ion-label {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+
+        .coordinates-text {
+          font-size: 0.7rem;
+          opacity: 0.85;
+          font-family: 'Courier New', monospace;
+          color: rgba(255, 255, 255, 0.7);
+          margin-top: 2px;
+        }
+      }
     }
 
     .post-actions-toolbar {
@@ -377,6 +437,44 @@
 // ===================================
 // LIVE CHAT MODAL
 // ===================================
+
+// Estilos para el header del chat modal
+ion-modal {
+  .custom-header {
+    .online-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 212, 255, 0.2);
+      color: #00d4ff;
+      border: 1px solid rgba(0, 212, 255, 0.3);
+
+      .pulse-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #00d4ff;
+        animation: pulse 2s ease-in-out infinite;
+      }
+    }
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+}
+
 .chat-content {
   --background: linear-gradient(180deg, #0a0e27 0%, #1a1f3a 100%);
 
@@ -639,3 +737,207 @@
     }
   }
 }
+
+// ===================================
+// LOCATION SEARCH STYLES
+// ===================================
+
+.location-search-container {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(20, 20, 40, 0.95), rgba(30, 30, 50, 0.95));
+  border-radius: 16px;
+  border: 2px solid rgba(0, 212, 255, 0.2);
+  backdrop-filter: blur(10px);
+  max-height: 500px;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+
+  .search-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    ion-button {
+      margin: 0;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: white;
+      flex: 1;
+    }
+  }
+
+  .search-input-item {
+    --background: rgba(255, 255, 255, 0.05);
+    --border-radius: 12px;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(0, 212, 255, 0.3);
+
+    ion-icon {
+      color: #00d4ff;
+      font-size: 1.25rem;
+      margin-right: 0.5rem;
+    }
+
+    ion-input {
+      --color: white;
+      --placeholder-color: rgba(255, 255, 255, 0.5);
+      font-size: 0.95rem;
+    }
+  }
+
+  .location-quick-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+
+    ion-button {
+      flex: 1;
+      min-width: 140px;
+      --border-color: rgba(0, 212, 255, 0.4);
+      --color: #00d4ff;
+      font-size: 0.85rem;
+      text-transform: none;
+
+      &:hover {
+        --background: rgba(0, 212, 255, 0.1);
+      }
+    }
+  }
+
+  .search-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    gap: 1rem;
+
+    ion-spinner {
+      --color: #00d4ff;
+      transform: scale(1.2);
+    }
+
+    p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.9rem;
+      margin: 0;
+    }
+  }
+
+  .suggestions-list {
+    .suggestion-item {
+      --background: rgba(255, 255, 255, 0.03);
+      --color: white;
+      --border-color: rgba(255, 255, 255, 0.05);
+      margin-bottom: 0.5rem;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        --background: rgba(0, 212, 255, 0.1);
+        transform: translateX(4px);
+      }
+
+      ion-label {
+        h3 {
+          color: white;
+          font-weight: 600;
+          font-size: 0.95rem;
+          margin-bottom: 0.25rem;
+        }
+
+        .suggestion-details {
+          color: rgba(255, 255, 255, 0.6);
+          font-size: 0.8rem;
+          white-space: normal;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+      }
+
+      .distance-badge {
+        --background: rgba(0, 212, 255, 0.2);
+        --color: #00d4ff;
+        font-weight: 700;
+        font-size: 0.75rem;
+        padding: 4px 10px;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 212, 255, 0.4);
+      }
+    }
+  }
+
+  .empty-suggestions,
+  .initial-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    text-align: center;
+
+    ion-icon {
+      font-size: 4rem;
+      color: rgba(0, 212, 255, 0.3);
+      margin-bottom: 1rem;
+    }
+
+    p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0 0 0.5rem 0;
+    }
+
+    small {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.85rem;
+    }
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Scrollbar personalizado para el contenedor de búsqueda
+.location-search-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.location-search-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.location-search-container::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.3);
+  border-radius: 10px;
+
+  &:hover {
+    background: rgba(0, 212, 255, 0.5);
+  }
+}
+

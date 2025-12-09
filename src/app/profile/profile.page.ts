@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ActionSheetController, AlertController, ToastController } from '@ionic/angular';
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Router } from '@angular/router';
 import { UserService, User } from '../services/user.service';
+import { CameraService } from '../services/camera.service';
+import { PermissionsService } from '../services/permissions.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-profile',
@@ -13,11 +15,12 @@ import { UserService, User } from '../services/user.service';
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule]
 })
-export class ProfilePage implements OnInit {
+export class ProfilePage implements OnInit, OnDestroy {
 
   isEditing = false;
   originalData: any = {};
   currentUser: User | null = null;
+  private userSubscription?: Subscription;
 
   profileData = {
     name: '',
@@ -37,25 +40,36 @@ export class ProfilePage implements OnInit {
     private actionSheetController: ActionSheetController,
     private alertController: AlertController,
     private toastController: ToastController,
-    private userService: UserService
+    private userService: UserService,
+    private cameraService: CameraService,
+    private permissionsService: PermissionsService
   ) { }
 
   ngOnInit() {
-    // Cargar datos del usuario desde UserService
-    this.currentUser = this.userService.getCurrentUser();
-    if (this.currentUser) {
-      this.profileData = {
-        name: this.currentUser.name,
-        email: this.currentUser.email,
-        phone: this.currentUser.phone || '',
-        birthdate: '',
-        city: '',
-        country: '',
-        bio: '',
-        avatar: this.currentUser.avatar
-      };
+    // Suscribirse al observable del usuario para recibir actualizaciones
+    this.userSubscription = this.userService.user$.subscribe(user => {
+      this.currentUser = user;
+      if (user) {
+        this.profileData = {
+          name: user.name,
+          email: user.email,
+          phone: user.phone || '',
+          birthdate: '',
+          city: '',
+          country: '',
+          bio: '',
+          avatar: user.avatar
+        };
+        this.originalData = { ...this.profileData };
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    // Limpiar suscripción para evitar memory leaks
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
     }
-    this.originalData = { ...this.profileData };
   }
 
   async changePhoto() {
@@ -104,49 +118,57 @@ export class ProfilePage implements OnInit {
 
   async takePicture() {
     try {
-      if (!this.isNativePlatform()) {
-        this.selectPhotoFromFile();
+      // Verificar permisos primero
+      const permissionStatus = await this.permissionsService.checkCameraPermission();
+      
+      if (!permissionStatus.granted) {
+        this.showErrorToast(permissionStatus.message || 'Permiso de cámara denegado');
         return;
       }
 
-      const image = await Camera.getPhoto({
+      const result = await this.cameraService.takePicture({
         quality: 90,
-        allowEditing: true,
-        resultType: CameraResultType.DataUrl,
-        source: CameraSource.Camera
+        allowEditing: true
       });
 
-      if (image.dataUrl) {
-        this.profileData.avatar = image.dataUrl;
-        this.saveToLocalStorage();
+      if (result.success && result.dataUrl) {
+        this.profileData.avatar = result.dataUrl;
+        await this.saveToLocalStorage();
         this.showSuccessToast('Foto actualizada correctamente');
+      } else if (result.error) {
+        this.showErrorToast(result.error);
       }
     } catch (error) {
       console.error('Error al tomar foto:', error);
+      this.showErrorToast('Error al tomar foto');
     }
   }
 
   async selectFromGallery() {
     try {
-      if (!this.isNativePlatform()) {
-        this.selectPhotoFromFile();
+      // Verificar permisos primero
+      const permissionStatus = await this.permissionsService.checkCameraPermission();
+      
+      if (!permissionStatus.granted) {
+        this.showErrorToast(permissionStatus.message || 'Permiso de galería denegado');
         return;
       }
 
-      const image = await Camera.getPhoto({
+      const result = await this.cameraService.selectFromGallery({
         quality: 90,
-        allowEditing: true,
-        resultType: CameraResultType.DataUrl,
-        source: CameraSource.Photos
+        allowEditing: true
       });
 
-      if (image.dataUrl) {
-        this.profileData.avatar = image.dataUrl;
-        this.saveToLocalStorage();
+      if (result.success && result.dataUrl) {
+        this.profileData.avatar = result.dataUrl;
+        await this.saveToLocalStorage();
         this.showSuccessToast('Foto actualizada correctamente');
+      } else if (result.error) {
+        this.showErrorToast(result.error);
       }
     } catch (error) {
       console.error('Error al seleccionar foto:', error);
+      this.showErrorToast('Error al seleccionar foto');
     }
   }
 
@@ -239,15 +261,19 @@ export class ProfilePage implements OnInit {
     this.showSuccessToast('✅ Perfil guardado exitosamente');
   }
 
-  saveToLocalStorage() {
+  async saveToLocalStorage() {
     // Actualizar el usuario en el servicio centralizado
     if (this.currentUser) {
-      this.userService.updateUser({
+      console.log('💾 Guardando avatar:', this.profileData.avatar?.substring(0, 50) + '...');
+      await this.userService.updateUser({
         name: this.profileData.name,
         email: this.profileData.email,
         phone: this.profileData.phone,
         avatar: this.profileData.avatar
       });
+      console.log('✅ Avatar guardado correctamente');
+    } else {
+      console.error('❌ No hay usuario actual para guardar');
     }
   }
 
@@ -257,6 +283,16 @@ export class ProfilePage implements OnInit {
       duration: 2000,
       position: 'top',
       color: 'success'
+    });
+    await toast.present();
+  }
+
+  async showErrorToast(message: string) {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      position: 'top',
+      color: 'danger'
     });
     await toast.present();
   }

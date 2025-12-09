@@ -1,0 +1,338 @@
+// ===================================
+// MENU COMPONENT - DARK THEME
+// ===================================
+
+ion-menu.custom-menu {
+  --background: #0a0a1e;
+  --ion-text-color: #ffffff;
+  
+  ion-header {
+    background: #0a0a1e !important;
+    --background: #0a0a1e !important;
+  }
+  
+  ion-toolbar {
+    --background: #0a0a1e !important;
+    background: #0a0a1e !important;
+    --border-width: 0 !important;
+  }
+  
+  ion-content {
+    --background: #0a0a1e;
+  }
+}
+
+// ===================================
+// USUARIO AUTENTICADO
+// ===================================
+.user-section {
+  padding: 24px 20px;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.08) 0%, rgba(102, 126, 234, 0.08) 100%);
+  border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+  margin-bottom: 8px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 12px;
+  border-radius: 12px;
+
+  &:hover {
+    background: rgba(0, 212, 255, 0.05);
+    transform: translateX(4px);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  ion-avatar {
+    width: 64px;
+    height: 64px;
+    border: 3px solid rgba(0, 212, 255, 0.6);
+    box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: #00d4ff;
+      box-shadow: 0 6px 30px rgba(0, 212, 255, 0.5);
+    }
+  }
+
+  .user-details {
+    flex: 1;
+
+    h3 {
+      margin: 0 0 6px 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.3px;
+    }
+
+    ion-note {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.65);
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .balance {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: rgba(0, 212, 255, 0.1);
+      border-radius: 20px;
+      width: fit-content;
+      border: 1px solid rgba(0, 212, 255, 0.3);
+
+      ion-icon {
+        font-size: 1rem;
+        color: #00d4ff;
+      }
+
+      span {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #00d4ff;
+      }
+    }
+  }
+}
+
+// ===================================
+// USUARIO NO AUTENTICADO (INVITADO)
+// ===================================
+.guest-section {
+  padding: 24px 20px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(0, 212, 255, 0.05) 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 8px;
+}
+
+.guest-info {
+  text-align: center;
+  margin-bottom: 20px;
+
+  .guest-avatar {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 12px;
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 212, 255, 0.05));
+    border: 2px solid rgba(0, 212, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ion-icon {
+      font-size: 2.5rem;
+      color: rgba(0, 212, 255, 0.8);
+    }
+  }
+
+  .guest-icon {
+    font-size: 4rem;
+    color: rgba(0, 212, 255, 0.6);
+    margin-bottom: 12px;
+  }
+
+  h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #ffffff;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.4;
+  }
+}
+
+.auth-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  ion-button {
+    --border-radius: 12px;
+    --padding-start: 20px;
+    --padding-end: 20px;
+    height: 48px;
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0.5px;
+
+    &:first-child {
+      --background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+      --background-hover: linear-gradient(135deg, #00e0ff 0%, #00aadd 100%);
+      --box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+    }
+
+    &:last-child {
+      --border-width: 2px;
+      --border-color: rgba(0, 212, 255, 0.5);
+      --color: #00d4ff;
+      --background-hover: rgba(0, 212, 255, 0.1);
+    }
+  }
+}
+
+// ===================================
+// LISTA DE MENÚ
+// ===================================
+ion-list {
+  background: transparent;
+  padding: 8px 0;
+
+  ion-list-header {
+    padding: 16px 20px 8px;
+    margin-top: 8px;
+
+    ion-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: rgba(0, 212, 255, 0.7);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+    }
+  }
+}
+
+// ===================================
+// ITEMS DEL MENÚ
+// ===================================
+ion-item {
+  --background: transparent;
+  --background-hover: rgba(0, 212, 255, 0.08);
+  --background-activated: rgba(0, 212, 255, 0.15);
+  --color: rgba(255, 255, 255, 0.85);
+  --padding-start: 20px;
+  --padding-end: 20px;
+  --border-color: rgba(255, 255, 255, 0.05);
+  --min-height: 52px;
+  font-weight: 500;
+  transition: all 0.25s ease;
+  margin: 2px 8px;
+  border-radius: 10px;
+
+  &:hover {
+    --background: rgba(0, 212, 255, 0.08);
+    transform: translateX(4px);
+  }
+
+  &:active {
+    --background: rgba(0, 212, 255, 0.15);
+  }
+
+  ion-icon {
+    color: rgba(0, 212, 255, 0.8);
+    font-size: 1.4rem;
+    margin-inline-end: 16px;
+    transition: all 0.25s ease;
+  }
+
+  ion-label {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+
+  &.active-item {
+    --background: linear-gradient(90deg, rgba(0, 212, 255, 0.15) 0%, rgba(0, 212, 255, 0.05) 100%);
+
+    ion-icon {
+      color: #00d4ff;
+      transform: scale(1.1);
+    }
+
+    ion-label {
+      color: #ffffff;
+      font-weight: 600;
+    }
+  }
+}
+
+// ===================================
+// ITEMS BLOQUEADOS (NO AUTENTICADO)
+// ===================================
+.locked-item {
+  --opacity: 0.5;
+  cursor: not-allowed;
+
+  ion-label {
+    h3 {
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin: 0 0 4px 0;
+    }
+
+    p {
+      font-size: 0.8rem;
+      margin: 0;
+      font-style: italic;
+    }
+  }
+
+  ion-icon {
+    color: rgba(255, 255, 255, 0.3);
+  }
+}
+
+// ===================================
+// BOTÓN DE CERRAR SESIÓN
+// ===================================
+ion-item[color="danger"] {
+  --background: rgba(255, 76, 76, 0.08);
+  --background-hover: rgba(255, 76, 76, 0.15);
+  --background-activated: rgba(255, 76, 76, 0.25);
+  margin-top: 12px;
+  border: 1px solid rgba(255, 76, 76, 0.3);
+
+  ion-icon {
+    color: #ff4c4c;
+  }
+
+  ion-label {
+    color: #ff4c4c;
+    font-weight: 600;
+  }
+
+  &:hover {
+    --background: rgba(255, 76, 76, 0.15);
+    border-color: rgba(255, 76, 76, 0.5);
+  }
+}
+
+// ===================================
+// RESPONSIVE
+// ===================================
+@media (min-width: 768px) {
+  .user-info {
+    ion-avatar {
+      width: 70px;
+      height: 70px;
+    }
+
+    .user-details h3 {
+      font-size: 1.2rem;
+    }
+  }
+
+  .guest-info {
+    .guest-icon {
+      font-size: 5rem;
+    }
+
+    h3 {
+      font-size: 1.5rem;
+    }
+  }
+}

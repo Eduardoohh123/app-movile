@@ -1,0 +1,344 @@
+// ===================================
+// TEAMS PAGE STYLES
+// ===================================
+
+.custom-header {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      rgba(0, 212, 255, 0.03) 0px,
+      rgba(0, 212, 255, 0.03) 1px,
+      transparent 1px,
+      transparent 80px
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  ion-toolbar {
+    --background: linear-gradient(135deg, rgba(10, 10, 30, 0.95) 0%, rgba(20, 40, 80, 0.95) 50%, rgba(10, 10, 30, 0.95) 100%);
+    --color: white;
+    --border-width: 0;
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border-bottom: 3px double rgba(0, 212, 255, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 212, 255, 0.15);
+    position: relative;
+    z-index: 1;
+  }
+
+  .title-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    ion-icon {
+      font-size: 1.6rem;
+      color: #00d4ff;
+      filter: drop-shadow(0 2px 8px rgba(0, 212, 255, 0.6));
+    }
+
+    span {
+      font-weight: 700;
+      color: white;
+    }
+  }
+
+  ion-back-button {
+    --color: #00d4ff;
+  }
+}
+
+.teams-content {
+  --background: linear-gradient(135deg, #0a0a1e 0%, #1a1a2e 50%, #0a0a1e 100%);
+}
+
+// ===================================
+// SEARCH SECTION
+// ===================================
+.search-section {
+  padding: 1rem;
+  background: linear-gradient(180deg, rgba(0, 212, 255, 0.05) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+  ion-searchbar {
+    --background: rgba(255, 255, 255, 0.05);
+    --border-radius: 12px;
+    --box-shadow: none;
+    --color: white;
+    --placeholder-color: rgba(255, 255, 255, 0.5);
+    --icon-color: #00d4ff;
+    margin-bottom: 0.75rem;
+  }
+
+  ion-segment {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 4px;
+
+    ion-segment-button {
+      --color: rgba(255, 255, 255, 0.6);
+      --color-checked: #00d4ff;
+      --indicator-color: rgba(0, 212, 255, 0.2);
+      font-size: 0.85rem;
+      min-height: 36px;
+    }
+  }
+}
+
+// ===================================
+// TEAMS CONTAINER
+// ===================================
+.teams-container {
+  padding: 1rem;
+  min-height: calc(100vh - 250px);
+}
+
+// ===================================
+// EMPTY STATE
+// ===================================
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+
+  ion-icon {
+    font-size: 5rem;
+    color: rgba(255, 255, 255, 0.2);
+    margin-bottom: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 1.5rem;
+    max-width: 280px;
+  }
+
+  ion-button {
+    --border-color: rgba(0, 212, 255, 0.3);
+    --color: #00d4ff;
+  }
+}
+
+// ===================================
+// TEAMS GRID
+// ===================================
+.teams-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.team-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 212, 255, 0.2);
+    border-color: rgba(0, 212, 255, 0.3);
+  }
+
+  .team-logo-container {
+    display: flex;
+    justify-content: center;
+    padding: 1.5rem 1rem 0.5rem;
+  }
+
+  .team-logo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    border: 3px solid rgba(255, 255, 255, 0.2);
+
+    .logo-text {
+      font-size: 2.5rem;
+    }
+  }
+
+  ion-card-header {
+    padding: 1rem 1rem 0.5rem;
+    text-align: center;
+  }
+
+  ion-card-subtitle {
+    color: #00d4ff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  ion-card-title {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  ion-card-content {
+    padding: 1rem;
+  }
+
+  .team-details {
+    margin-bottom: 1rem;
+
+    .detail-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+
+      ion-icon {
+        font-size: 1rem;
+        color: #00d4ff;
+        flex-shrink: 0;
+      }
+
+      span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+  .team-stats {
+    display: flex;
+    justify-content: space-around;
+    padding: 0.75rem;
+    background: rgba(0, 212, 255, 0.05);
+    border-radius: 8px;
+    margin-top: 1rem;
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+
+      .stat-value {
+        color: white;
+        font-weight: 700;
+        font-size: 1rem;
+      }
+
+      .stat-label {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+      }
+    }
+  }
+
+  .card-actions {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 10;
+
+    ion-button {
+      --padding-start: 8px;
+      --padding-end: 8px;
+    }
+  }
+}
+
+// ===================================
+// FAB
+// ===================================
+ion-fab-button {
+  --box-shadow: 0 4px 16px rgba(0, 212, 255, 0.3);
+}
+
+// ===================================
+// RESPONSIVE
+// ===================================
+
+// Mobile
+@media (max-width: 767px) {
+  .teams-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .team-card {
+    .team-logo {
+      width: 70px;
+      height: 70px;
+
+      .logo-text {
+        font-size: 2rem;
+      }
+    }
+
+    ion-card-title {
+      font-size: 1rem;
+    }
+
+    .team-stats {
+      .stat {
+        .stat-value {
+          font-size: 0.9rem;
+        }
+
+        .stat-label {
+          font-size: 0.65rem;
+        }
+      }
+    }
+  }
+}
+
+// Tablet
+@media (min-width: 768px) and (max-width: 1023px) {
+  .teams-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+// Desktop
+@media (min-width: 1024px) {
+  .teams-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+
+  .teams-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+}

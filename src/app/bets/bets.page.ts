@@ -1,58 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, AlertController, ToastController } from '@ionic/angular';
+import { IonicModule, ModalController, AlertController, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { UserService, User } from '../services/user.service';
+import { BetsService, Bet } from '../services/bets.service';
+import { UserService } from '../services/user.service';
 import { Subscription } from 'rxjs';
-
-interface Bet {
-  id: number;
-  homeTeam: string;
-  awayTeam: string;
-  league: string;
-  leagueBadge: string;
-  date: string;
-  time: string;
-  isLive?: boolean;
-  score?: string;
-  odds: {
-    home: number;
-    draw: number;
-    away: number;
-  };
-  category: string;
-  featured?: boolean;
-}
-
-interface ActiveBet {
-  id: number;
-  homeTeam: string;
-  awayTeam: string;
-  league: string;
-  bet: string;
-  betType: 'home' | 'draw' | 'away';
-  amount: number;
-  odds: number;
-  potential: number;
-  status: 'pending' | 'live';
-  date: string;
-  time?: string;
-}
-
-interface HistoryBet {
-  id: number;
-  homeTeam: string;
-  awayTeam: string;
-  league: string;
-  bet: string;
-  amount: number;
-  odds: number;
-  result: number;
-  status: 'won' | 'lost';
-  date: string;
-  finalScore?: string;
-}
+import { BetDetailModalComponent } from './bet-detail-modal/bet-detail-modal.component';
 
 @Component({
   selector: 'app-bets',
@@ -62,262 +16,170 @@ interface HistoryBet {
   imports: [IonicModule, CommonModule, FormsModule]
 })
 export class BetsPage implements OnInit, OnDestroy {
-
-  selectedTab = 'available';
-  currentUser: User | null = null;
-  private userSubscription?: Subscription;
-  selectedCategory = 'all';
+  bets: Bet[] = [];
+  filteredBets: Bet[] = [];
+  searchQuery: string = '';
+  selectedStatus: string = 'all';
+  currentUserId: string = '';
+  currentUserName: string = '';
+  isSearchFocused: boolean = false;
   
-  // Carrito de apuestas
-  betSlip: any[] = [];
-  betSlipOpen = false;
-
-  categories = [
-    { id: 'all', name: 'Todas', icon: 'apps-outline' },
-    { id: 'football', name: 'Fútbol', icon: 'football-outline' },
-    { id: 'basketball', name: 'Basket', icon: 'basketball-outline' },
-    { id: 'tennis', name: 'Tenis', icon: 'tennisball-outline' }
-  ];
-
-  availableBets: Bet[] = [
-    {
-      id: 1,
-      homeTeam: 'Real Madrid',
-      awayTeam: 'Barcelona',
-      league: 'La Liga',
-      leagueBadge: '🇪🇸',
-      date: 'Hoy',
-      time: '20:00',
-      isLive: false,
-      odds: { home: 2.10, draw: 3.40, away: 3.20 },
-      category: 'football',
-      featured: true
-    },
-    {
-      id: 2,
-      homeTeam: 'Manchester United',
-      awayTeam: 'Liverpool',
-      league: 'Premier League',
-      leagueBadge: '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
-      date: 'Hoy',
-      time: '17:30',
-      isLive: true,
-      score: '1 - 1',
-      odds: { home: 2.50, draw: 3.10, away: 2.80 },
-      category: 'football'
-    },
-    {
-      id: 3,
-      homeTeam: 'Bayern Munich',
-      awayTeam: 'Borussia Dortmund',
-      league: 'Bundesliga',
-      leagueBadge: '🇩🇪',
-      date: 'Mañana',
-      time: '18:30',
-      odds: { home: 1.75, draw: 3.80, away: 4.20 },
-      category: 'football'
-    },
-    {
-      id: 4,
-      homeTeam: 'PSG',
-      awayTeam: 'Marseille',
-      league: 'Ligue 1',
-      leagueBadge: '🇫🇷',
-      date: 'Mañana',
-      time: '21:00',
-      odds: { home: 1.45, draw: 4.50, away: 6.00 },
-      category: 'football'
-    },
-    {
-      id: 5,
-      homeTeam: 'Inter Milan',
-      awayTeam: 'Juventus',
-      league: 'Serie A',
-      leagueBadge: '🇮🇹',
-      date: '21 Nov',
-      time: '19:45',
-      odds: { home: 2.25, draw: 3.20, away: 3.10 },
-      category: 'football'
-    },
-    {
-      id: 6,
-      homeTeam: 'Lakers',
-      awayTeam: 'Warriors',
-      league: 'NBA',
-      leagueBadge: '🏀',
-      date: 'Hoy',
-      time: '02:00',
-      odds: { home: 1.90, draw: 0, away: 1.95 },
-      category: 'basketball'
-    }
-  ];
-
-  myBets: ActiveBet[] = [
-    {
-      id: 101,
-      homeTeam: 'Bayern Munich',
-      awayTeam: 'PSG',
-      league: 'Champions League',
-      bet: 'Bayern Munich',
-      betType: 'home',
-      amount: 100,
-      odds: 1.95,
-      potential: 195,
-      status: 'pending',
-      date: '22 Nov',
-      time: '21:00'
-    },
-    {
-      id: 102,
-      homeTeam: 'Atlético Madrid',
-      awayTeam: 'Sevilla',
-      league: 'La Liga',
-      bet: 'Empate',
-      betType: 'draw',
-      amount: 50,
-      odds: 3.20,
-      potential: 160,
-      status: 'live',
-      date: 'Hoy',
-      time: 'En vivo'
-    }
-  ];
-
-  betHistory: HistoryBet[] = [
-    {
-      id: 201,
-      homeTeam: 'Chelsea',
-      awayTeam: 'Arsenal',
-      league: 'Premier League',
-      bet: 'Chelsea',
-      amount: 50,
-      odds: 2.20,
-      result: 110,
-      status: 'won',
-      date: '18 Nov',
-      finalScore: '2 - 1'
-    },
-    {
-      id: 202,
-      homeTeam: 'Juventus',
-      awayTeam: 'Milan',
-      league: 'Serie A',
-      bet: 'Empate',
-      amount: 75,
-      odds: 3.50,
-      result: -75,
-      status: 'lost',
-      date: '17 Nov',
-      finalScore: '1 - 2'
-    },
-    {
-      id: 203,
-      homeTeam: 'Barcelona',
-      awayTeam: 'Real Sociedad',
-      league: 'La Liga',
-      bet: 'Barcelona',
-      amount: 100,
-      odds: 1.65,
-      result: 165,
-      status: 'won',
-      date: '15 Nov',
-      finalScore: '3 - 0'
-    },
-    {
-      id: 204,
-      homeTeam: 'Liverpool',
-      awayTeam: 'Manchester City',
-      league: 'Premier League',
-      bet: 'Manchester City',
-      amount: 80,
-      odds: 2.80,
-      result: -80,
-      status: 'lost',
-      date: '14 Nov',
-      finalScore: '1 - 0'
-    }
-  ];
-
-  // Estadísticas
-  stats = {
-    totalBets: 24,
-    wonBets: 15,
-    lostBets: 9,
-    winRate: 62.5,
-    totalProfit: 450.00
+  userStats: any = {
+    totalBets: 0,
+    won: 0,
+    lost: 0,
+    pending: 0,
+    winRate: 0,
+    profitLoss: 0,
+    totalStaked: 0,
+    totalWon: 0,
+    totalLost: 0
   };
 
+  private betsSubscription?: Subscription;
+  private userSubscription?: Subscription;
+
   constructor(
-    private router: Router,
+    private betsService: BetsService,
+    private userService: UserService,
+    private modalController: ModalController,
     private alertController: AlertController,
     private toastController: ToastController,
-    private userService: UserService
-  ) { }
+    private router: Router
+  ) {}
 
-  ngOnInit() {
-    this.currentUser = this.userService.getCurrentUser();
+  async ngOnInit() {
+    // Subscribe to user for getting current userId
     this.userSubscription = this.userService.user$.subscribe(user => {
-      this.currentUser = user;
+      if (user) {
+        this.currentUserId = user.id;
+        this.currentUserName = user.name || 'Usuario';
+        this.loadBets();
+        this.loadUserStats();
+      }
     });
-    this.loadBetsData();
+
+    // Subscribe to bets changes
+    this.betsSubscription = this.betsService.bets$.subscribe(bets => {
+      this.bets = bets.filter(bet => bet.userId === this.currentUserId);
+      this.filterBets();
+    });
+
+    await this.loadBets();
+    await this.loadUserStats();
   }
 
   ngOnDestroy() {
+    if (this.betsSubscription) {
+      this.betsSubscription.unsubscribe();
+    }
     if (this.userSubscription) {
       this.userSubscription.unsubscribe();
     }
   }
 
-  loadBetsData() {
-    // Aquí podrías cargar datos desde un servicio/API
-    console.log('Bets data loaded');
-  }
-
-  segmentChanged(event: any) {
-    this.selectedTab = event.detail.value;
-  }
-
-  filterByCategory(categoryId: string) {
-    this.selectedCategory = categoryId;
-  }
-
-  getFilteredBets() {
-    if (this.selectedCategory === 'all') {
-      return this.availableBets;
+  async loadBets() {
+    try {
+      const allBets = await this.betsService.getBets();
+      this.bets = allBets.filter(bet => bet.userId === this.currentUserId);
+      this.filterBets();
+    } catch (error) {
+      console.error('Error loading bets:', error);
+      this.showToast('Error al cargar las apuestas', 'danger');
     }
-    return this.availableBets.filter(bet => bet.category === this.selectedCategory);
   }
 
-  async placeBet(bet: Bet, type: 'home' | 'draw' | 'away') {
-    const teamName = type === 'home' ? bet.homeTeam : type === 'away' ? bet.awayTeam : 'Empate';
-    const odds = bet.odds[type];
+  async loadUserStats() {
+    try {
+      this.userStats = await this.betsService.getUserStats(this.currentUserId);
+    } catch (error) {
+      console.error('Error loading stats:', error);
+    }
+  }
+
+  filterBets() {
+    let filtered = [...this.bets];
+
+    // Filter by search query
+    if (this.searchQuery.trim()) {
+      const query = this.searchQuery.toLowerCase();
+      filtered = filtered.filter(bet =>
+        bet.matchName.toLowerCase().includes(query) ||
+        bet.league.toLowerCase().includes(query) ||
+        bet.prediction.toLowerCase().includes(query)
+      );
+    }
+
+    // Filter by status
+    if (this.selectedStatus !== 'all') {
+      filtered = filtered.filter(bet => bet.status === this.selectedStatus);
+    }
+
+    // Sort by date (most recent first)
+    filtered.sort((a, b) => new Date(b.matchDate).getTime() - new Date(a.matchDate).getTime());
+
+    this.filteredBets = filtered;
+  }
+
+  onSearchChange(event: any) {
+    this.searchQuery = event.detail.value || '';
+    this.filterBets();
+  }
+
+  onStatusChange(event: any) {
+    this.selectedStatus = event.detail.value;
+    this.filterBets();
+  }
+
+  async openBetDetail(bet?: Bet, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    const modal = await this.modalController.create({
+      component: BetDetailModalComponent,
+      componentProps: {
+        bet: bet,
+        isEditMode: !!bet
+      },
+      backdropDismiss: true
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+    if (data?.saved) {
+      await this.loadBets();
+      await this.loadUserStats();
+    }
+  }
+
+  async settleBet(bet: Bet, result: 'won' | 'lost', event: Event) {
+    event.stopPropagation();
 
     const alert = await this.alertController.create({
-      header: '💰 Realizar Apuesta',
-      message: `<strong>${teamName}</strong><br>Cuota: ${odds}`,
-      inputs: [
-        {
-          name: 'amount',
-          type: 'number',
-          placeholder: 'Monto a apostar',
-          min: 10,
-          max: this.currentUser?.balance || 0
-        }
-      ],
+      header: '¿Liquidar apuesta?',
+      message: `¿Marcar esta apuesta como ${result === 'won' ? 'ganada' : 'perdida'}?`,
       buttons: [
         {
           text: 'Cancelar',
           role: 'cancel'
         },
         {
-          text: 'Apostar',
-          handler: (data) => {
-            if (data.amount && data.amount >= 10 && data.amount <= (this.currentUser?.balance || 0)) {
-              this.confirmBet(bet, type, teamName, odds, parseFloat(data.amount));
-              return true;
-            } else {
-              this.showToast('Monto inválido', 'danger');
-              return false;
+          text: 'Confirmar',
+          handler: async () => {
+            try {
+              if (result === 'won') {
+                await this.betsService.settleBetAsWon(bet.id);
+                this.showToast(`¡Apuesta ganada! +$${bet.potentialWin.toFixed(2)}`, 'success');
+              } else {
+                await this.betsService.settleBetAsLost(bet.id);
+                this.showToast('Apuesta perdida', 'warning');
+              }
+              await this.loadUserStats();
+            } catch (error) {
+              console.error('Error settling bet:', error);
+              this.showToast('Error al liquidar la apuesta', 'danger');
             }
           }
         }
@@ -327,48 +189,27 @@ export class BetsPage implements OnInit, OnDestroy {
     await alert.present();
   }
 
-  confirmBet(bet: Bet, type: 'home' | 'draw' | 'away', teamName: string, odds: number, amount: number) {
-    const potential = amount * odds;
-    this.userService.subtractFromBalance(amount);
+  async cancelBet(bet: Bet, event: Event) {
+    event.stopPropagation();
 
-    const newBet: ActiveBet = {
-      id: Date.now(),
-      homeTeam: bet.homeTeam,
-      awayTeam: bet.awayTeam,
-      league: bet.league,
-      bet: teamName,
-      betType: type,
-      amount: amount,
-      odds: odds,
-      potential: potential,
-      status: 'pending',
-      date: bet.date,
-      time: bet.time
-    };
-
-    this.myBets.unshift(newBet);
-    this.showToast(`¡Apuesta realizada! Ganancia potencial: $${potential.toFixed(2)}`, 'success');
-    
-    // Guardar en localStorage
-    this.saveBetsToStorage();
-  }
-
-  async cancelBet(betId: number) {
     const alert = await this.alertController.create({
-      header: 'Cancelar Apuesta',
-      message: '¿Estás seguro de cancelar esta apuesta?',
+      header: '¿Cancelar apuesta?',
+      message: '¿Estás seguro de que deseas cancelar esta apuesta?',
       buttons: [
-        { text: 'No', role: 'cancel' },
+        {
+          text: 'No',
+          role: 'cancel'
+        },
         {
           text: 'Sí, cancelar',
-          handler: () => {
-            const betIndex = this.myBets.findIndex(b => b.id === betId);
-            if (betIndex !== -1) {
-              const bet = this.myBets[betIndex];
-              this.userService.addToBalance(bet.amount);
-              this.myBets.splice(betIndex, 1);
-              this.showToast('Apuesta cancelada y saldo devuelto', 'warning');
-              this.saveBetsToStorage();
+          handler: async () => {
+            try {
+              await this.betsService.cancelBet(bet.id);
+              this.showToast('Apuesta cancelada', 'warning');
+              await this.loadUserStats();
+            } catch (error) {
+              console.error('Error cancelling bet:', error);
+              this.showToast('Error al cancelar la apuesta', 'danger');
             }
           }
         }
@@ -378,26 +219,28 @@ export class BetsPage implements OnInit, OnDestroy {
     await alert.present();
   }
 
-  async showDepositModal() {
+  async deleteBet(bet: Bet, event: Event) {
+    event.stopPropagation();
+
     const alert = await this.alertController.create({
-      header: '💳 Depositar Fondos',
-      inputs: [
-        {
-          name: 'amount',
-          type: 'number',
-          placeholder: 'Monto a depositar',
-          min: 10
-        }
-      ],
+      header: '¿Eliminar apuesta?',
+      message: 'Esta acción no se puede deshacer.',
       buttons: [
-        { text: 'Cancelar', role: 'cancel' },
         {
-          text: 'Depositar',
-          handler: (data) => {
-            if (data.amount && data.amount >= 10) {
-              this.userService.addToBalance(parseFloat(data.amount));
-              this.showToast(`$${data.amount} depositados exitosamente`, 'success');
-              this.saveBetsToStorage();
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Eliminar',
+          cssClass: 'danger',
+          handler: async () => {
+            try {
+              await this.betsService.deleteBet(bet.id);
+              this.showToast('Apuesta eliminada', 'success');
+              await this.loadUserStats();
+            } catch (error) {
+              console.error('Error deleting bet:', error);
+              this.showToast('Error al eliminar la apuesta', 'danger');
             }
           }
         }
@@ -405,35 +248,130 @@ export class BetsPage implements OnInit, OnDestroy {
     });
 
     await alert.present();
+  }
+
+  async generateSampleData() {
+    const alert = await this.alertController.create({
+      header: 'Generar Ejemplos',
+      message: '¿Deseas generar apuestas de ejemplo?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Generar',
+          handler: async () => {
+            try {
+              await this.betsService.generateSampleBets(this.currentUserId);
+              this.showToast('Apuestas de ejemplo generadas', 'success');
+              await this.loadUserStats();
+            } catch (error) {
+              console.error('Error generating samples:', error);
+              this.showToast('Error al generar ejemplos', 'danger');
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  async clearAllBets() {
+    const alert = await this.alertController.create({
+      header: '⚠️ Eliminar Todo',
+      message: '¿Estás seguro de que deseas eliminar todas tus apuestas? Esta acción no se puede deshacer.',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Eliminar Todo',
+          cssClass: 'danger',
+          handler: async () => {
+            try {
+              await this.betsService.clearUserBets(this.currentUserId);
+              this.showToast('Todas las apuestas han sido eliminadas', 'success');
+              this.userStats = {
+                totalBets: 0,
+                won: 0,
+                lost: 0,
+                pending: 0,
+                winRate: 0,
+                profitLoss: 0,
+                totalStaked: 0,
+                totalWon: 0,
+                totalLost: 0
+              };
+            } catch (error) {
+              console.error('Error clearing bets:', error);
+              this.showToast('Error al eliminar las apuestas', 'danger');
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  getStatusLabel(status: string): string {
+    const labels: any = {
+      'pending': 'Pendiente',
+      'won': 'Ganada',
+      'lost': 'Perdida',
+      'cancelled': 'Cancelada'
+    };
+    return labels[status] || status;
+  }
+
+  getStatusColor(status: string): string {
+    const colors: any = {
+      'pending': 'warning',
+      'won': 'success',
+      'lost': 'danger',
+      'cancelled': 'medium'
+    };
+    return colors[status] || 'medium';
+  }
+
+  getBetTypeLabel(type: string): string {
+    const labels: any = {
+      'winner': 'Ganador',
+      'score': 'Resultado',
+      'goals': 'Goles',
+      'corners': 'Corners',
+      'cards': 'Tarjetas'
+    };
+    return labels[type] || type;
+  }
+
+  formatDate(dateString: string | Date): string {
+    const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
+    const now = new Date();
+    const diffTime = date.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return 'Hoy';
+    if (diffDays === 1) return 'Mañana';
+    if (diffDays === -1) return 'Ayer';
+    
+    return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
   }
 
   async showToast(message: string, color: string) {
     const toast = await this.toastController.create({
-      message: message,
+      message,
       duration: 2500,
       position: 'top',
-      color: color,
-      cssClass: 'custom-toast'
+      color
     });
-    toast.present();
-  }
-
-  saveBetsToStorage() {
-    // El balance ahora se guarda automáticamente en UserService
-    localStorage.setItem('myBets', JSON.stringify(this.myBets));
-    localStorage.setItem('betHistory', JSON.stringify(this.betHistory));
-  }
-
-  getTotalPotential(): number {
-    return this.myBets.reduce((sum, bet) => sum + bet.potential, 0);
-  }
-
-  getTotalStaked(): number {
-    return this.myBets.reduce((sum, bet) => sum + bet.amount, 0);
+    await toast.present();
   }
 
   goBack() {
     this.router.navigate(['/home']);
   }
-
 }

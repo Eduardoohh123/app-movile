@@ -1,0 +1,132 @@
+<ion-menu contentId="main-content" type="overlay" class="custom-menu">
+  <ion-header class="ion-no-border" style="background: #0a0a1e !important; --background: #0a0a1e !important;">
+    <ion-toolbar style="--background: #0a0a1e; background: #0a0a1e; --border-width: 0; --padding-start: 0; --padding-end: 0; --padding-top: 0; --padding-bottom: 0;">
+      <div style="background: #0a0a1e; padding: 2rem 0; display: flex; justify-content: center; align-items: center; min-height: 120px;">
+        <img src="assets/imagenes/football-scoop.png" 
+             alt="Football Scoop Logo" 
+             style="height: 70px; width: auto; object-fit: contain; filter: brightness(1.2) drop-shadow(0 4px 8px rgba(0, 212, 255, 0.3));" />
+      </div>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content>
+    <!-- Usuario autenticado -->
+    <div *ngIf="isAuthenticated && currentUser" class="user-section">
+      <div class="user-info" (click)="goToProfile()">
+        <ion-avatar>
+          <img [src]="currentUser.avatar" alt="Avatar">
+        </ion-avatar>
+        <div class="user-details">
+          <h3>{{ currentUser.name }}</h3>
+          <ion-note>{{ currentUser.email }}</ion-note>
+          <div class="balance">
+            <ion-icon name="cash-outline"></ion-icon>
+            <span>${{ currentUser.balance.toFixed(2) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Usuario no autenticado -->
+    <div *ngIf="!isAuthenticated" class="guest-section">
+      <div class="guest-info">
+        <ion-avatar class="guest-avatar">
+          <ion-icon name="person-outline"></ion-icon>
+        </ion-avatar>
+        <h3>Bienvenido</h3>
+        <p>Inicia sesión para acceder a todas las funciones</p>
+      </div>
+      <div class="auth-buttons">
+        <ion-menu-toggle auto-hide="true">
+          <ion-button expand="block" (click)="goToLogin()">
+            <ion-icon name="log-in-outline" slot="start"></ion-icon>
+            Iniciar Sesión
+          </ion-button>
+        </ion-menu-toggle>
+        <ion-menu-toggle auto-hide="true">
+          <ion-button expand="block" fill="outline" (click)="goToRegister()">
+            <ion-icon name="person-add-outline" slot="start"></ion-icon>
+            Registrarse
+          </ion-button>
+        </ion-menu-toggle>
+      </div>
+    </div>
+
+    <!-- Menú para usuario autenticado -->
+    <ion-list *ngIf="isAuthenticated">
+      <ion-list-header>
+        <ion-label>Menú Principal</ion-label>
+      </ion-list-header>
+
+      <ion-menu-toggle auto-hide="true" *ngFor="let item of authenticatedMenuItems">
+        <ion-item [routerLink]="item.url" routerLinkActive="active-item" routerDirection="root" lines="full" button>
+          <ion-icon [name]="item.icon" slot="start"></ion-icon>
+          <ion-label>{{ item.title }}</ion-label>
+        </ion-item>
+      </ion-menu-toggle>
+
+      <ion-list-header>
+        <ion-label>Cuenta</ion-label>
+      </ion-list-header>
+
+      <ion-menu-toggle auto-hide="true">
+        <ion-item (click)="goToProfile()" button lines="full">
+          <ion-icon name="person-outline" slot="start"></ion-icon>
+          <ion-label>Mi Perfil</ion-label>
+        </ion-item>
+      </ion-menu-toggle>
+
+      <ion-menu-toggle auto-hide="true">
+        <ion-item (click)="goToAdmin()" button lines="full">
+          <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
+          <ion-label>Panel Admin</ion-label>
+        </ion-item>
+      </ion-menu-toggle>
+
+      <ion-menu-toggle auto-hide="true">
+        <ion-item (click)="logout()" button lines="full" color="danger">
+          <ion-icon name="log-out-outline" slot="start"></ion-icon>
+          <ion-label>Cerrar Sesión</ion-label>
+        </ion-item>
+      </ion-menu-toggle>
+    </ion-list>
+
+    <!-- Menú para usuario no autenticado (limitado) -->
+    <ion-list *ngIf="!isAuthenticated">
+      <ion-list-header>
+        <ion-label>Contenido Público</ion-label>
+      </ion-list-header>
+
+      <ion-menu-toggle auto-hide="true" *ngFor="let item of publicMenuItems">
+        <ion-item [routerLink]="item.url" routerLinkActive="active-item" routerDirection="root" lines="full" button>
+          <ion-icon [name]="item.icon" slot="start"></ion-icon>
+          <ion-label>{{ item.title }}</ion-label>
+        </ion-item>
+      </ion-menu-toggle>
+
+      <ion-item lines="full" class="locked-item" disabled>
+        <ion-icon name="lock-closed-outline" slot="start" color="medium"></ion-icon>
+        <ion-label color="medium">
+          <h3>Apuestas</h3>
+          <p>Requiere autenticación</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item lines="full" class="locked-item" disabled>
+        <ion-icon name="lock-closed-outline" slot="start" color="medium"></ion-icon>
+        <ion-label color="medium">
+          <h3>Comunidad</h3>
+          <p>Requiere autenticación</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item lines="full" class="locked-item" disabled>
+        <ion-icon name="lock-closed-outline" slot="start" color="medium"></ion-icon>
+        <ion-label color="medium">
+          <h3>Mi Perfil</h3>
+          <p>Requiere autenticación</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>

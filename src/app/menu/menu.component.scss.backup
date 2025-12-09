@@ -1,0 +1,239 @@
+ion-menu.custom-menu {
+  --background: #0a0a1e;
+  --ion-text-color: #ffffff;
+  
+  ion-header {
+    background: #0a0a1e !important;
+    --background: #0a0a1e !important;
+  }
+  
+  ion-toolbar {
+    --background: #0a0a1e !important;
+    background: #0a0a1e !important;
+    --border-width: 0 !important;
+  }
+  
+  ion-content {
+    --background: #0a0a1e;
+  }
+}
+
+// ===================================
+// USUARIO AUTENTICADO
+// ===================================
+.user-section {
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateX(5px);
+  }
+
+  ion-avatar {
+    width: 60px;
+    height: 60px;
+    border: 3px solid rgba(0, 212, 255, 0.5);
+    box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+  }
+
+  .user-details {
+    flex: 1;
+
+    h3 {
+      margin: 0 0 5px 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    ion-note {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .balance {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 8px;
+      padding: 5px 12px;
+      background: rgba(0, 212, 255, 0.2);
+      border-radius: 15px;
+      width: fit-content;
+
+      ion-icon {
+        color: #00d4ff;
+        font-size: 18px;
+      }
+
+      span {
+        font-weight: 600;
+        color: #00d4ff;
+        font-size: 1rem;
+      }
+    }
+  }
+}
+
+// ===================================
+// USUARIO NO AUTENTICADO
+// ===================================
+.guest-section {
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.guest-info {
+  text-align: center;
+  margin-bottom: 20px;
+
+  .guest-icon {
+    font-size: 60px;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 15px;
+  }
+
+  h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.4;
+  }
+}
+
+.auth-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  ion-button {
+    --border-radius: 12px;
+    text-transform: none;
+    font-weight: 600;
+
+    &:first-child {
+      --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    &:last-child {
+      --border-color: rgba(102, 126, 234, 0.5);
+      --color: #667eea;
+    }
+  }
+}
+
+// ===================================
+// ITEMS DE MENÚ
+// ===================================
+ion-list {
+  background: transparent;
+  padding: 10px 0;
+}
+
+ion-list-header {
+  padding: 15px 16px 10px;
+  
+  ion-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+ion-item {
+  --background: transparent;
+  --border-color: rgba(255, 255, 255, 0.05);
+  --color: #ffffff;
+  --padding-start: 16px;
+  --inner-padding-end: 16px;
+  margin: 2px 8px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    --background: rgba(255, 255, 255, 0.05);
+    transform: translateX(5px);
+  }
+
+  ion-icon {
+    color: #00d4ff;
+    font-size: 22px;
+  }
+
+  ion-label {
+    margin-left: 15px;
+    font-weight: 500;
+  }
+
+  &[color="danger"] {
+    ion-icon {
+      color: #ff4961;
+    }
+  }
+}
+
+// Items bloqueados
+.locked-item {
+  opacity: 0.5;
+  cursor: not-allowed;
+
+  ion-icon {
+    color: rgba(255, 255, 255, 0.3) !important;
+  }
+
+  ion-label {
+    h3 {
+      font-weight: 500;
+      margin: 0 0 4px 0;
+    }
+
+    p {
+      font-size: 0.8rem;
+      margin: 0;
+      font-style: italic;
+    }
+  }
+}
+
+// Responsive
+@media (min-width: 768px) {
+  .user-info {
+    ion-avatar {
+      width: 70px;
+      height: 70px;
+    }
+
+    .user-details h3 {
+      font-size: 1.2rem;
+    }
+  }
+
+  .guest-info {
+    .guest-icon {
+      font-size: 80px;
+    }
+
+    h3 {
+      font-size: 1.5rem;
+    }
+  }
+}

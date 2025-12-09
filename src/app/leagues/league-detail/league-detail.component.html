@@ -1,0 +1,168 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ isEditMode ? 'Editar Liga' : 'Nueva Liga' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="save()" [strong]="true">
+        Guardar
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="league-detail-content">
+  <div class="form-container">
+    <!-- Logo Section -->
+    <div class="logo-section">
+      <div class="logo-preview" [style.background]="'linear-gradient(135deg, ' + formData.colors.primary + ', ' + formData.colors.secondary + ')'">
+        <span class="logo-text">{{ formData.logo }}</span>
+      </div>
+      <ion-button fill="outline" size="small" (click)="selectLogo()">
+        <ion-icon name="image-outline" slot="start"></ion-icon>
+        Cambiar Logo
+      </ion-button>
+    </div>
+
+    <!-- Basic Information -->
+    <div class="form-section">
+      <h3 class="section-title">Información Básica</h3>
+      
+      <ion-item>
+        <ion-label position="stacked">Nombre de la Liga *</ion-label>
+        <ion-input
+          [(ngModel)]="formData.name"
+          placeholder="Ej: La Liga"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Nombre Corto *</ion-label>
+        <ion-input
+          [(ngModel)]="formData.shortName"
+          placeholder="Ej: LALIGA"
+          maxlength="10"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">País</ion-label>
+        <ion-input
+          [(ngModel)]="formData.country"
+          placeholder="Ej: España"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Temporada</ion-label>
+        <ion-input
+          [(ngModel)]="formData.season"
+          placeholder="2024/2025"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Descripción</ion-label>
+        <ion-textarea
+          [(ngModel)]="formData.description"
+          placeholder="Descripción de la liga..."
+          rows="3"
+        ></ion-textarea>
+      </ion-item>
+    </div>
+
+    <!-- Type & Status -->
+    <div class="form-section">
+      <h3 class="section-title">Tipo y Estado</h3>
+      
+      <ion-item>
+        <ion-label position="stacked">Tipo de Liga</ion-label>
+        <ion-select [(ngModel)]="formData.type" interface="popover">
+          <ion-select-option value="domestic">Nacional</ion-select-option>
+          <ion-select-option value="international">Internacional</ion-select-option>
+          <ion-select-option value="cup">Copa</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Estado</ion-label>
+        <ion-select [(ngModel)]="formData.status" interface="popover">
+          <ion-select-option value="active">Activa</ion-select-option>
+          <ion-select-option value="upcoming">Próximamente</ion-select-option>
+          <ion-select-option value="finished">Finalizada</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </div>
+
+    <!-- League Details -->
+    <div class="form-section">
+      <h3 class="section-title">Detalles de la Liga</h3>
+      
+      <ion-item>
+        <ion-label position="stacked">Número de Equipos</ion-label>
+        <ion-input
+          type="number"
+          [(ngModel)]="formData.numberOfTeams"
+          min="2"
+          max="100"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Jornada Actual</ion-label>
+        <ion-input
+          type="number"
+          [(ngModel)]="formData.currentMatchday"
+          min="1"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Año de Fundación</ion-label>
+        <ion-input
+          type="number"
+          [(ngModel)]="formData.founded"
+          placeholder="1929"
+          min="1800"
+          [max]="2025"
+        ></ion-input>
+      </ion-item>
+    </div>
+
+    <!-- Colors -->
+    <div class="form-section">
+      <h3 class="section-title">Colores de la Liga</h3>
+      
+      <div class="color-pickers">
+        <div class="color-picker-item">
+          <ion-label>Color Primario</ion-label>
+          <input type="color" [(ngModel)]="formData.colors.primary" class="color-input">
+          <span class="color-value">{{ formData.colors.primary }}</span>
+        </div>
+        
+        <div class="color-picker-item">
+          <ion-label>Color Secundario</ion-label>
+          <input type="color" [(ngModel)]="formData.colors.secondary" class="color-input">
+          <span class="color-value">{{ formData.colors.secondary }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <ion-button expand="block" (click)="save()" color="primary">
+        <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+        {{ isEditMode ? 'Actualizar' : 'Crear' }} Liga
+      </ion-button>
+      
+      <ion-button expand="block" fill="outline" (click)="close()">
+        Cancelar
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

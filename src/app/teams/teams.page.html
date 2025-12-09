@@ -1,0 +1,142 @@
+<ion-header class="custom-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      <div class="title-wrapper">
+        <ion-icon name="shield-outline"></ion-icon>
+        <span>Equipos</span>
+      </div>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openTeamDetail()">
+        <ion-icon name="add" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="teams-content">
+  <!-- Search Bar -->
+  <div class="search-section">
+    <ion-searchbar
+      [(ngModel)]="searchQuery"
+      (ionInput)="onSearchChange($event)"
+      placeholder="Buscar equipos..."
+      animated
+      [debounce]="300"
+    ></ion-searchbar>
+    
+    <!-- Filter by League -->
+    <ion-segment [(ngModel)]="selectedLeague" (ionChange)="onLeagueChange($event)" mode="md">
+      <ion-segment-button value="all">
+        <ion-label>Todos</ion-label>
+      </ion-segment-button>
+      <ion-segment-button *ngFor="let league of leagues.slice(0, 3)" [value]="league.id">
+        <ion-label>{{ league.shortName }}</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <!-- Teams List -->
+  <div class="teams-container">
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="filteredTeams.length === 0">
+      <ion-icon name="shield-outline"></ion-icon>
+      <h2>No hay equipos</h2>
+      <p *ngIf="searchQuery || selectedLeague !== 'all'">
+        No se encontraron equipos con los filtros aplicados
+      </p>
+      <p *ngIf="!searchQuery && selectedLeague === 'all'">
+        Agrega tu primer equipo o genera datos de ejemplo
+      </p>
+      <ion-button (click)="generateSampleData()" fill="outline" *ngIf="teams.length === 0">
+        <ion-icon name="flask-outline" slot="start"></ion-icon>
+        Generar Ejemplos
+      </ion-button>
+    </div>
+
+    <!-- Teams Grid -->
+    <div class="teams-grid" *ngIf="filteredTeams.length > 0">
+      <ion-card *ngFor="let team of filteredTeams" class="team-card" (click)="openTeamDetail(team)">
+        <!-- Team Logo -->
+        <div class="team-logo-container">
+          <div class="team-logo" [style.background]="'linear-gradient(135deg, ' + team.colors.primary + ', ' + team.colors.secondary + ')'">
+            <span class="logo-text">{{ team.logo }}</span>
+          </div>
+        </div>
+
+        <!-- Team Info -->
+        <ion-card-header>
+          <ion-card-subtitle>{{ team.shortName }} • {{ getLeagueName(team.league) }}</ion-card-subtitle>
+          <ion-card-title>{{ team.name }}</ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+          <div class="team-details">
+            <div class="detail-item">
+              <ion-icon name="location-outline"></ion-icon>
+              <span>{{ team.city }}, {{ team.country }}</span>
+            </div>
+            <div class="detail-item">
+              <ion-icon name="home-outline"></ion-icon>
+              <span>{{ team.stadium }}</span>
+            </div>
+            <div class="detail-item">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <span>Fundado en {{ team.founded }}</span>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="team-stats">
+            <div class="stat">
+              <span class="stat-value">{{ team.stats.wins }}</span>
+              <span class="stat-label">V</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value">{{ team.stats.draws }}</span>
+              <span class="stat-label">E</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value">{{ team.stats.losses }}</span>
+              <span class="stat-label">D</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value">{{ team.stats.goalsFor }}:{{ team.stats.goalsAgainst }}</span>
+              <span class="stat-label">Goles</span>
+            </div>
+          </div>
+        </ion-card-content>
+
+        <!-- Actions -->
+        <div class="card-actions">
+          <ion-button fill="clear" size="small" (click)="deleteTeam(team, $event)">
+            <ion-icon name="trash-outline" slot="icon-only" color="danger"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-card>
+    </div>
+  </div>
+
+  <!-- FAB for Actions -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button>
+      <ion-icon name="menu"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="top">
+      <ion-fab-button (click)="openTeamDetail()" color="primary">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button (click)="generateSampleData()" color="secondary">
+        <ion-icon name="flask"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button (click)="clearAllTeams()" color="danger">
+        <ion-icon name="trash"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
+</ion-content>

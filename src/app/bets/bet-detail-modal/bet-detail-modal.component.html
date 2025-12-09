@@ -1,0 +1,159 @@
+<ion-header class="custom-modal-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ isEditMode ? 'Editar Apuesta' : 'Nueva Apuesta' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="saveBet()" [strong]="true">
+        <ion-icon name="checkmark"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="form-container">
+    
+    <!-- Match Information -->
+    <div class="form-section">
+      <h3 class="section-title">
+        <ion-icon name="football-outline"></ion-icon>
+        Información del Partido
+      </h3>
+      
+      <ion-item class="custom-item">
+        <ion-label position="stacked">Nombre del Partido *</ion-label>
+        <ion-input
+          [(ngModel)]="betForm.matchName"
+          placeholder="Ej: Real Madrid vs Barcelona"
+          required>
+        </ion-input>
+      </ion-item>
+
+      <ion-item class="custom-item">
+        <ion-label position="stacked">Liga/Competición *</ion-label>
+        <ion-input
+          [(ngModel)]="betForm.league"
+          placeholder="Ej: La Liga"
+          required>
+        </ion-input>
+      </ion-item>
+
+      <ion-item class="custom-item">
+        <ion-label position="stacked">Fecha del Partido *</ion-label>
+        <ion-datetime-button datetime="matchDate"></ion-datetime-button>
+        <ion-modal [keepContentsMounted]="true">
+          <ng-template>
+            <ion-datetime
+              id="matchDate"
+              [(ngModel)]="betForm.matchDate"
+              presentation="date-time"
+              [min]="minDate">
+            </ion-datetime>
+          </ng-template>
+        </ion-modal>
+      </ion-item>
+    </div>
+
+    <!-- Bet Details -->
+    <div class="form-section">
+      <h3 class="section-title">
+        <ion-icon name="stats-chart-outline"></ion-icon>
+        Detalles de la Apuesta
+      </h3>
+
+      <ion-item class="custom-item">
+        <ion-label position="stacked">Tipo de Apuesta *</ion-label>
+        <ion-select [(ngModel)]="betForm.betType" interface="action-sheet">
+          <ion-select-option value="winner">Ganador</ion-select-option>
+          <ion-select-option value="score">Resultado Exacto</ion-select-option>
+          <ion-select-option value="goals">Cantidad de Goles</ion-select-option>
+          <ion-select-option value="corners">Córners</ion-select-option>
+          <ion-select-option value="cards">Tarjetas</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item class="custom-item">
+        <ion-label position="stacked">Predicción *</ion-label>
+        <ion-input
+          [(ngModel)]="betForm.prediction"
+          placeholder="Ej: Real Madrid, 2-1, Más de 2.5, etc."
+          required>
+        </ion-input>
+      </ion-item>
+
+      <div class="two-column">
+        <ion-item class="custom-item">
+          <ion-label position="stacked">Cuota *</ion-label>
+          <ion-input
+            type="number"
+            [(ngModel)]="betForm.odds"
+            (ionInput)="onOddsChange()"
+            step="0.01"
+            min="1.01"
+            placeholder="1.50"
+            required>
+          </ion-input>
+        </ion-item>
+
+        <ion-item class="custom-item">
+          <ion-label position="stacked">Monto Apostado ($) *</ion-label>
+          <ion-input
+            type="number"
+            [(ngModel)]="betForm.stake"
+            (ionInput)="onStakeChange()"
+            step="1"
+            min="1"
+            placeholder="10"
+            required>
+          </ion-input>
+        </ion-item>
+      </div>
+
+      <!-- Potential Win Display -->
+      <div class="potential-win-display">
+        <div class="win-label">
+          <ion-icon name="trending-up"></ion-icon>
+          <span>Ganancia Potencial</span>
+        </div>
+        <div class="win-amount">
+          ${{ potentialWin | number:'1.2-2' }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="form-section">
+      <h3 class="section-title">
+        <ion-icon name="document-text-outline"></ion-icon>
+        Notas (Opcional)
+      </h3>
+
+      <ion-item class="custom-item">
+        <ion-label position="stacked">Observaciones</ion-label>
+        <ion-textarea
+          [(ngModel)]="betForm.notes"
+          placeholder="Agrega cualquier nota sobre esta apuesta..."
+          rows="4"
+          autoGrow="true">
+        </ion-textarea>
+      </ion-item>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons-modal">
+      <ion-button expand="block" color="medium" fill="outline" (click)="dismiss()">
+        <ion-icon name="close-outline" slot="start"></ion-icon>
+        Cancelar
+      </ion-button>
+      <ion-button expand="block" color="primary" (click)="saveBet()">
+        <ion-icon name="save-outline" slot="start"></ion-icon>
+        {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+      </ion-button>
+    </div>
+
+  </div>
+</ion-content>

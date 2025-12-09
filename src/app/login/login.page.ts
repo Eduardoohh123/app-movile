@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { UserService } from '../services/user.service';
+import { FirebaseService } from '../services/firebase.service';
+import { Preferences } from '@capacitor/preferences';
 import { 
   IonContent, 
   IonInput, 
@@ -9,7 +12,9 @@ import {
   IonButton, 
   IonCheckbox,
   IonSpinner,
-  ModalController
+  ModalController,
+  ToastController,
+  MenuController
 } from '@ionic/angular/standalone';
 import { RegistrarPage } from '../registrar/registrar.page';
 import { addIcons } from 'ionicons';
@@ -54,7 +59,14 @@ export class LoginPage implements OnInit {
   emailError: string = '';
   passwordError: string = '';
 
-  constructor(private router: Router, private modalController: ModalController) {
+  constructor(
+    private router: Router, 
+    private modalController: ModalController,
+    private userService: UserService,
+    private firebaseService: FirebaseService,
+    private toastController: ToastController,
+    private menuController: MenuController
+  ) {
     // Register icons
     addIcons({
       'mail-outline': mailOutline,
@@ -94,11 +106,14 @@ export class LoginPage implements OnInit {
   regPasswordError: string = '';
   regConfirmPasswordError: string = '';
 
-  ngOnInit() {
+  async ngOnInit() {
+    // Cerrar el menú si está abierto
+    await this.menuController.close();
+    
     // Load remembered email if exists
-    const rememberedEmail = localStorage.getItem('rememberedEmail');
-    if (rememberedEmail) {
-      this.email = rememberedEmail;
+    const result = await Preferences.get({ key: 'rememberedEmail' });
+    if (result.value) {
+      this.email = result.value;
       this.rememberMe = true;
     }
   }
@@ -183,20 +198,68 @@ export class LoginPage implements OnInit {
     const vConfirm = this.validateRegConfirmPassword();
     if (!vName || !vEmail || !vPass || !vConfirm) return;
     if (!this.regAcceptTerms) {
-      alert('Debes aceptar los términos y condiciones');
+      await this.showToast('Debes aceptar los términos y condiciones', 'warning');
       return;
     }
+
     this.regIsLoading = true;
+
     try {
-      await new Promise((r) => setTimeout(r, 1200));
-      alert('¡Cuenta creada exitosamente!');
-      // close inline form and reset fields
+      console.log('🔐 Registrando usuario con Firebase...');
+      
+      // Crear usuario en Firebase Auth y Realtime Database
+      const newUser = await this.firebaseService.register(
+        this.regEmail, 
+        this.regPassword,
+        {
+          name: this.regFullName,
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(this.regFullName)}&background=random&size=256`,
+          phone: '',
+          balance: 1000.00,
+          joinDate: new Date()
+        }
+      );
+
+      console.log('✅ Usuario creado en Firebase:', newUser.email);
+
+      // Actualizar UserService con el nuevo usuario
+      await this.userService.setUser(newUser);
+      console.log('✅ Usuario guardado en UserService');
+
+      await this.showToast('¡Cuenta creada exitosamente! Bienvenido a Football Scoop', 'success');
+      
+      // Cerrar formulario de registro
       this.showRegister = false;
       this.regFullName = this.regEmail = this.regPassword = this.regConfirmPassword = '';
       this.regAcceptTerms = false;
-    } catch (e) {
-      console.error(e);
-      alert('Error al crear la cuenta. Intenta de nuevo.');
+      
+      // Navegar a home
+      this.router.navigate(['/home']);
+    } catch (error: any) {
+      console.error('❌ Error al registrar usuario:', error);
+      
+      let errorMessage = 'Error al crear la cuenta. Intenta de nuevo.';
+      
+      if (error.code) {
+        switch (error.code) {
+          case 'auth/email-already-in-use':
+            errorMessage = 'Este correo ya está registrado. Intenta iniciar sesión.';
+            break;
+          case 'auth/invalid-email':
+            errorMessage = 'El correo electrónico no es válido.';
+            break;
+          case 'auth/weak-password':
+            errorMessage = 'La contraseña es muy débil. Debe tener al menos 6 caracteres.';
+            break;
+          case 'auth/network-request-failed':
+            errorMessage = 'Error de conexión. Verifica tu internet.';
+            break;
+          default:
+            errorMessage = error.message || errorMessage;
+        }
+      }
+      
+      await this.showToast(errorMessage, 'danger');
     } finally {
       this.regIsLoading = false;
     }
@@ -265,42 +328,69 @@ export class LoginPage implements OnInit {
     this.isLoading = true;
 
     try {
-      // Simulate API call
-      await this.simulateLogin();
+      console.log('🔐 Iniciando sesión con Firebase...');
+      
+      // Autenticar con Firebase
+      const firebaseUser = await this.firebaseService.login(this.email, this.password);
+      console.log('✅ Usuario autenticado:', firebaseUser.email);
+
+      // Obtener datos del usuario desde Firebase Realtime Database
+      const userData = await this.firebaseService.getUserById(firebaseUser.uid);
+      
+      if (userData) {
+        // Actualizar UserService con los datos del usuario
+        await this.userService.setUser(userData);
+        console.log('✅ Usuario cargado:', userData.name);
+      } else {
+        console.warn('⚠️ Usuario no encontrado en base de datos');
+      }
 
       // Save email if remember me is checked
       if (this.rememberMe) {
-        localStorage.setItem('rememberedEmail', this.email);
+        await Preferences.set({ key: 'rememberedEmail', value: this.email });
       } else {
-        localStorage.removeItem('rememberedEmail');
+        await Preferences.remove({ key: 'rememberedEmail' });
       }
 
+      await this.showToast(`¡Bienvenido de vuelta${userData ? ', ' + userData.name : ''}!`, 'success');
+      
       // Navigate to home page
       this.router.navigate(['/home']);
-    } catch (error) {
-      console.error('Login error:', error);
-      this.passwordError = 'Credenciales incorrectas. Intenta de nuevo.';
+    } catch (error: any) {
+      console.error('❌ Error de login:', error);
+      
+      let errorMessage = 'Credenciales incorrectas. Intenta de nuevo.';
+      
+      if (error.code) {
+        switch (error.code) {
+          case 'auth/user-not-found':
+            errorMessage = 'No existe una cuenta con este correo.';
+            break;
+          case 'auth/wrong-password':
+            errorMessage = 'Contraseña incorrecta.';
+            break;
+          case 'auth/invalid-email':
+            errorMessage = 'El correo electrónico no es válido.';
+            break;
+          case 'auth/user-disabled':
+            errorMessage = 'Esta cuenta ha sido deshabilitada.';
+            break;
+          case 'auth/network-request-failed':
+            errorMessage = 'Error de conexión. Verifica tu internet.';
+            break;
+          default:
+            errorMessage = error.message || errorMessage;
+        }
+      }
+      
+      this.passwordError = errorMessage;
+      await this.showToast(errorMessage, 'danger');
     } finally {
       this.isLoading = false;
     }
   }
 
-  /**
-   * Simulate login API call (replace with real API)
-   */
-  private simulateLogin(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        // Simulate success for demo purposes
-        // Replace with actual authentication logic
-        if (this.email && this.password) {
-          resolve();
-        } else {
-          reject(new Error('Invalid credentials'));
-        }
-      }, 1500);
-    });
-  }
+
 
   /**
    * Handle forgot password
@@ -354,6 +444,19 @@ export class LoginPage implements OnInit {
 
   closeRegister() {
     this.showRegister = false;
+  }
+
+  /**
+   * Show toast message
+   */
+  private async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      position: 'top',
+      color
+    });
+    await toast.present();
   }
 }
 

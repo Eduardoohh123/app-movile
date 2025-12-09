@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { UserService, User } from '../services/user.service';
+import { NotificationService } from '../services/notification.service';
+import { NewsService, News } from '../services/news.service';
 import { Subscription } from 'rxjs';
 import { 
   IonHeader,
@@ -16,11 +18,8 @@ import {
   IonFab,
   IonFabButton,
   IonFabList,
-  IonMenu,
-  IonList,
-  IonItem,
-  IonLabel,
-  MenuController
+  MenuController,
+  ModalController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -51,6 +50,7 @@ import {
   alertCircleOutline,
   homeOutline,
   personOutline,
+  personCircleOutline,
   folderOpenOutline,
   logoFacebook,
   logoTwitter,
@@ -64,7 +64,9 @@ import {
   swapHorizontalOutline,
   megaphoneOutline,
   videocamOutline,
-  cashOutline
+  cashOutline,
+  shieldOutline,
+  ribbonOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -85,20 +87,24 @@ import {
     IonAvatar,
     IonFab,
     IonFabButton,
-    IonFabList,
-    IonMenu,
-    IonList,
-    IonItem,
-    IonLabel
+    IonFabList
   ],
 })
 export class HomePage implements OnInit, OnDestroy {
   // User data
   currentUser: User | null = null;
+  isAuthenticated: boolean = false;
   private userSubscription?: Subscription;
+  
+  // Notificaciones
+  unreadCount: number = 0;
+  private unreadCountSubscription?: Subscription;
   notificationCount: number = 3;
   currentDate: Date = new Date();
   currentYear: number = new Date().getFullYear();
+  
+  // Flag para controlar inicialización
+  private isInitialized = false;
 
   // Stats data
   stats = [
@@ -177,44 +183,16 @@ export class HomePage implements OnInit, OnDestroy {
     }
   ];
 
-  // Featured items
-  featuredItems = [
-    {
-      id: 1,
-      title: 'Champions League: Semifinales Definidas',
-      description: 'Los cuatro equipos que lucharán por la gloria europea están confirmados',
-      image: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&h=250&fit=crop',
-      badge: 'En Vivo',
-      badgeColor: 'danger',
-      duration: 'Champions',
-      rating: '⭐ Destacado'
-    },
-    {
-      id: 2,
-      title: 'Análisis: Los mejores goles de la jornada',
-      description: 'Repasa las jugadas más espectaculares del fin de semana',
-      image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400&h=250&fit=crop',
-      badge: 'Trending',
-      badgeColor: 'warning',
-      duration: 'Top 10',
-      rating: '🔥 Popular'
-    },
-    {
-      id: 3,
-      title: 'Copa América: Se vienen los cuartos',
-      description: 'Todo lo que necesitas saber sobre la fase eliminatoria',
-      image: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=400&h=250&fit=crop',
-      badge: 'Próximamente',
-      badgeColor: 'success',
-      duration: 'Copa América',
-      rating: '⚽ Imperdible'
-    }
-  ];
+  // Featured items (noticias)
+  featuredItems: News[] = [];
 
   constructor(
     private router: Router,
     private menuController: MenuController,
-    private userService: UserService
+    private userService: UserService,
+    private notificationService: NotificationService,
+    private modalController: ModalController,
+    public newsService: NewsService
   ) {
     // Register icons
     addIcons({
@@ -258,22 +236,87 @@ export class HomePage implements OnInit, OnDestroy {
       'swap-horizontal-outline': swapHorizontalOutline,
       'megaphone-outline': megaphoneOutline,
       'videocam-outline': videocamOutline,
-      'cash-outline': cashOutline
+      'cash-outline': cashOutline,
+      'person-circle-outline': personCircleOutline,
+      'shield-outline': shieldOutline,
+      'ribbon-outline': ribbonOutline
     });
   }
 
   ngOnInit() {
-    // Load user data from UserService
-    this.currentUser = this.userService.getCurrentUser();
-    this.userSubscription = this.userService.user$.subscribe(user => {
-      this.currentUser = user;
-    });
+    // Inicialización básica solamente
+    console.log('🏠 HomePage: ngOnInit');
   }
 
-  ngOnDestroy() {
+  ionViewWillEnter() {
+    // Esta función se ejecuta cada vez que la vista va a entrar
+    console.log('🏠 HomePage: ionViewWillEnter');
+    
+    // Cerrar el menú al entrar
+    this.menuController.close('main-menu');
+    
+    // Cargar datos del usuario solo si no está inicializado
+    if (!this.isInitialized) {
+      this.initializeData();
+      this.isInitialized = true;
+    } else {
+      // Solo actualizar datos del usuario
+      this.currentUser = this.userService.getCurrentUser();
+      this.isAuthenticated = this.currentUser !== null;
+    }
+  }
+
+  ionViewWillLeave() {
+    // Esta función se ejecuta cada vez que la vista va a salir
+    console.log('🏠 HomePage: ionViewWillLeave');
+    // Cerrar el menú al salir
+    this.menuController.close('main-menu');
+  }
+
+  private initializeData() {
+    // Load user data from UserService
+    this.currentUser = this.userService.getCurrentUser();
+    this.isAuthenticated = this.currentUser !== null;
+    
+    // Cargar las últimas 3 noticias
+    this.featuredItems = this.newsService.getLatestNews(3);
+    
+    // Limpiar suscripciones anteriores si existen
     if (this.userSubscription) {
       this.userSubscription.unsubscribe();
     }
+    if (this.unreadCountSubscription) {
+      this.unreadCountSubscription.unsubscribe();
+    }
+    
+    this.userSubscription = this.userService.user$.subscribe(user => {
+      this.currentUser = user;
+      this.isAuthenticated = user !== null;
+      
+      // Cerrar menú cuando cambia el estado de autenticación
+      if (user) {
+        this.menuController.close('main-menu');
+        this.loadNotifications(user.id);
+      }
+    });
+    
+    // Suscribirse al contador de notificaciones
+    this.unreadCountSubscription = this.notificationService.unreadCount$.subscribe(
+      count => {
+        this.unreadCount = count;
+      }
+    );
+  }
+
+  ngOnDestroy() {
+    console.log('🏠 HomePage: ngOnDestroy');
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
+    }
+    if (this.unreadCountSubscription) {
+      this.unreadCountSubscription.unsubscribe();
+    }
+    this.isInitialized = false;
   }
 
   /**
@@ -365,14 +408,6 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   /**
-   * Open notifications
-   */
-  openNotifications() {
-    console.log('Notifications opened');
-    // TODO: Navigate to notifications page
-  }
-
-  /**
    * Open user profile
    */
   async openProfile() {
@@ -436,15 +471,48 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   /**
-   * Logout user
+   * Logout user and clear data
    */
   async logout() {
     await this.closeMenu();
     console.log('Logging out...');
-    // Clear user data
-    localStorage.clear();
+    
+    // Clear user data usando el servicio
+    await this.userService.logout();
+    
     // Navigate to login
     this.router.navigate(['/login']);
+  }
+
+  /**
+   * Cargar notificaciones del usuario
+   */
+  async loadNotifications(userId: string) {
+    await this.notificationService.getNotificationsForUser(userId);
+  }
+
+  /**
+   * Abrir modal de notificaciones
+   */
+  async openNotifications() {
+    const { NotificationsModalComponent } = await import('../notifications-modal/notifications-modal.component');
+    
+    const modal = await this.modalController.create({
+      component: NotificationsModalComponent,
+      cssClass: 'notifications-modal'
+    });
+
+    await modal.present();
+  }
+
+  /**
+   * Generar notificaciones de prueba (solo para desarrollo)
+   */
+  async generateTestNotifications() {
+    if (this.currentUser) {
+      await this.notificationService.generateSampleNotifications(this.currentUser.id);
+      console.log('✅ Notificaciones de prueba generadas');
+    }
   }
 
   /**

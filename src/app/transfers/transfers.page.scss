@@ -1,0 +1,710 @@
+// ===================================
+// TRANSFERS PAGE STYLES
+// ===================================
+
+.custom-header {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      rgba(0, 212, 255, 0.03) 0px,
+      rgba(0, 212, 255, 0.03) 1px,
+      transparent 1px,
+      transparent 80px
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  &::after {
+    content: '⚽';
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    font-size: 2rem;
+    opacity: 0.15;
+    transform: translateY(-50%);
+    z-index: 0;
+    animation: rotate 4s linear infinite;
+  }
+
+  ion-toolbar {
+    --background: linear-gradient(135deg, rgba(10, 10, 30, 0.95) 0%, rgba(20, 40, 80, 0.95) 50%, rgba(10, 10, 30, 0.95) 100%);
+    --color: white;
+    --border-width: 0;
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border-bottom: 3px double rgba(0, 212, 255, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 212, 255, 0.15);
+    position: relative;
+    z-index: 1;
+  }
+
+  ion-title {
+    font-weight: 900;
+    font-size: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+
+    .title-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+
+      ion-icon {
+        font-size: 1.6rem;
+        color: #00d4ff;
+        filter: drop-shadow(0 2px 8px rgba(0, 212, 255, 0.6));
+      }
+
+      span {
+        background: linear-gradient(135deg, #ffffff 0%, #00d4ff 50%, #ffffff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        filter: drop-shadow(0 3px 6px rgba(0, 212, 255, 0.5));
+        font-weight: 900;
+        font-style: italic;
+        transform: skewX(-5deg);
+      }
+    }
+  }
+
+  ion-button {
+    --color: #00d4ff;
+    
+    &:hover {
+      --color: #00e5ff;
+    }
+  }
+}
+
+@keyframes rotate {
+  from { transform: translateY(-50%) rotate(0deg); }
+  to { transform: translateY(-50%) rotate(360deg); }
+}
+
+.transfers-content {
+  --background: linear-gradient(135deg, #0a0a1e 0%, #1a1a2e 50%, #0a0a1e 100%);
+}
+
+// Banners de modo
+.demo-banner, .api-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  margin: 16px;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+  animation: slideDown 0.3s ease;
+
+  ion-icon {
+    font-size: 1.25rem;
+  }
+}
+
+.demo-banner {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.15), rgba(255, 152, 0, 0.15));
+  border: 2px solid rgba(255, 193, 7, 0.3);
+  color: #ffc107;
+}
+
+.api-banner {
+  background: linear-gradient(135deg, rgba(255, 87, 34, 0.15), rgba(244, 67, 54, 0.15));
+  border: 2px solid rgba(255, 87, 34, 0.3);
+  color: #ff5722;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.transfers-header {
+  padding: 2rem 1.5rem 1.5rem;
+  background: linear-gradient(180deg, rgba(0, 212, 255, 0.1) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 0.5rem;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  p {
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+    font-size: 0.95rem;
+  }
+}
+
+.filter-section {
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-segment {
+  --background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 4px;
+
+  ion-segment-button {
+    --color: rgba(255, 255, 255, 0.6);
+    --color-checked: #00d4ff;
+    --indicator-color: rgba(0, 212, 255, 0.2);
+    min-height: 36px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+}
+
+.loading-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1rem;
+  gap: 1rem;
+
+  ion-spinner {
+    --color: #00d4ff;
+    transform: scale(1.5);
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+    margin: 0;
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  
+  ion-icon {
+    font-size: 5rem;
+    color: rgba(0, 212, 255, 0.3);
+    margin-bottom: 1.5rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 0.5rem;
+  }
+  
+  p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.95rem;
+    margin: 0 0 2rem;
+    max-width: 400px;
+  }
+  
+  .config-btn {
+    --background: linear-gradient(135deg, #00d4ff 0%, #0090ff 100%);
+    --border-radius: 12px;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-transform: none;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(0, 212, 255, 0.4);
+  }
+  
+  ion-button[fill="outline"] {
+    --border-color: rgba(0, 212, 255, 0.5);
+    --color: #00d4ff;
+    --border-width: 2px;
+    font-weight: 600;
+  }
+}
+
+.transfers-container {
+  padding: 1rem;
+}
+
+.transfer-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 212, 255, 0.25);
+    border-color: rgba(0, 212, 255, 0.3);
+    background: rgba(255, 255, 255, 0.08);
+  }
+  
+  &:active {
+    transform: translateY(-2px);
+  }
+}
+
+.player-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.player-photo {
+  position: relative;
+  flex-shrink: 0;
+  
+  img {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 3px solid #00d4ff;
+    box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+  }
+  
+  .status-badge {
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.65rem;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.5px;
+  }
+}
+
+.player-info {
+  flex: 1;
+  
+  .player-name {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  .player-details {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0 0 0.375rem 0;
+    
+    .position {
+      font-weight: 600;
+      color: #00d4ff;
+    }
+    
+    .separator {
+      margin: 0 0.5rem;
+      opacity: 0.5;
+    }
+  }
+  
+  .nationality {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+  }
+}
+
+.transfer-direction {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: rgba(0, 212, 255, 0.08);
+  border-radius: 16px;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.club {
+  flex: 1;
+  text-align: center;
+  
+  .club-logo {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 0.5rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border: 2px solid rgba(0, 212, 255, 0.3);
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+  
+  .club-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.transfer-arrow {
+  font-size: 2rem;
+  color: #00d4ff;
+  filter: drop-shadow(0 2px 6px rgba(0, 212, 255, 0.6));
+  
+  ion-icon {
+    font-size: 2rem;
+  }
+}
+
+.transfer-details {
+  display: flex;
+  gap: 1rem;
+  
+  .detail-item {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    
+    ion-icon {
+      font-size: 1.25rem;
+      filter: drop-shadow(0 2px 4px rgba(0, 212, 255, 0.4));
+    }
+    
+    .detail-label {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.6);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .detail-value {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: white;
+      margin-left: auto;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+.load-more-section {
+  padding: 2rem 1rem;
+  
+  .load-more-btn {
+    margin: 0 0 1rem 0;
+    --border-radius: 12px;
+    --border-width: 2px;
+    --border-color: rgba(0, 212, 255, 0.3);
+    --color: #00d4ff;
+    font-weight: 600;
+    height: 48px;
+
+    &:hover {
+      --background: rgba(0, 212, 255, 0.1);
+    }
+  }
+  
+  .api-info {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85rem;
+    margin: 0;
+    font-style: italic;
+  }
+}
+
+// ===================================
+// RESPONSIVE
+// ===================================
+
+@media (max-width: 479px) {
+  .transfers-header {
+    padding: 1.5rem 1rem 1rem;
+
+    h1 {
+      font-size: 1.375rem;
+    }
+
+    p {
+      font-size: 0.85rem;
+    }
+  }
+
+  .transfer-card {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .player-photo img {
+    width: 70px;
+    height: 70px;
+  }
+
+  .player-info .player-name {
+    font-size: 1rem;
+  }
+
+  .club .club-logo {
+    width: 50px;
+    height: 50px;
+  }
+
+  .transfer-arrow {
+    font-size: 1.5rem;
+
+    ion-icon {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .transfers-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .transfers-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .transfer-card {
+    padding: 2rem;
+
+    &:hover {
+      transform: translateY(-8px);
+    }
+  }
+
+  .player-photo img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .club .club-logo {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+// ===================================
+// API KEY MODAL
+// ===================================
+
+.api-key-modal {
+  --height: auto;
+  --border-radius: 20px 20px 0 0;
+  --backdrop-opacity: 0.6;
+
+  ion-header {
+    ion-toolbar {
+      --background: linear-gradient(135deg, #00d4ff 0%, #0090ff 100%);
+      --color: white;
+      
+      ion-title {
+        font-weight: 700;
+      }
+    }
+  }
+
+  ion-content {
+    --background: linear-gradient(135deg, #0a0a1e 0%, #1a1a2e 100%);
+  }
+}
+
+.modal-content {
+  padding: 1rem 0;
+}
+
+.modal-icon {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  
+  ion-icon {
+    font-size: 4rem;
+    color: #00d4ff;
+    filter: drop-shadow(0 4px 12px rgba(0, 212, 255, 0.6));
+  }
+}
+
+.modal-content h2 {
+  text-align: center;
+  color: white;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 1rem;
+}
+
+.modal-description {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.95rem;
+  margin: 0 0 2rem;
+  line-height: 1.6;
+}
+
+.steps {
+  margin-bottom: 2rem;
+}
+
+.step {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: rgba(0, 212, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.step-number {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #00d4ff 0%, #0090ff 100%);
+  color: white;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 212, 255, 0.4);
+}
+
+.step-content {
+  flex: 1;
+  
+  h3 {
+    color: white;
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem;
+  }
+  
+  p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+    margin: 0;
+    line-height: 1.5;
+    
+    a {
+      color: #00d4ff;
+      text-decoration: none;
+      font-weight: 600;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+.api-key-input {
+  --background: rgba(255, 255, 255, 0.05);
+  --border-radius: 12px;
+  --padding-start: 1rem;
+  --padding-end: 1rem;
+  --inner-padding-end: 0;
+  border: 2px solid rgba(0, 212, 255, 0.3);
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  
+  ion-label {
+    color: #00d4ff !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  
+  ion-input {
+    --color: white;
+    --placeholder-color: rgba(255, 255, 255, 0.4);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+}
+
+.modal-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  
+  ion-button[expand="block"] {
+    margin: 0;
+    --border-radius: 12px;
+    font-weight: 700;
+    height: 50px;
+    text-transform: none;
+    letter-spacing: 0.5px;
+    
+    &:not([fill="clear"]) {
+      --background: linear-gradient(135deg, #00d4ff 0%, #0090ff 100%);
+      box-shadow: 0 4px 12px rgba(0, 212, 255, 0.4);
+      
+      &[disabled] {
+        --background: rgba(255, 255, 255, 0.1);
+        box-shadow: none;
+        opacity: 0.5;
+      }
+    }
+    
+    &[fill="clear"] {
+      --color: rgba(255, 255, 255, 0.6);
+      height: 40px;
+    }
+  }
+}
+

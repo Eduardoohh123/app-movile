@@ -1,0 +1,236 @@
+<ion-header class="custom-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">
+      <div class="title-wrapper">
+        <ion-icon name="swap-horizontal-outline"></ion-icon>
+        <span>Fichajes</span>
+      </div>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleDataMode()" [color]="isDemoMode ? 'warning' : 'success'">
+        <ion-icon [name]="isDemoMode ? 'flask-outline' : 'cloud-outline'" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button (click)="openApiKeyModal()">
+        <ion-icon name="key-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button (click)="reloadFromApi()">
+        <ion-icon name="reload-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="transfers-content">
+  
+  <!-- Modo de datos Banner -->
+  <div *ngIf="isDemoMode" class="demo-banner">
+    <ion-icon name="information-circle-outline"></ion-icon>
+    <span>Modo demostración activo (no consume consultas API)</span>
+  </div>
+  <div *ngIf="!isDemoMode" class="api-banner">
+    <ion-icon name="warning-outline"></ion-icon>
+    <span>Usando API real - Cada actualización consume 1 consulta</span>
+  </div>
+  
+  <!-- Header Section -->
+  <div class="transfers-header">
+    <h1>Mercado de Fichajes</h1>
+    <p>Todos los traspasos y rumores actualizados</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-section">
+    <ion-segment [value]="selectedFilter" (ionChange)="filterTransfers($event)" class="status-segment">
+      <ion-segment-button value="all">
+        <ion-label>Todos</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="confirmado">
+        <ion-label>Confirmados</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="rumor">
+        <ion-label>Rumores</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="loading-section" *ngIf="loading">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p>Cargando fichajes desde API...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!loading && filteredTransfers.length === 0">
+    <ion-icon name="football-outline"></ion-icon>
+    <h2>No hay fichajes disponibles</h2>
+    <p>Configura tu API Key de RapidAPI para ver los fichajes en tiempo real</p>
+    <ion-button fill="solid" (click)="openApiKeyModal()" class="config-btn">
+      <ion-icon name="key-outline" slot="start"></ion-icon>
+      Configurar API Key
+    </ion-button>
+    <ion-button fill="outline" (click)="loadTransfers()">
+      <ion-icon name="reload-outline" slot="start"></ion-icon>
+      Reintentar
+    </ion-button>
+  </div>
+
+  <!-- Transfers Cards -->
+  <div class="transfers-container" *ngIf="!loading && filteredTransfers.length > 0">
+    
+    <div class="transfer-card" *ngFor="let transfer of filteredTransfers" (click)="viewTransferDetail(transfer.id)">
+      
+      <!-- Player Info Section -->
+      <div class="player-section">
+        <div class="player-photo">
+          <img [src]="transfer.playerPhoto" [alt]="transfer.playerName">
+          <ion-badge [color]="getStatusColor(transfer.status)" class="status-badge">
+            {{ getStatusText(transfer.status) }}
+          </ion-badge>
+        </div>
+        
+        <div class="player-info">
+          <h2 class="player-name">{{ transfer.playerName }}</h2>
+          <p class="player-details">
+            <span class="position">{{ transfer.position }}</span>
+            <span class="separator">•</span>
+            <span class="age">{{ transfer.age }} años</span>
+          </p>
+          <p class="nationality">{{ transfer.nationality }}</p>
+        </div>
+      </div>
+
+      <!-- Transfer Direction -->
+      <div class="transfer-direction">
+        
+        <!-- From Club -->
+        <div class="club from-club">
+          <div class="club-logo">
+            <img [src]="transfer.fromClubLogo" [alt]="transfer.fromClub" onerror="this.src='https://via.placeholder.com/60x60?text=Club'">
+          </div>
+          <p class="club-name">{{ transfer.fromClub }}</p>
+        </div>
+
+        <!-- Arrow -->
+        <div class="transfer-arrow">
+          <ion-icon name="arrow-forward" color="primary"></ion-icon>
+        </div>
+
+        <!-- To Club -->
+        <div class="club to-club">
+          <div class="club-logo">
+            <img [src]="transfer.toClubLogo" [alt]="transfer.toClub" onerror="this.src='https://via.placeholder.com/60x60?text=Club'">
+          </div>
+          <p class="club-name">{{ transfer.toClub }}</p>
+        </div>
+
+      </div>
+
+      <!-- Transfer Details -->
+      <div class="transfer-details">
+        <div class="detail-item">
+          <ion-icon name="cash-outline" color="success"></ion-icon>
+          <span class="detail-label">Monto:</span>
+          <span class="detail-value">{{ transfer.fee }}</span>
+        </div>
+        <div class="detail-item">
+          <ion-icon name="calendar-outline" color="medium"></ion-icon>
+          <span class="detail-label">Fecha:</span>
+          <span class="detail-value">{{ transfer.date }}</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Load More Button -->
+  <div class="load-more-section" *ngIf="!loading && filteredTransfers.length > 0">
+    <ion-button expand="block" fill="outline" class="load-more-btn" (click)="loadTransfers()">
+      <ion-icon name="reload-outline" slot="start"></ion-icon>
+      Actualizar fichajes desde API
+    </ion-button>
+    <p class="api-info">Total de fichajes: {{ filteredTransfers.length }}</p>
+  </div>
+
+</ion-content>
+
+<!-- API Key Configuration Modal -->
+<ion-modal [isOpen]="showApiKeyModal" (didDismiss)="closeApiKeyModal()" class="api-key-modal">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Configurar API Key</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeApiKeyModal()">
+            <ion-icon name="close" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    
+    <ion-content class="ion-padding">
+      <div class="modal-content">
+        <div class="modal-icon">
+          <ion-icon name="key-outline"></ion-icon>
+        </div>
+        
+        <h2>Configura tu API Key</h2>
+        <p class="modal-description">
+          Para ver los fichajes en tiempo real, necesitas una API Key gratuita de RapidAPI.
+        </p>
+        
+        <div class="steps">
+          <div class="step">
+            <span class="step-number">1</span>
+            <div class="step-content">
+              <h3>Regístrate en RapidAPI</h3>
+              <p>Ve a <a href="https://rapidapi.com/api-sports/api/api-football" target="_blank">API-FOOTBALL</a></p>
+            </div>
+          </div>
+          
+          <div class="step">
+            <span class="step-number">2</span>
+            <div class="step-content">
+              <h3>Suscríbete al plan Free</h3>
+              <p>100 requests/día gratis</p>
+            </div>
+          </div>
+          
+          <div class="step">
+            <span class="step-number">3</span>
+            <div class="step-content">
+              <h3>Copia tu API Key</h3>
+              <p>Desde el dashboard de RapidAPI</p>
+            </div>
+          </div>
+        </div>
+        
+        <ion-item class="api-key-input">
+          <ion-label position="stacked">API Key de RapidAPI</ion-label>
+          <ion-input 
+            [(ngModel)]="apiKeyInput" 
+            placeholder="Pega aquí tu API Key"
+            type="text"
+            clearInput="true">
+          </ion-input>
+        </ion-item>
+        
+        <div class="modal-buttons">
+          <ion-button expand="block" (click)="saveApiKey()" [disabled]="!apiKeyInput || apiKeyInput.trim().length === 0">
+            <ion-icon name="save-outline" slot="start"></ion-icon>
+            Guardar y Cargar Fichajes
+          </ion-button>
+          
+          <ion-button expand="block" fill="clear" (click)="closeApiKeyModal()">
+            Cancelar
+          </ion-button>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

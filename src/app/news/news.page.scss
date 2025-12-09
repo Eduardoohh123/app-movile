@@ -123,8 +123,24 @@
 
   p {
     color: rgba(255, 255, 255, 0.6);
-    margin: 0;
+    margin: 0 0 1rem;
     font-size: 0.95rem;
+  }
+
+  .transfers-btn {
+    --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --border-radius: 12px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    font-weight: 600;
+    margin-top: 10px;
+    text-transform: none;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    
+    &:hover {
+      --background: linear-gradient(135deg, #7688ff 0%, #8655b2 100%);
+    }
   }
 }
 

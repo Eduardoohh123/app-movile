@@ -34,4 +34,61 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+/* @import '@ionic/angular/css/palettes/dark.system.css'; */
+
+// Forzar tema oscuro siempre
+@import "@ionic/angular/css/palettes/dark.always.css";
+
+// Force dark theme for menu
+ion-menu.custom-menu {
+  --ion-background-color: #0a0a1e !important;
+  --ion-text-color: #ffffff !important;
+  
+  ion-header,
+  ion-toolbar,
+  ion-content {
+    --ion-background-color: #0a0a1e !important;
+    --ion-text-color: #ffffff !important;
+    background: #0a0a1e !important;
+    color: #ffffff !important;
+    
+    &::before,
+    &::after {
+      display: none !important;
+    }
+  }
+  
+  // Forzar todos los elementos internos del toolbar
+  ion-toolbar {
+    .toolbar-container,
+    .toolbar-content {
+      background: #0a0a1e !important;
+    }
+  }
+  
+  // Forzar el header custom a ser oscuro
+  .menu-header-custom {
+    background: #0a0a1e !important;
+    border: none !important;
+    box-shadow: none !important;
+    
+    &::before,
+    &::after {
+      display: none !important;
+    }
+  }
+  
+  .menu-logo-wrapper {
+    background: #0a0a1e !important;
+  }
+  
+  ion-item {
+    --ion-background-color: transparent !important;
+    --ion-text-color: #ffffff !important;
+    --color: #ffffff !important;
+  }
+  
+  ion-label {
+    color: #ffffff !important;
+  }
+}

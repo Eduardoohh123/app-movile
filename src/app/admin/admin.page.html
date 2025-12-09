@@ -1,0 +1,370 @@
+<ion-header>
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-icon name="server-outline"></ion-icon>
+      Admin Panel
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="refreshData()">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <!-- Tabs -->
+  <ion-toolbar color="dark">
+    <ion-segment [(ngModel)]="selectedTab" mode="md" scrollable="true">
+      <ion-segment-button value="overview">
+        <ion-icon name="bar-chart-outline"></ion-icon>
+        <ion-label>Overview</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="bets">
+        <ion-icon name="ticket-outline"></ion-icon>
+        <ion-label>Apuestas</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="leagues">
+        <ion-icon name="trophy-outline"></ion-icon>
+        <ion-label>Ligas</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="teams">
+        <ion-icon name="football-outline"></ion-icon>
+        <ion-label>Equipos</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="users">
+        <ion-icon name="people-outline"></ion-icon>
+        <ion-label>Usuarios</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="system">
+        <ion-icon name="hardware-chip-outline"></ion-icon>
+        <ion-label>Sistema</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="raw">
+        <ion-icon name="code-outline"></ion-icon>
+        <ion-label>Raw JSON</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  
+  <!-- Overview Tab -->
+  <div *ngIf="selectedTab === 'overview'" class="tab-content">
+    <div class="stats-container">
+      <h2>📊 Estadísticas del Sistema</h2>
+      
+      <div class="stats-grid">
+        <div class="stat-card bets">
+          <ion-icon name="ticket-outline"></ion-icon>
+          <div class="stat-info">
+            <span class="stat-value">{{ stats.bets }}</span>
+            <span class="stat-label">Apuestas</span>
+          </div>
+        </div>
+
+        <div class="stat-card leagues">
+          <ion-icon name="trophy-outline"></ion-icon>
+          <div class="stat-info">
+            <span class="stat-value">{{ stats.leagues }}</span>
+            <span class="stat-label">Ligas</span>
+          </div>
+        </div>
+
+        <div class="stat-card teams">
+          <ion-icon name="football-outline"></ion-icon>
+          <div class="stat-info">
+            <span class="stat-value">{{ stats.teams }}</span>
+            <span class="stat-label">Equipos</span>
+          </div>
+        </div>
+
+        <div class="stat-card storage">
+          <ion-icon name="server-outline"></ion-icon>
+          <div class="stat-info">
+            <span class="stat-value">{{ stats.totalStorage }}</span>
+            <span class="stat-label">Almacenamiento</span>
+          </div>
+        </div>
+
+        <div class="stat-card users">
+          <ion-icon name="people-outline"></ion-icon>
+          <div class="stat-info">
+            <span class="stat-value">{{ stats.users }}</span>
+            <span class="stat-label">Usuarios</span>
+          </div>
+        </div>
+
+        <div class="stat-card keys">
+          <ion-icon name="key-outline"></ion-icon>
+          <div class="stat-info">
+            <span class="stat-value">{{ allStorageKeys.length }}</span>
+            <span class="stat-label">Storage Keys</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Current User Info -->
+      <div class="current-user-section" *ngIf="currentUser">
+        <h3>👤 Usuario Actual</h3>
+        <div class="user-card current">
+          <div class="user-avatar">{{ getUserInitials(currentUser.name) }}</div>
+          <div class="user-details">
+            <h4>{{ currentUser.name }}</h4>
+            <p><ion-icon name="mail-outline"></ion-icon> {{ currentUser.email }}</p>
+            <p *ngIf="currentUser.phone"><ion-icon name="call-outline"></ion-icon> {{ currentUser.phone }}</p>
+            <p class="user-id">ID: {{ currentUser.id }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Storage Keys Info -->
+      <div class="storage-keys-section">
+        <h3>🔑 Claves de Almacenamiento</h3>
+        <div class="keys-list">
+          <ion-chip *ngFor="let key of allStorageKeys" color="primary">
+            <ion-icon name="key-outline"></ion-icon>
+            <ion-label>{{ key }}</ion-label>
+          </ion-chip>
+          <div *ngIf="allStorageKeys.length === 0" class="empty-state small">
+            <p>No hay claves almacenadas</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions-section">
+        <h3>🛠️ Acciones</h3>
+        <div class="action-buttons">
+          <ion-button expand="block" (click)="exportData()" color="primary">
+            <ion-icon name="download-outline" slot="start"></ion-icon>
+            Exportar Datos
+          </ion-button>
+          <ion-button expand="block" (click)="importData()" color="secondary">
+            <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+            Importar Datos
+          </ion-button>
+          <ion-button expand="block" (click)="initializeFirebase()" color="tertiary">
+            <ion-icon name="cloud-done-outline" slot="start"></ion-icon>
+            Inicializar Firebase
+          </ion-button>
+          <ion-button expand="block" (click)="clearAllData()" color="danger">
+            <ion-icon name="trash-outline" slot="start"></ion-icon>
+            Limpiar Todo
+          </ion-button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bets Tab -->
+  <div *ngIf="selectedTab === 'bets'" class="tab-content">
+    <div class="data-container">
+      <h2>🎫 Apuestas ({{ betsData.length }})</h2>
+      <div class="data-list">
+        <div *ngFor="let bet of betsData" class="data-item">
+          <div class="item-header">
+            <span class="item-id">{{ bet.id }}</span>
+            <ion-badge [color]="getStatusColor(bet.status)">{{ bet.status }}</ion-badge>
+          </div>
+          <div class="item-body">
+            <strong>{{ bet.matchName }}</strong>
+            <p>{{ bet.league }} | {{ bet.prediction }}</p>
+            <p>Cuota: {{ bet.odds }} | Apostado: ${{ bet.stake }}</p>
+          </div>
+        </div>
+        <div *ngIf="betsData.length === 0" class="empty-state">
+          <ion-icon name="document-outline"></ion-icon>
+          <p>No hay apuestas registradas</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leagues Tab -->
+  <div *ngIf="selectedTab === 'leagues'" class="tab-content">
+    <div class="data-container">
+      <h2>🏆 Ligas ({{ leaguesData.length }})</h2>
+      <div class="data-list">
+        <div *ngFor="let league of leaguesData" class="data-item">
+          <div class="item-header">
+            <span class="item-id">{{ league.id }}</span>
+          </div>
+          <div class="item-body">
+            <strong>{{ league.name }}</strong>
+            <p>{{ league.country }}</p>
+          </div>
+        </div>
+        <div *ngIf="leaguesData.length === 0" class="empty-state">
+          <ion-icon name="document-outline"></ion-icon>
+          <p>No hay ligas registradas</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Teams Tab -->
+  <div *ngIf="selectedTab === 'teams'" class="tab-content">
+    <div class="data-container">
+      <h2>⚽ Equipos ({{ teamsData.length }})</h2>
+      <div class="data-list">
+        <div *ngFor="let team of teamsData" class="data-item">
+          <div class="item-header">
+            <span class="item-id">{{ team.id }}</span>
+          </div>
+          <div class="item-body">
+            <strong>{{ team.name }}</strong>
+            <p>{{ team.league }}</p>
+          </div>
+        </div>
+        <div *ngIf="teamsData.length === 0" class="empty-state">
+          <ion-icon name="document-outline"></ion-icon>
+          <p>No hay equipos registrados</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Users Tab -->
+  <div *ngIf="selectedTab === 'users'" class="tab-content">
+    <div class="data-container">
+      <h2>👥 Usuarios ({{ usersData.length }})</h2>
+      <div class="users-grid">
+        <div *ngFor="let user of usersData" class="user-card">
+          <div class="user-avatar">{{ getUserInitials(user.name) }}</div>
+          <div class="user-info">
+            <h3>{{ user.name }}</h3>
+            <div class="user-field">
+              <ion-icon name="mail-outline"></ion-icon>
+              <span>{{ user.email }}</span>
+            </div>
+            <div class="user-field" *ngIf="user.phone">
+              <ion-icon name="call-outline"></ion-icon>
+              <span>{{ user.phone }}</span>
+            </div>
+            <div class="user-field" *ngIf="user.password">
+              <ion-icon name="lock-closed-outline"></ion-icon>
+              <span class="password">{{ maskPassword(user.password) }}</span>
+              <ion-chip color="warning" size="small">
+                <ion-label>{{ user.password.length }} chars</ion-label>
+              </ion-chip>
+            </div>
+            <div class="user-field">
+              <ion-icon name="finger-print-outline"></ion-icon>
+              <span class="user-id">{{ user.id }}</span>
+            </div>
+            <div class="user-field" *ngIf="user.createdAt">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <span>Registro: {{ user.createdAt | date:'short' }}</span>
+            </div>
+            <div class="user-field" *ngIf="user.lastLogin">
+              <ion-icon name="time-outline"></ion-icon>
+              <span>Última sesión: {{ user.lastLogin | date:'short' }}</span>
+            </div>
+            <ion-button expand="block" size="small" (click)="viewUserDetails(user)" class="view-details-btn">
+              <ion-icon name="eye-outline" slot="start"></ion-icon>
+              Ver Detalles Completos
+            </ion-button>
+          </div>
+        </div>
+        <div *ngIf="usersData.length === 0" class="empty-state">
+          <ion-icon name="people-outline"></ion-icon>
+          <p>No hay usuarios registrados</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- System Tab -->
+  <div *ngIf="selectedTab === 'system'" class="tab-content">
+    <div class="data-container">
+      <h2>💻 Información del Sistema</h2>
+      
+      <div class="system-section">
+        <h3>🖥️ Plataforma</h3>
+        <div class="system-item">
+          <span class="label">Sistema Operativo:</span>
+          <span class="value">{{ systemInfo.platform }}</span>
+        </div>
+        <div class="system-item">
+          <span class="label">Navegador:</span>
+          <span class="value small">{{ systemInfo.userAgent }}</span>
+        </div>
+        <div class="system-item">
+          <span class="label">Idioma:</span>
+          <span class="value">{{ systemInfo.language }}</span>
+        </div>
+        <div class="system-item">
+          <span class="label">Resolución:</span>
+          <span class="value">{{ systemInfo.screenResolution }}</span>
+        </div>
+      </div>
+
+      <div class="system-section">
+        <h3>💾 Almacenamiento</h3>
+        <div class="system-item">
+          <span class="label">Cuota de Storage:</span>
+          <span class="value">{{ systemInfo.storageQuota }}</span>
+        </div>
+        <div class="system-item">
+          <span class="label">Datos Almacenados:</span>
+          <span class="value">{{ stats.totalStorage }}</span>
+        </div>
+        <div class="system-item">
+          <span class="label">Claves Activas:</span>
+          <span class="value">{{ allStorageKeys.length }}</span>
+        </div>
+      </div>
+
+      <div class="system-section">
+        <h3>📊 Estadísticas</h3>
+        <div class="system-item">
+          <span class="label">Total Apuestas:</span>
+          <span class="value">{{ stats.bets }}</span>
+        </div>
+        <div class="system-item">
+          <span class="label">Total Ligas:</span>
+          <span class="value">{{ stats.leagues }}</span>
+        </div>
+        <div class="system-item">
+          <span class="label">Total Equipos:</span>
+          <span class="value">{{ stats.teams }}</span>
+        </div>
+        <div class="system-item">
+          <span class="label">Total Usuarios:</span>
+          <span class="value">{{ stats.users }}</span>
+        </div>
+        <div class="system-item">
+          <span class="label">Última Actualización:</span>
+          <span class="value">{{ stats.lastUpdate | date:'medium' }}</span>
+        </div>
+      </div>
+
+      <div class="system-section">
+        <h3>🔑 Storage Keys</h3>
+        <div class="keys-grid">
+          <div *ngFor="let key of allStorageKeys" class="key-item">
+            <ion-icon name="key-outline"></ion-icon>
+            <span>{{ key }}</span>
+            <ion-badge color="primary">{{ formatJson(allStorageData[key]).length }} bytes</ion-badge>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Raw JSON Tab -->
+  <div *ngIf="selectedTab === 'raw'" class="tab-content">
+    <div class="json-container">
+      <div class="json-header">
+        <h2>📝 Raw JSON Data</h2>
+        <ion-button fill="clear" (click)="copyToClipboard()">
+          <ion-icon name="copy-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </div>
+      <pre class="json-viewer">{{ jsonView }}</pre>
+    </div>
+  </div>
+
+</ion-content>

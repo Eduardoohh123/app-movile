@@ -1,0 +1,154 @@
+<ion-header class="custom-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      <div class="title-wrapper">
+        <ion-icon name="ribbon-outline"></ion-icon>
+        <span>Ligas</span>
+      </div>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openLeagueDetail()">
+        <ion-icon name="add" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="leagues-content">
+  <!-- Search Bar -->
+  <div class="search-section">
+    <ion-searchbar
+      [(ngModel)]="searchQuery"
+      (ionInput)="onSearchChange($event)"
+      placeholder="Buscar ligas..."
+      animated
+      [debounce]="300"
+    ></ion-searchbar>
+    
+    <!-- Filters -->
+    <div class="filters-row">
+      <ion-segment [(ngModel)]="selectedType" (ionChange)="onTypeChange($event)" mode="md">
+        <ion-segment-button value="all">
+          <ion-label>Todas</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="domestic">
+          <ion-label>Nacionales</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="international">
+          <ion-label>Internacionales</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="cup">
+          <ion-label>Copas</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+      <ion-segment [(ngModel)]="selectedStatus" (ionChange)="onStatusChange($event)" mode="md" class="status-segment">
+        <ion-segment-button value="all">
+          <ion-label>Todos</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="active">
+          <ion-label>Activas</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="upcoming">
+          <ion-label>Próximas</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+  </div>
+
+  <!-- Leagues List -->
+  <div class="leagues-container">
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="filteredLeagues.length === 0">
+      <ion-icon name="ribbon-outline"></ion-icon>
+      <h2>No hay ligas</h2>
+      <p *ngIf="searchQuery || selectedType !== 'all' || selectedStatus !== 'all'">
+        No se encontraron ligas con los filtros aplicados
+      </p>
+      <p *ngIf="!searchQuery && selectedType === 'all' && selectedStatus === 'all'">
+        Agrega tu primera liga o genera datos de ejemplo
+      </p>
+      <ion-button (click)="generateSampleData()" fill="outline" *ngIf="leagues.length === 0">
+        <ion-icon name="flask-outline" slot="start"></ion-icon>
+        Generar Ejemplos
+      </ion-button>
+    </div>
+
+    <!-- Leagues Grid -->
+    <div class="leagues-grid" *ngIf="filteredLeagues.length > 0">
+      <ion-card *ngFor="let league of filteredLeagues" class="league-card" (click)="openLeagueDetail(league)">
+        <!-- League Logo & Header -->
+        <div class="league-header" [style.background]="'linear-gradient(135deg, ' + league.colors.primary + ', ' + league.colors.secondary + ')'">
+          <div class="league-logo">
+            <span class="logo-text">{{ league.logo }}</span>
+          </div>
+          <ion-badge [color]="getStatusColor(league.status)" class="status-badge">
+            {{ getStatusLabel(league.status) }}
+          </ion-badge>
+        </div>
+
+        <!-- League Info -->
+        <ion-card-header>
+          <ion-card-subtitle>
+            {{ league.shortName }} • {{ league.season }}
+            <ion-badge class="type-badge" color="medium">{{ getTypeLabel(league.type) }}</ion-badge>
+          </ion-card-subtitle>
+          <ion-card-title>{{ league.name }}</ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+          <p class="league-description">{{ league.description }}</p>
+
+          <div class="league-details">
+            <div class="detail-item">
+              <ion-icon name="location-outline"></ion-icon>
+              <span>{{ league.country }}</span>
+            </div>
+            <div class="detail-item">
+              <ion-icon name="people-outline"></ion-icon>
+              <span>{{ league.numberOfTeams }} equipos</span>
+            </div>
+            <div class="detail-item">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <span>Jornada {{ league.currentMatchday }}</span>
+            </div>
+            <div class="detail-item">
+              <ion-icon name="trophy-outline"></ion-icon>
+              <span>Fundada en {{ league.founded }}</span>
+            </div>
+          </div>
+        </ion-card-content>
+
+        <!-- Actions -->
+        <div class="card-actions">
+          <ion-button fill="clear" size="small" (click)="deleteLeague(league, $event)">
+            <ion-icon name="trash-outline" slot="icon-only" color="danger"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-card>
+    </div>
+  </div>
+
+  <!-- FAB for Actions -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button>
+      <ion-icon name="menu"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="top">
+      <ion-fab-button (click)="openLeagueDetail()" color="primary">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button (click)="generateSampleData()" color="secondary">
+        <ion-icon name="flask"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button (click)="clearAllLeagues()" color="danger">
+        <ion-icon name="trash"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
+</ion-content>

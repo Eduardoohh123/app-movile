@@ -10,9 +10,12 @@ import {
   IonCheckbox,
   IonSpinner,
   ModalController,
-  ActionSheetController
+  ActionSheetController,
+  ToastController
 } from '@ionic/angular/standalone';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { FirebaseService } from '../services/firebase.service';
+import { UserService, User } from '../services/user.service';
 import { addIcons } from 'ionicons';
 import {
   arrowBackOutline,
@@ -82,7 +85,10 @@ export class RegistrarPage implements OnInit {
   constructor(
     private router: Router, 
     private modalController: ModalController,
-    private actionSheetController: ActionSheetController
+    private actionSheetController: ActionSheetController,
+    private firebaseService: FirebaseService,
+    private userService: UserService,
+    private toastController: ToastController
   ) {
     addIcons({
       'arrow-back-outline': arrowBackOutline,
@@ -237,40 +243,83 @@ export class RegistrarPage implements OnInit {
     }
 
     if (!this.acceptTerms) {
-      alert('Debes aceptar los términos y condiciones');
+      await this.showToast('Debes aceptar los términos y condiciones', 'warning');
       return;
     }
 
     this.isLoading = true;
 
     try {
-      // Simulate API call
-      await this.simulateRegister();
+      console.log('🚀 Iniciando registro con Firebase...');
+      
+      // Registrar en Firebase Authentication
+      const newUser = await this.firebaseService.register(
+        this.email,
+        this.password,
+        {
+          name: this.fullName,
+          avatar: this.photoPreviewUrl || 'https://ionicframework.com/docs/img/demos/avatar.svg',
+          phone: '',
+          balance: 1000.00, // Balance inicial
+          joinDate: new Date()
+        }
+      );
 
-      // Navigate to login or close inline form
-      alert('¡Cuenta creada exitosamente!');
+      console.log('✅ Usuario registrado en Firebase:', newUser);
+
+      // Actualizar el UserService con el nuevo usuario
+      await this.userService.setUser(newUser);
+
+      await this.showToast('¡Cuenta creada exitosamente! Bienvenido a Football Scoop', 'success');
+      
+      // Navegar a home
       if (this.inline) {
         this.modalController.dismiss();
-      } else {
-        this.router.navigate(['/login']);
       }
-    } catch (error) {
-      console.error('Register error:', error);
-      alert('Error al crear la cuenta. Intenta de nuevo.');
+      this.router.navigate(['/home']);
+      
+    } catch (error: any) {
+      console.error('❌ Error al crear la cuenta:', error);
+      
+      let errorMessage = 'Error al crear la cuenta. Intenta de nuevo.';
+      
+      // Mensajes de error específicos de Firebase
+      if (error.code) {
+        switch (error.code) {
+          case 'auth/email-already-in-use':
+            errorMessage = 'Este correo ya está registrado. Intenta iniciar sesión.';
+            break;
+          case 'auth/invalid-email':
+            errorMessage = 'El correo electrónico no es válido.';
+            break;
+          case 'auth/weak-password':
+            errorMessage = 'La contraseña es muy débil. Usa al menos 6 caracteres.';
+            break;
+          case 'auth/network-request-failed':
+            errorMessage = 'Error de conexión. Verifica tu internet.';
+            break;
+          default:
+            errorMessage = error.message || errorMessage;
+        }
+      }
+      
+      await this.showToast(errorMessage, 'danger');
     } finally {
       this.isLoading = false;
     }
   }
 
   /**
-   * Simulate register API call
+   * Show toast message
    */
-  private simulateRegister(): Promise<void> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve();
-      }, 1500);
+  private async showToast(message: string, color: 'success' | 'danger' | 'warning') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      position: 'top',
+      color
     });
+    await toast.present();
   }
 
   /**
