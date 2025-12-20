@@ -244,7 +244,7 @@ export class ProfilePage implements OnInit, OnDestroy {
     }
   }
 
-  saveProfile() {
+  async saveProfile() {
     if (!this.isEditing) return;
 
     // Validar datos antes de guardar
@@ -253,27 +253,48 @@ export class ProfilePage implements OnInit, OnDestroy {
       return;
     }
 
-    this.saveToLocalStorage();
-    this.isEditing = false;
-    this.originalData = { ...this.profileData };
-    
-    // Mostrar mensaje de éxito
-    this.showSuccessToast('✅ Perfil guardado exitosamente');
+    try {
+      await this.saveToLocalStorage();
+      this.isEditing = false;
+      this.originalData = { ...this.profileData };
+      
+      // Mostrar mensaje de éxito
+      this.showSuccessToast('✅ Perfil guardado exitosamente');
+    } catch (error) {
+      console.error('❌ Error al guardar perfil:', error);
+      this.showErrorAlert('Error al guardar el perfil. Por favor verifica tu conexión e intenta nuevamente.');
+    }
   }
 
   async saveToLocalStorage() {
     // Actualizar el usuario en el servicio centralizado
     if (this.currentUser) {
-      console.log('💾 Guardando avatar:', this.profileData.avatar?.substring(0, 50) + '...');
-      await this.userService.updateUser({
-        name: this.profileData.name,
-        email: this.profileData.email,
-        phone: this.profileData.phone,
-        avatar: this.profileData.avatar
-      });
-      console.log('✅ Avatar guardado correctamente');
+      try {
+        console.log('💾 Guardando perfil del usuario:', {
+          name: this.profileData.name,
+          email: this.profileData.email,
+          hasAvatar: !!this.profileData.avatar,
+          avatarLength: this.profileData.avatar?.length
+        });
+        
+        await this.userService.updateUser({
+          name: this.profileData.name,
+          email: this.profileData.email,
+          phone: this.profileData.phone,
+          avatar: this.profileData.avatar
+        });
+        
+        console.log('✅ Perfil guardado correctamente');
+      } catch (error) {
+        console.error('❌ Error al guardar perfil:', error);
+        this.showErrorToast('Error al guardar el perfil. Por favor intenta nuevamente.');
+        throw error;
+      }
     } else {
-      console.error('❌ No hay usuario actual para guardar');
+      const errorMsg = 'No hay usuario actual para guardar';
+      console.error('❌', errorMsg);
+      this.showErrorToast(errorMsg);
+      throw new Error(errorMsg);
     }
   }
 

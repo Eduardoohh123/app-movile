@@ -1,1 +1,6 @@
-{}
+{
+  "appId": "com.eduardo.appmovile",
+  "appName": "app-movile",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}

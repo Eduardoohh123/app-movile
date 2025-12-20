@@ -20,6 +20,11 @@ export const routes: Routes = [
     canActivate: [publicGuard]
   },
   {
+    path: 'spring-register',
+    loadComponent: () => import('./spring-register/spring-register.page').then( m => m.SpringRegisterPage),
+    canActivate: [publicGuard]
+  },
+  {
     path: 'google',
     loadComponent: () => import('./google/google.page').then( m => m.GooglePage),
     canActivate: [publicGuard]
@@ -79,6 +84,19 @@ export const routes: Routes = [
   {
     path: 'matches',
     loadComponent: () => import('./matches/matches.page').then( m => m.MatchesPage)
+  },
+  
+  // Página de test de conexión (desarrollo)
+  {
+    path: 'connection-test',
+    loadComponent: () => import('./pages/connection-test/connection-test.page').then( m => m.ConnectionTestPage)
+  },
+  
+  // Rutas de administración
+  {
+    path: 'admin/users',
+    loadComponent: () => import('./admin/users/users.page').then( m => m.UsersPage),
+    canActivate: [authGuard]
   },
   
   {

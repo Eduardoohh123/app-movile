@@ -1,0 +1,164 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Test de Conexión</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-container">
+    <ion-spinner></ion-spinner>
+    <p>Verificando conexión...</p>
+  </div>
+
+  <!-- Error -->
+  <ion-card *ngIf="error" color="danger">
+    <ion-card-header>
+      <ion-card-title>❌ Error</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      {{ error }}
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Estado de la Aplicación -->
+  <ion-card *ngIf="appStatus">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="checkmark-circle" color="success"></ion-icon>
+        Estado del Servidor
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list lines="none">
+        <ion-item>
+          <ion-label>
+            <h3>Aplicación</h3>
+            <p>{{ appStatus.application }}</p>
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            <h3>Estado</h3>
+            <p>{{ appStatus.status }}</p>
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            <h3>Timestamp</h3>
+            <p>{{ appStatus.timestamp | date:'medium' }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Estado de la Base de Datos -->
+  <ion-card *ngIf="dbStatus">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="server" color="primary"></ion-icon>
+        Estado de PostgreSQL
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list lines="none">
+        <ion-item>
+          <ion-label>
+            <h3>Base de Datos</h3>
+            <p>{{ dbStatus.database }}</p>
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            <h3>Estado</h3>
+            <p>
+              <ion-badge [color]="dbStatus.status === 'connected' ? 'success' : 'danger'">
+                {{ dbStatus.status }}
+              </ion-badge>
+            </p>
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            <h3>URL</h3>
+            <p class="url-text">{{ dbStatus.url }}</p>
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            <h3>Usuario</h3>
+            <p>{{ dbStatus.username }}</p>
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            <h3>Versión</h3>
+            <p>{{ dbStatus.databaseProductVersion }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Estadísticas -->
+  <ion-card *ngIf="stats">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="stats-chart" color="tertiary"></ion-icon>
+        Estadísticas de la BD
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6">
+            <div class="stat-box">
+              <h2>{{ stats.users }}</h2>
+              <p>Usuarios</p>
+            </div>
+          </ion-col>
+          <ion-col size="6">
+            <div class="stat-box">
+              <h2>{{ stats.animes }}</h2>
+              <p>Animes</p>
+            </div>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="6">
+            <div class="stat-box">
+              <h2>{{ stats.categories }}</h2>
+              <p>Categorías</p>
+            </div>
+          </ion-col>
+          <ion-col size="6">
+            <div class="stat-box">
+              <h2>{{ stats.games }}</h2>
+              <p>Juegos</p>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Botones de Acción -->
+  <div class="button-container">
+    <ion-button expand="block" (click)="checkAll()">
+      <ion-icon name="refresh" slot="start"></ion-icon>
+      Verificar Conexión
+    </ion-button>
+
+    <ion-button expand="block" color="secondary" (click)="seedData()">
+      <ion-icon name="cloud-upload" slot="start"></ion-icon>
+      Insertar Datos de Prueba
+    </ion-button>
+  </div>
+
+</ion-content>

@@ -35,7 +35,7 @@ export class TeamsService {
   private readonly STORAGE_KEY = 'football_teams';
   private teamsSubject = new BehaviorSubject<Team[]>([]);
   public teams$: Observable<Team[]> = this.teamsSubject.asObservable();
-  private useFirebase = true; // Toggle para usar Firebase
+  private useFirebase = false; // Deshabilitado: usar PostgreSQL 100%
 
   constructor(private firebaseService: FirebaseService) {
     this.loadTeams();

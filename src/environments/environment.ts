@@ -5,6 +5,13 @@
 
 export const environment = {
   production: false,
+  // Supabase - Base de datos en la nube (funciona desde cualquier dispositivo)
+  supabase: {
+    url: 'https://htdvrcajzddfjzpbfjhb.supabase.co',
+    key: 'sb_publishable_cVnJBQyNeNyuIJIqJx6fsA_330rGqLn'
+  },
+  // Backend API (opcional - solo si usas Spring Boot)
+  apiUrl: 'http://192.168.18.225:8080/api', // IP local de tu PC para dispositivo real
   firebase: {
     apiKey: "AIzaSyCRT2DDKCVo6F5Yp3yMGri2exM_QStaiDU",
     authDomain: "app-mobile-2025-b833b.firebaseapp.com",

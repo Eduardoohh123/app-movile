@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { FirebaseService } from '../services/firebase.service';
+import { ApiService } from '../services/api.service';
+import { SupabaseService } from '../services/supabase.service';  // ⭐ AGREGADO
 import { Preferences } from '@capacitor/preferences';
 import { 
   IonContent, 
@@ -43,7 +45,7 @@ import {
     FormsModule
   ]
 })
-export class LoginPage implements OnInit {
+export class LoginPage implements OnInit, OnDestroy {
   // Form fields
   email: string = '';
   password: string = '';
@@ -64,6 +66,8 @@ export class LoginPage implements OnInit {
     private modalController: ModalController,
     private userService: UserService,
     private firebaseService: FirebaseService,
+    private apiService: ApiService,
+    private supabaseService: SupabaseService,  // ⭐ AGREGADO
     private toastController: ToastController,
     private menuController: MenuController
   ) {
@@ -116,6 +120,9 @@ export class LoginPage implements OnInit {
       this.email = result.value;
       this.rememberMe = true;
     }
+
+    // Expose debug helper to window for quick testing from DevTools
+    (window as any).debugSupabase = this.debugSupabase.bind(this);
   }
 
   // --- Inline register helpers ---
@@ -192,6 +199,15 @@ export class LoginPage implements OnInit {
   }
 
   async onRegisterInline() {
+    // Delegar el registro al backend Spring Boot para consistencia
+    await this.registerInSpringBoot();
+  }
+
+  /**
+   * Registrar usuario en Spring Boot backend
+   * Esta función registra el usuario en la base de datos H2 del backend
+   */
+  async registerInSpringBoot() {
     const vName = this.validateRegFullName();
     const vEmail = this.validateRegEmail();
     const vPass = this.validateRegPassword();
@@ -205,58 +221,37 @@ export class LoginPage implements OnInit {
     this.regIsLoading = true;
 
     try {
-      console.log('🔐 Registrando usuario con Firebase...');
+      console.log('🔐 Registrando usuario en Spring Boot...');
       
-      // Crear usuario en Firebase Auth y Realtime Database
-      const newUser = await this.firebaseService.register(
-        this.regEmail, 
-        this.regPassword,
-        {
-          name: this.regFullName,
-          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(this.regFullName)}&background=random&size=256`,
-          phone: '',
-          balance: 1000.00,
-          joinDate: new Date()
-        }
-      );
+      // Preparar datos para Spring Boot
+      const userData = {
+        username: this.regEmail.split('@')[0], // Usar parte del email como username
+        name: this.regFullName,
+        email: this.regEmail,
+        password: this.regPassword
+      };
 
-      console.log('✅ Usuario creado en Firebase:', newUser.email);
-
-      // Actualizar UserService con el nuevo usuario
-      await this.userService.setUser(newUser);
-      console.log('✅ Usuario guardado en UserService');
-
-      await this.showToast('¡Cuenta creada exitosamente! Bienvenido a Football Scoop', 'success');
+      // Registrar en Spring Boot usando ApiService
+      const response = await this.apiService.registerUser(userData).toPromise();
       
+      console.log('✅ Usuario registrado en Spring Boot:', response);
+      console.log('✅ Datos enviados:', { ...userData, password: '***' });
+
+      await this.showToast('¡Usuario registrado exitosamente en la base de datos!', 'success');
+
       // Cerrar formulario de registro
       this.showRegister = false;
       this.regFullName = this.regEmail = this.regPassword = this.regConfirmPassword = '';
       this.regAcceptTerms = false;
       
-      // Navegar a home
-      this.router.navigate(['/home']);
+      // Opcionalmente navegar a home o mostrar login
+      // this.router.navigate(['/home']);
     } catch (error: any) {
-      console.error('❌ Error al registrar usuario:', error);
+      console.error('❌ Error al registrar en Spring Boot:', error);
       
-      let errorMessage = 'Error al crear la cuenta. Intenta de nuevo.';
-      
-      if (error.code) {
-        switch (error.code) {
-          case 'auth/email-already-in-use':
-            errorMessage = 'Este correo ya está registrado. Intenta iniciar sesión.';
-            break;
-          case 'auth/invalid-email':
-            errorMessage = 'El correo electrónico no es válido.';
-            break;
-          case 'auth/weak-password':
-            errorMessage = 'La contraseña es muy débil. Debe tener al menos 6 caracteres.';
-            break;
-          case 'auth/network-request-failed':
-            errorMessage = 'Error de conexión. Verifica tu internet.';
-            break;
-          default:
-            errorMessage = error.message || errorMessage;
-        }
+      let errorMessage = 'Error al crear la cuenta en el servidor';
+      if (error.message) {
+        errorMessage = error.message;
       }
       
       await this.showToast(errorMessage, 'danger');
@@ -314,77 +309,73 @@ export class LoginPage implements OnInit {
   }
 
   /**
-   * Handle form submission
+   * Handle form submission - USANDO SUPABASE AUTH ⭐
    */
   async onLogin() {
-    // Validate all fields
     const isEmailValid = this.validateEmail();
     const isPasswordValid = this.validatePassword();
 
-    if (!isEmailValid || !isPasswordValid) {
-      return;
-    }
+    if (!isEmailValid || !isPasswordValid) return;
 
     this.isLoading = true;
 
+    // Verificar que el backend esté disponible antes de intentar login
     try {
-      console.log('🔐 Iniciando sesión con Firebase...');
-      
-      // Autenticar con Firebase
-      const firebaseUser = await this.firebaseService.login(this.email, this.password);
-      console.log('✅ Usuario autenticado:', firebaseUser.email);
+      await this.apiService.checkConnection().toPromise();
+    } catch (connErr) {
+      this.isLoading = false;
+      console.error('❌ Backend no disponible:', connErr);
+      await this.showToast('No se pudo conectar con el servidor. Revisa la conexión, el firewall o WARP.', 'danger');
+      return;
+    }
 
-      // Obtener datos del usuario desde Firebase Realtime Database
-      const userData = await this.firebaseService.getUserById(firebaseUser.uid);
-      
-      if (userData) {
-        // Actualizar UserService con los datos del usuario
-        await this.userService.setUser(userData);
-        console.log('✅ Usuario cargado:', userData.name);
-      } else {
-        console.warn('⚠️ Usuario no encontrado en base de datos');
-      }
+    try {
+      // Primero intentamos login contra Supabase directamente
+      console.log('🔐 Probando conexión a Supabase...');
+      const supaTest = await this.supabaseService.testAuthWithHeaders();
 
-      // Save email if remember me is checked
-      if (this.rememberMe) {
-        await Preferences.set({ key: 'rememberedEmail', value: this.email });
-      } else {
-        await Preferences.remove({ key: 'rememberedEmail' });
-      }
+      if (supaTest.ok) {
+        console.log('🔐 Iniciando sesión con Supabase');
+        const { data, error } = await this.supabaseService.signIn(this.email, this.password);
 
-      await this.showToast(`¡Bienvenido de vuelta${userData ? ', ' + userData.name : ''}!`, 'success');
-      
-      // Navigate to home page
-      this.router.navigate(['/home']);
-    } catch (error: any) {
-      console.error('❌ Error de login:', error);
-      
-      let errorMessage = 'Credenciales incorrectas. Intenta de nuevo.';
-      
-      if (error.code) {
-        switch (error.code) {
-          case 'auth/user-not-found':
-            errorMessage = 'No existe una cuenta con este correo.';
-            break;
-          case 'auth/wrong-password':
-            errorMessage = 'Contraseña incorrecta.';
-            break;
-          case 'auth/invalid-email':
-            errorMessage = 'El correo electrónico no es válido.';
-            break;
-          case 'auth/user-disabled':
-            errorMessage = 'Esta cuenta ha sido deshabilitada.';
-            break;
-          case 'auth/network-request-failed':
-            errorMessage = 'Error de conexión. Verifica tu internet.';
-            break;
-          default:
-            errorMessage = error.message || errorMessage;
+        if (error) {
+          // Error de Supabase (puede ser credenciales o net)
+          console.error('❌ Supabase signIn error:', error);
+          // Si parece un problema de conexión, fallback al backend
+          const isNetworkError = String(error).toLowerCase().includes('network') || (error?.message && String(error.message).toLowerCase().includes('network'));
+          if (isNetworkError) {
+            console.warn('⚠️ Supabase no disponible, intentando login por backend...');
+            const user = await this.userService.loginUser(this.email, this.password);
+            await this.onSuccessfulLogin(user.name);
+            return;
+          }
+
+          // Credenciales incorrectas u otro error de Supabase
+          this.passwordError = error?.message || 'Error al iniciar sesión con Supabase';
+          await this.showToast(this.passwordError, 'danger');
+          return;
         }
+
+        if (data?.user) {
+          // Login correcto vía Supabase: crear perfil local si hace falta y navegar
+          await Preferences.set({ key: 'rememberedEmail', value: this.rememberMe ? this.email : '' });
+          await this.showToast(`¡Bienvenido de vuelta, ${data.user.email}!`, 'success');
+          this.router.navigate(['/home']);
+          return;
+        }
+      } else {
+        console.warn('⚠️ Supabase no responde, fallback a backend');
+        // Fallback: intentar login con el backend Spring Boot
+        const user = await this.userService.loginUser(this.email, this.password);
+        await this.onSuccessfulLogin(user.name);
+        return;
       }
-      
-      this.passwordError = errorMessage;
-      await this.showToast(errorMessage, 'danger');
+    } catch (error: any) {
+      console.error('❌ Error al iniciar sesión:', error);
+      let message = 'Error al iniciar sesión. Intenta de nuevo.';
+      if (error?.message) message = error.message;
+      this.passwordError = message;
+      await this.showToast(message, 'danger');
     } finally {
       this.isLoading = false;
     }
@@ -447,6 +438,30 @@ export class LoginPage implements OnInit {
   }
 
   /**
+   * Método de diagnóstico: prueba la conectividad a Supabase y muestra un toast/console
+   * Úsalo desde DevTools (Chrome): ng.getComponent(document.querySelector('app-login')).debugSupabase()
+   */
+  async debugSupabase() {
+    // Ejecutar varias pruebas y mostrar resultados
+    const c1 = await this.supabaseService.testConnectivity();
+    const aNo = await this.supabaseService.testAuthWithoutHeaders();
+    const aYes = await this.supabaseService.testAuthWithHeaders();
+    const rYes = await this.supabaseService.testRestWithHeaders();
+
+    console.log('🔧 Supabase tests:', { c1, aNo, aYes, rYes });
+
+    const messages = [
+      `root: ${c1.status ?? 'ERR'}`,
+      `/auth w/o headers: ${aNo.status ?? 'ERR'}`,
+      `/auth w/ headers: ${aYes.status ?? 'ERR'}`,
+      `/rest w/ headers: ${rYes.status ?? 'ERR'}`
+    ].join(' | ');
+
+    const ok = (aYes.ok || rYes.ok);
+    await this.showToast(`Supabase: ${ok ? 'OK' : 'FAIL'} — ${messages}`, ok ? 'success' : 'danger');
+  }
+
+  /**
    * Show toast message
    */
   private async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {
@@ -457,6 +472,25 @@ export class LoginPage implements OnInit {
       color
     });
     await toast.present();
+  }
+
+  /**
+   * Centraliza acciones tras un login exitoso (backend fallback)
+   */
+  private async onSuccessfulLogin(name: string) {
+    if (this.rememberMe) {
+      await Preferences.set({ key: 'rememberedEmail', value: this.email });
+    } else {
+      await Preferences.remove({ key: 'rememberedEmail' });
+    }
+
+    await this.showToast(`¡Bienvenido de vuelta, ${name}!`, 'success');
+    this.router.navigate(['/home']);
+  }
+
+  ngOnDestroy() {
+    // Clean up global helper
+    try { delete (window as any).debugSupabase; } catch (e) { /* ignore */ }
   }
 }
 

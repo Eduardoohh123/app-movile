@@ -31,7 +31,7 @@ export class LeaguesService {
   private readonly STORAGE_KEY = 'football_leagues';
   private leaguesSubject = new BehaviorSubject<League[]>([]);
   public leagues$: Observable<League[]> = this.leaguesSubject.asObservable();
-  private useFirebase = true; // Toggle para usar Firebase
+  private useFirebase = false; // Deshabilitado: usar PostgreSQL 100%
 
   constructor(private firebaseService: FirebaseService) {
     this.loadLeagues();

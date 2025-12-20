@@ -1,0 +1,107 @@
+2025-12-20T19:40:47Z INF Thank you for trying Cloudflare Tunnel. Doing so, without a Cloudflare account, is a quick way to experiment and try it out. However, be aware that these account-less Tunnels have no uptime guarantee, are subject to the Cloudflare Online Services Terms of Use (https://www.cloudflare.com/website-terms/), and Cloudflare reserves the right to investigate your use of Tunnels for violations of such terms. If you intend to use Tunnels in production you should use a pre-created named tunnel by following: https://developers.cloudflare.com/cloudflare-one/connections/connect-apps
+2025-12-20T19:40:47Z INF Requesting new quick Tunnel on trycloudflare.com...
+2025-12-20T19:40:52Z INF +--------------------------------------------------------------------------------------------+
+2025-12-20T19:40:52Z INF |  Your quick Tunnel has been created! Visit it at (it may take some time to be reachable):  |
+2025-12-20T19:40:52Z INF |  https://observation-garlic-received-harvey.trycloudflare.com                              |
+2025-12-20T19:40:52Z INF +--------------------------------------------------------------------------------------------+
+2025-12-20T19:40:52Z INF Cannot determine default configuration path. No file [config.yml config.yaml] in [~/.cloudflared ~/.cloudflare-warp ~/cloudflare-warp]
+2025-12-20T19:40:52Z INF Version 2025.11.1 (Checksum 413f9b24dc6e61a455564651524f167b8ce29ac4ccd40703dea7af93cd37ed39)
+2025-12-20T19:40:52Z INF GOOS: windows, GOVersion: go1.24.9, GoArch: amd64
+2025-12-20T19:40:52Z INF Settings: map[ha-connections:1 protocol:quic url:http://localhost:8080]
+2025-12-20T19:40:52Z INF cloudflared will not automatically update on Windows systems.
+2025-12-20T19:40:52Z INF Generated Connector ID: 73a009d4-bdca-4c90-90e7-1639e95d9bb4
+2025-12-20T19:40:52Z INF Initial protocol quic
+2025-12-20T19:40:52Z INF ICMP proxy will use 192.168.18.225 as source for IPv4
+2025-12-20T19:40:52Z INF ICMP proxy will use fe80::603d:27ad:a2ea:376 in zone Ethernet as source for IPv6
+2025-12-20T19:40:52Z ERR Cannot determine default origin certificate path. No file cert.pem in [~/.cloudflared ~/.cloudflare-warp ~/cloudflare-warp]. You need to specify the origin certificate path by specifying the origincert option in the configuration file, or set TUNNEL_ORIGIN_CERT environment variable originCertPath=
+2025-12-20T19:40:52Z INF cloudflared does not support loading the system root certificate pool on Windows. Please use --origin-ca-pool <PATH> to specify the path to the certificate pool
+2025-12-20T19:40:52Z INF ICMP proxy will use 192.168.18.225 as source for IPv4
+2025-12-20T19:40:52Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.192.37
+2025-12-20T19:40:52Z INF ICMP proxy will use fe80::603d:27ad:a2ea:376 in zone Ethernet as source for IPv6
+2025-12-20T19:40:52Z INF Starting metrics server on 127.0.0.1:20241/metrics
+2025-12-20T19:40:57Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: no recent network activity" connIndex=0 event=0 ip=198.41.192.37
+2025-12-20T19:40:57Z INF Retrying connection in up to 2s connIndex=0 event=0 ip=198.41.192.37
+2025-12-20T19:40:58Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.192.167
+2025-12-20T19:41:03Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: no recent network activity" connIndex=0 event=0 ip=198.41.192.167
+2025-12-20T19:41:03Z INF Retrying connection in up to 4s connIndex=0 event=0 ip=198.41.192.167
+2025-12-20T19:41:05Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.192.57
+2025-12-20T19:41:10Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: no recent network activity" connIndex=0 event=0 ip=198.41.192.57
+2025-12-20T19:41:10Z INF Retrying connection in up to 8s connIndex=0 event=0 ip=198.41.192.57
+2025-12-20T19:41:14Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.200.233
+2025-12-20T19:41:24Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: handshake did not complete in time" connIndex=0 event=0 ip=198.41.200.233
+2025-12-20T19:41:24Z INF Retrying connection in up to 16s connIndex=0 event=0 ip=198.41.200.233
+2025-12-20T19:41:30Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.192.27
+2025-12-20T19:41:36Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: no recent network activity" connIndex=0 event=0 ip=198.41.192.27
+2025-12-20T19:41:36Z INF Retrying connection in up to 32s connIndex=0 event=0 ip=198.41.192.27
+2025-12-20T19:41:45Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.192.7
+2025-12-20T19:41:50Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: no recent network activity" connIndex=0 event=0 ip=198.41.192.7
+2025-12-20T19:41:50Z INF Retrying connection in up to 1m4s connIndex=0 event=0 ip=198.41.192.7
+2025-12-20T19:42:09Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.192.57
+2025-12-20T19:42:14Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: no recent network activity" connIndex=0 event=0 ip=198.41.192.57
+2025-12-20T19:42:14Z INF Retrying connection in up to 1m4s connIndex=0 event=0 ip=198.41.192.57
+2025-12-20T19:42:33Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.192.107
+2025-12-20T19:42:38Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: no recent network activity" connIndex=0 event=0 ip=198.41.192.107
+2025-12-20T19:42:38Z INF Retrying connection in up to 1m4s connIndex=0 event=0 ip=198.41.192.107
+2025-12-20T19:42:48Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.200.193
+2025-12-20T19:42:58Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: handshake did not complete in time" connIndex=0 event=0 ip=198.41.200.193
+2025-12-20T19:42:58Z INF Retrying connection in up to 1m4s connIndex=0 event=0 ip=198.41.200.193
+2025-12-20T19:43:12Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.200.53
+2025-12-20T19:43:22Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: handshake did not complete in time" connIndex=0 event=0 ip=198.41.200.53
+2025-12-20T19:43:22Z INF Retrying connection in up to 1m4s connIndex=0 event=0 ip=198.41.200.53
+2025-12-20T19:43:36Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.192.167
+2025-12-20T19:43:41Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: no recent network activity" connIndex=0 event=0 ip=198.41.192.167
+2025-12-20T19:43:41Z INF Retrying connection in up to 1m4s connIndex=0 event=0 ip=198.41.192.167
+2025-12-20T19:43:59Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.200.193
+2025-12-20T19:44:08Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: no recent network activity" connIndex=0 event=0 ip=198.41.200.193
+2025-12-20T19:44:08Z INF Retrying connection in up to 1m4s connIndex=0 event=0 ip=198.41.200.193
+2025-12-20T19:44:33Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.192.67
+2025-12-20T19:44:38Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: no recent network activity" connIndex=0 event=0 ip=198.41.192.67
+2025-12-20T19:44:38Z INF Retrying connection in up to 1m4s connIndex=0 event=0 ip=198.41.192.67
+2025-12-20T19:44:57Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.200.63
+2025-12-20T19:45:07Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: handshake did not complete in time" connIndex=0 event=0 ip=198.41.200.63
+2025-12-20T19:45:07Z INF Retrying connection in up to 1m4s connIndex=0 event=0 ip=198.41.200.63
+2025-12-20T19:45:11Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.200.33
+2025-12-20T19:45:21Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: handshake did not complete in time" connIndex=0 event=0 ip=198.41.200.33
+2025-12-20T19:45:21Z INF Retrying connection in up to 1m4s connIndex=0 event=0 ip=198.41.200.33
+2025-12-20T19:45:28Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.192.27
+2025-12-20T19:45:33Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: no recent network activity" connIndex=0 event=0 ip=198.41.192.27
+2025-12-20T19:45:33Z INF Retrying connection in up to 1m4s connIndex=0 event=0 ip=198.41.192.27
+2025-12-20T19:45:55Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.192.57
+2025-12-20T19:46:00Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: no recent network activity" connIndex=0 event=0 ip=198.41.192.57
+2025-12-20T19:46:00Z INF Retrying connection in up to 1m4s connIndex=0 event=0 ip=198.41.192.57
+2025-12-20T19:46:07Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.200.13
+2025-12-20T19:46:17Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: handshake did not complete in time" connIndex=0 event=0 ip=198.41.200.13
+2025-12-20T19:46:17Z INF Retrying connection in up to 1m4s connIndex=0 event=0 ip=198.41.200.13
+2025-12-20T19:46:40Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.200.193
+2025-12-20T19:46:50Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: handshake did not complete in time" connIndex=0 event=0 ip=198.41.200.193
+2025-12-20T19:46:50Z INF Retrying connection in up to 1m4s connIndex=0 event=0 ip=198.41.200.193
+2025-12-20T19:47:08Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.200.53
+2025-12-20T19:47:18Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: handshake did not complete in time" connIndex=0 event=0 ip=198.41.200.53
+2025-12-20T19:47:18Z INF Retrying connection in up to 1m4s connIndex=0 event=0 ip=198.41.200.53
+2025-12-20T19:47:26Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.192.47
+2025-12-20T19:47:31Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: no recent network activity" connIndex=0 event=0 ip=198.41.192.47
+2025-12-20T19:47:31Z INF Retrying connection in up to 1m4s connIndex=0 event=0 ip=198.41.192.47
+2025-12-20T19:47:50Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.200.233
+2025-12-20T19:48:00Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: handshake did not complete in time" connIndex=0 event=0 ip=198.41.200.233
+2025-12-20T19:48:00Z INF Retrying connection in up to 1m4s connIndex=0 event=0 ip=198.41.200.233
+2025-12-20T19:48:09Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.200.53
+2025-12-20T19:48:19Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: handshake did not complete in time" connIndex=0 event=0 ip=198.41.200.53
+2025-12-20T19:48:19Z INF Retrying connection in up to 1m4s connIndex=0 event=0 ip=198.41.200.53
+2025-12-20T19:48:25Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.200.113
+2025-12-20T19:48:35Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: handshake did not complete in time" connIndex=0 event=0 ip=198.41.200.113
+2025-12-20T19:48:35Z INF Retrying connection in up to 1m4s connIndex=0 event=0 ip=198.41.200.113
+2025-12-20T19:48:58Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.200.13
+2025-12-20T19:49:08Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: handshake did not complete in time" connIndex=0 event=0 ip=198.41.200.13
+2025-12-20T19:49:08Z INF Retrying connection in up to 1m4s connIndex=0 event=0 ip=198.41.200.13
+2025-12-20T19:49:38Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.200.193
+2025-12-20T19:49:48Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: handshake did not complete in time" connIndex=0 event=0 ip=198.41.200.193
+2025-12-20T19:49:48Z INF Retrying connection in up to 1m4s connIndex=0 event=0 ip=198.41.200.193
+2025-12-20T19:50:15Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.200.63
+2025-12-20T19:50:25Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: handshake did not complete in time" connIndex=0 event=0 ip=198.41.200.63
+2025-12-20T19:50:25Z INF Retrying connection in up to 1m4s connIndex=0 event=0 ip=198.41.200.63
+2025-12-20T19:50:29Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.192.47
+2025-12-20T19:50:34Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: no recent network activity" connIndex=0 event=0 ip=198.41.192.47
+2025-12-20T19:50:34Z INF Retrying connection in up to 1m4s connIndex=0 event=0 ip=198.41.192.47
+2025-12-20T19:50:57Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.200.63
+2025-12-20T19:51:07Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: handshake did not complete in time" connIndex=0 event=0 ip=198.41.200.63
+2025-12-20T19:51:07Z INF Retrying connection in up to 1m4s connIndex=0 event=0 ip=198.41.200.63

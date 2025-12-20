@@ -16,6 +16,7 @@ import {
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { FirebaseService } from '../services/firebase.service';
 import { UserService, User } from '../services/user.service';
+import { ApiService } from '../services/api.service';
 import { addIcons } from 'ionicons';
 import {
   arrowBackOutline,
@@ -88,6 +89,7 @@ export class RegistrarPage implements OnInit {
     private actionSheetController: ActionSheetController,
     private firebaseService: FirebaseService,
     private userService: UserService,
+    private apiService: ApiService,
     private toastController: ToastController
   ) {
     addIcons({
@@ -250,56 +252,57 @@ export class RegistrarPage implements OnInit {
     this.isLoading = true;
 
     try {
-      console.log('🚀 Iniciando registro con Firebase...');
+      console.log('🚀 Registrando usuario en PostgreSQL (Spring Boot)...');
       
-      // Registrar en Firebase Authentication
-      const newUser = await this.firebaseService.register(
-        this.email,
-        this.password,
-        {
-          name: this.fullName,
-          avatar: this.photoPreviewUrl || 'https://ionicframework.com/docs/img/demos/avatar.svg',
-          phone: '',
-          balance: 1000.00, // Balance inicial
-          joinDate: new Date()
-        }
-      );
-
-      console.log('✅ Usuario registrado en Firebase:', newUser);
-
-      // Actualizar el UserService con el nuevo usuario
-      await this.userService.setUser(newUser);
-
-      await this.showToast('¡Cuenta creada exitosamente! Bienvenido a Football Scoop', 'success');
+      // Generar username desde el email o nombre
+      const username = this.email.split('@')[0];
       
-      // Navegar a home
+      // Preparar datos para Spring Boot
+      const userData = {
+        username: username,
+        name: this.fullName,
+        email: this.email,
+        password: this.password
+      };
+
+      console.log('📤 Enviando datos:', userData);
+
+      // Registrar usuario usando ApiService (PostgreSQL)
+      const response = await this.apiService.registerUser(userData).toPromise();
+
+      console.log('✅ Usuario registrado en PostgreSQL:', response);
+
+      await this.showToast('¡Cuenta creada exitosamente! Ya puedes iniciar sesión', 'success');
+      
+      // Limpiar formulario
+      this.fullName = '';
+      this.email = '';
+      this.password = '';
+      this.confirmPassword = '';
+      this.acceptTerms = false;
+      this.photoPreviewUrl = null;
+
+      // Navegar a login
       if (this.inline) {
         this.modalController.dismiss();
       }
-      this.router.navigate(['/home']);
+      this.router.navigate(['/login']);
       
     } catch (error: any) {
       console.error('❌ Error al crear la cuenta:', error);
       
       let errorMessage = 'Error al crear la cuenta. Intenta de nuevo.';
       
-      // Mensajes de error específicos de Firebase
-      if (error.code) {
-        switch (error.code) {
-          case 'auth/email-already-in-use':
-            errorMessage = 'Este correo ya está registrado. Intenta iniciar sesión.';
-            break;
-          case 'auth/invalid-email':
-            errorMessage = 'El correo electrónico no es válido.';
-            break;
-          case 'auth/weak-password':
-            errorMessage = 'La contraseña es muy débil. Usa al menos 6 caracteres.';
-            break;
-          case 'auth/network-request-failed':
-            errorMessage = 'Error de conexión. Verifica tu internet.';
-            break;
-          default:
-            errorMessage = error.message || errorMessage;
+      // Mensajes de error específicos
+      if (error.message) {
+        if (error.message.includes('username') || error.message.includes('usuario')) {
+          errorMessage = 'El nombre de usuario ya está en uso.';
+        } else if (error.message.includes('email') || error.message.includes('correo')) {
+          errorMessage = 'Este correo ya está registrado.';
+        } else if (error.message.includes('Backend no disponible') || error.message.includes('Connection')) {
+          errorMessage = 'No se puede conectar con el servidor. Verifica que Spring Boot esté corriendo.';
+        } else {
+          errorMessage = error.message;
         }
       }
       

@@ -1,0 +1,149 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Registro de Usuario</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="register-container">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title class="ion-text-center">
+          <ion-icon name="person-outline" size="large"></ion-icon>
+          <h2>Crear Cuenta</h2>
+          <p class="subtitle">Regístrate en nuestra plataforma</p>
+        </ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <form (ngSubmit)="onRegister()">
+          <!-- Nombre Completo -->
+          <ion-item [class.ion-invalid]="fullNameTouched && fullNameError" lines="full">
+            <ion-icon name="person-outline" slot="start"></ion-icon>
+            <ion-label position="floating">Nombre Completo</ion-label>
+            <ion-input
+              type="text"
+              [(ngModel)]="fullName"
+              name="fullName"
+              (ionBlur)="validateFullName()"
+              (ionInput)="validateFullName()"
+              [clearInput]="true"
+              required>
+            </ion-input>
+          </ion-item>
+          <div class="error-message" *ngIf="fullNameTouched && fullNameError">
+            {{ fullNameError }}
+          </div>
+
+          <!-- Username -->
+          <ion-item [class.ion-invalid]="usernameTouched && usernameError" lines="full">
+            <ion-icon name="person-outline" slot="start"></ion-icon>
+            <ion-label position="floating">Nombre de Usuario</ion-label>
+            <ion-input
+              type="text"
+              [(ngModel)]="username"
+              name="username"
+              (ionBlur)="validateUsername()"
+              (ionInput)="validateUsername()"
+              [clearInput]="true"
+              required>
+            </ion-input>
+          </ion-item>
+          <div class="error-message" *ngIf="usernameTouched && usernameError">
+            {{ usernameError }}
+          </div>
+
+          <!-- Email -->
+          <ion-item [class.ion-invalid]="emailTouched && emailError" lines="full">
+            <ion-icon name="mail-outline" slot="start"></ion-icon>
+            <ion-label position="floating">Correo Electrónico</ion-label>
+            <ion-input
+              type="email"
+              [(ngModel)]="email"
+              name="email"
+              (ionBlur)="validateEmail()"
+              (ionInput)="validateEmail()"
+              [clearInput]="true"
+              required>
+            </ion-input>
+          </ion-item>
+          <div class="error-message" *ngIf="emailTouched && emailError">
+            {{ emailError }}
+          </div>
+
+          <!-- Password -->
+          <ion-item [class.ion-invalid]="passwordTouched && passwordError" lines="full">
+            <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+            <ion-label position="floating">Contraseña</ion-label>
+            <ion-input
+              [type]="showPassword ? 'text' : 'password'"
+              [(ngModel)]="password"
+              name="password"
+              (ionBlur)="validatePassword()"
+              (ionInput)="validatePassword()"
+              required>
+            </ion-input>
+            <ion-icon 
+              slot="end" 
+              [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+              (click)="togglePassword()"
+              style="cursor: pointer;">
+            </ion-icon>
+          </ion-item>
+          <div class="error-message" *ngIf="passwordTouched && passwordError">
+            {{ passwordError }}
+          </div>
+
+          <!-- Confirm Password -->
+          <ion-item [class.ion-invalid]="confirmPasswordTouched && confirmPasswordError" lines="full">
+            <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+            <ion-label position="floating">Confirmar Contraseña</ion-label>
+            <ion-input
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              [(ngModel)]="confirmPassword"
+              name="confirmPassword"
+              (ionBlur)="validateConfirmPassword()"
+              (ionInput)="validateConfirmPassword()"
+              required>
+            </ion-input>
+            <ion-icon 
+              slot="end" 
+              [name]="showConfirmPassword ? 'eye-off-outline' : 'eye-outline'"
+              (click)="toggleConfirmPassword()"
+              style="cursor: pointer;">
+            </ion-icon>
+          </ion-item>
+          <div class="error-message" *ngIf="confirmPasswordTouched && confirmPasswordError">
+            {{ confirmPasswordError }}
+          </div>
+
+          <!-- Terms and Conditions -->
+          <ion-item lines="none" class="terms-item">
+            <ion-checkbox [(ngModel)]="acceptTerms" name="acceptTerms" slot="start"></ion-checkbox>
+            <ion-label class="ion-text-wrap">
+              Acepto los términos y condiciones
+            </ion-label>
+          </ion-item>
+
+          <!-- Register Button -->
+          <ion-button 
+            expand="block" 
+            type="submit"
+            [disabled]="isLoading"
+            class="register-button">
+            <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+            <span *ngIf="!isLoading">Registrarse</span>
+          </ion-button>
+
+          <!-- Login Link -->
+          <div class="login-link ion-text-center">
+            <p>
+              ¿Ya tienes cuenta? 
+              <a (click)="goToLogin()" class="link">Inicia sesión</a>
+            </p>
+          </div>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

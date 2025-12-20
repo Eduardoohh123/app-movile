@@ -1,0 +1,67 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Administración de Usuarios</ion-title>
+  </ion-toolbar>
+  
+  <!-- Barra de búsqueda -->
+  <ion-toolbar>
+    <ion-searchbar 
+      [(ngModel)]="searchTerm"
+      (ionInput)="handleSearch($event)"
+      placeholder="Buscar por nombre, email o usuario"
+      animated="true">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Loading spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando usuarios...</p>
+  </div>
+
+  <!-- Lista de usuarios -->
+  <ion-list *ngIf="!isLoading">
+    <ion-item-sliding *ngFor="let user of filteredUsers">
+      <ion-item>
+        <ion-icon slot="start" name="person-outline" color="primary"></ion-icon>
+        <ion-label>
+          <h2><strong>{{ user.name }}</strong></h2>
+          <p>{{ user.email }}</p>
+          <p class="user-meta">
+            <span class="username">@{{ user.username }}</span>
+            <span class="role" [class.admin]="user.role === 'ADMIN'">{{ user.role }}</span>
+          </p>
+        </ion-label>
+      </ion-item>
+
+      <!-- Opciones de deslizar -->
+      <ion-item-options side="end">
+        <ion-item-option color="primary" (click)="openEditUserModal(user)">
+          <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+        </ion-item-option>
+        <ion-item-option color="danger" (click)="confirmDeleteUser(user)">
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+
+    <!-- Mensaje si no hay usuarios -->
+    <ion-item *ngIf="filteredUsers.length === 0 && !isLoading">
+      <ion-label class="ion-text-center">
+        <p>No se encontraron usuarios</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <!-- Botón flotante para agregar usuario -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="openCreateUserModal()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

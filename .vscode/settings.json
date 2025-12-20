@@ -3,5 +3,13 @@
     "@ionic/angular/common",
     "@ionic/angular"
   ],
-  "java.configuration.updateBuildConfiguration": "interactive"
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "files.exclude": {
+    "**/node_modules/@capacitor": true
+  },
+  "java.project.sourcePaths": [],
+  "java.import.exclusions": [
+    "**/node_modules/**",
+    "**/android/**"
+  ]
 }

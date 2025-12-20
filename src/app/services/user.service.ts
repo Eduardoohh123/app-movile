@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Preferences} from '@capacitor/preferences';
 import { FirebaseService } from './firebase.service';
+import { ApiService } from './api.service';
+import { SupabaseService } from './supabase.service';
 
 export interface User {
   id: string;
@@ -22,9 +24,15 @@ export class UserService {
   
   private userSubject: BehaviorSubject<User | null>;
   public user$: Observable<User | null>;
-  private useFirebase = true; // Toggle para usar Firebase
+  private useFirebase = false; // Deshabilitado
+  private useBackendAPI = true; // ✅ Usar Spring Boot (tu configuración original)
+  private useSupabase = false; // Supabase disponible pero desactivado por defecto
 
-  constructor(private firebaseService: FirebaseService) {
+  constructor(
+    private firebaseService: FirebaseService,
+    private apiService: ApiService,
+    private supabaseService: SupabaseService
+  ) {
     this.userSubject = new BehaviorSubject<User | null>(null);
     this.user$ = this.userSubject.asObservable();
     
@@ -86,30 +94,125 @@ export class UserService {
   }
 
   public async setUser(user: User): Promise<void> {
-    this.userSubject.next(user);
-    await this.saveUserToStorage(user);
-    
-    // También actualizar en la base de datos para persistir cambios
-    await this.updateUserInDatabase(user);
-    
-    // Sincronizar con Firebase SIEMPRE (sin verificar autenticación)
-    if (this.useFirebase) {
-      try {
-        const existingUser = await this.firebaseService.getUserById(user.id);
-        if (existingUser) {
-          await this.firebaseService.updateUser(user.id, user);
-          console.log('☁️ Usuario actualizado en Firebase');
-        } else {
-          await this.firebaseService.createUser(user);
-          console.log('☁️ Usuario creado en Firebase');
-        }
-      } catch (error) {
-        console.error('⚠️ Error al sincronizar usuario con Firebase:', error);
+    try {
+      // 1. Actualizar el observable inmediatamente
+      console.log('📝 Paso 1/3: Actualizando observable...');
+      this.userSubject.next(user);
+      
+      // 2. Guardar en localStorage
+      console.log('💾 Paso 2/3: Guardando en localStorage...');
+      await this.saveUserToStorage(user);
+      
+      // 3. Sincronizar con Supabase (cloud database)
+      if (this.useSupabase) {
+        console.log('☁️ Paso 3/3: Sincronizando con Supabase...');
+        await this.syncWithSupabase(user);
+      } else if (this.useBackendAPI) {
+        console.log('🐘 Paso 3/3: Sincronizando con PostgreSQL...');
+        this.syncWithBackend(user).catch(error => {
+          console.warn('⚠️ Error al sincronizar con PostgreSQL (no crítico):', error);
+        });
       }
+      
+      // Emitir evento para que otros componentes se actualicen
+      window.dispatchEvent(new CustomEvent('userUpdated', { detail: user }));
+      console.log('✅ Usuario actualizado completamente');
+    } catch (error) {
+      console.error('❌ Error en setUser:', error);
+      throw error;
     }
-    
-    // Emitir evento para que otros componentes se actualicen
-    window.dispatchEvent(new CustomEvent('userUpdated', { detail: user }));
+  }
+  
+  /**
+   * Sincronizar usuario con Supabase (método principal)
+   */
+  private async syncWithSupabase(user: User): Promise<void> {
+    try {
+      const { data, error } = await this.supabaseService.updateUserProfile(user.id, {
+        name: user.name,
+        avatar: user.avatar,
+        phone: user.phone,
+        balance: user.balance
+      });
+
+      if (error) {
+        // Si no existe, crear el perfil
+        console.log('⚠️ Usuario no existe en Supabase, creando...');
+        const createResult = await this.supabaseService.createUserProfile({
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          avatar: user.avatar,
+          phone: user.phone,
+          balance: user.balance
+        });
+        
+        if (createResult.error) {
+          console.warn('⚠️ No se pudo crear en Supabase:', createResult.error.message);
+        } else {
+          console.log('✅ Usuario creado en Supabase');
+        }
+      } else {
+        console.log('✅ Usuario actualizado en Supabase');
+      }
+    } catch (error: any) {
+      console.error('⚠️ Error al sincronizar con Supabase:', error.message);
+      // No lanzar error para no bloquear la operación
+    }
+  }
+  
+  /**
+   * Sincronizar usuario con Backend PostgreSQL (método asíncrono separado)
+   */
+  private async syncWithBackend(user: User): Promise<void> {
+    try {
+      // Convertir el ID string a number para el backend
+      const userId = this.extractNumericId(user.id);
+      
+      // Preparar datos para el backend
+      const backendUser = {
+        id: userId,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        avatar: user.avatar,
+        balance: user.balance,
+        joinDate: user.joinDate
+      };
+      
+      // Intentar actualizar, si falla crear nuevo
+      this.apiService.updateUser(userId, backendUser).subscribe({
+        next: () => {
+          console.log('🐘 Usuario actualizado en PostgreSQL');
+        },
+        error: (error) => {
+          // Si el error es 404 (no existe), intentar crear
+          if (error.status === 404) {
+            this.apiService.createUser(backendUser).subscribe({
+              next: () => {
+                console.log('🐘 Usuario creado en PostgreSQL');
+              },
+              error: (createError) => {
+                console.error('⚠️ Error al crear usuario en PostgreSQL:', createError);
+              }
+            });
+          } else {
+            console.error('⚠️ Error al actualizar usuario en PostgreSQL:', error);
+          }
+        }
+      });
+    } catch (error) {
+      console.error('⚠️ Error al sincronizar con PostgreSQL:', error);
+      throw error;
+    }
+  }
+  
+  /**
+   * Extraer ID numérico del usuario (convierte 'user-123456' a 123456)
+   */
+  private extractNumericId(id: string): number {
+    const match = id.match(/\d+/);
+    return match ? parseInt(match[0]) : 0;
   }
 
   public async updateUser(updates: Partial<User>): Promise<void> {
@@ -121,9 +224,18 @@ export class UserService {
         hasAvatar: !!updatedUser.avatar,
         avatarLength: updatedUser.avatar?.length
       });
-      await this.setUser(updatedUser);
+      
+      try {
+        await this.setUser(updatedUser);
+        console.log('✅ Usuario actualizado exitosamente');
+      } catch (error) {
+        console.error('❌ Error al actualizar usuario:', error);
+        throw error;
+      }
     } else {
-      console.error('❌ No se puede actualizar: no hay usuario actual');
+      const error = new Error('No hay usuario actual para actualizar');
+      console.error('❌ Error:', error.message);
+      throw error;
     }
   }
 
@@ -173,41 +285,104 @@ export class UserService {
    * Registrar un nuevo usuario
    */
   public async registerUser(name: string, email: string, password: string): Promise<User> {
-    // Verificar si el usuario ya existe
-    const existingUser = await this.findUserByEmail(email);
-    if (existingUser) {
-      // Si existe, cargar ese usuario
-      await this.setUser(existingUser);
-      return existingUser;
-    }
+    try {
+      if (this.useBackendAPI) {
+        // 🐘 Registrar vía Spring Boot
+        console.log('📝 Registrando usuario en backend (Spring Boot)...');
+        return new Promise((resolve, reject) => {
+          const payload = { username: email.split('@')[0], name, email, password };
+          this.apiService.registerUser(payload).subscribe({
+            next: async (response: any) => {
+              // Si backend devuelve token, guárdalo
+              if (response.token) this.apiService.setAuthToken(response.token);
 
-    // Crear nuevo usuario
-    const newUser: User = {
-      id: 'user-' + Date.now(),
-      name: name,
-      email: email,
-      avatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
-      balance: 5000.00,
-      joinDate: new Date()
-    };
-    
-    // Guardar en la base de datos de usuarios
-    await this.saveUserToDatabase(newUser);
-    
-    // Establecer como usuario actual
-    await this.setUser(newUser);
-    return newUser;
+              const newUser: User = {
+                id: response.id ? String(response.id) : 'user-' + Date.now(),
+                name: response.name || name,
+                email: response.email || email,
+                avatar: response.avatar || 'https://ionicframework.com/docs/img/demos/avatar.svg',
+                balance: response.balance || 5000.00,
+                joinDate: response.joinDate ? new Date(response.joinDate) : new Date()
+              };
+
+              await this.setUser(newUser);
+              console.log('✅ Usuario registrado en backend');
+              resolve(newUser);
+            },
+            error: (err) => {
+              console.error('❌ Error al registrar en backend:', err);
+              reject(new Error('Error de registro en el servidor: ' + (err.message || err.statusText || err.status)));
+            }
+          });
+        });
+      }
+
+      // Si no usamos backend, mantener comportamiento local (mantener supabase como opción futura)
+      const existingUser = await this.findUserByEmail(email);
+      if (existingUser) {
+        await this.setUser(existingUser);
+        return existingUser;
+      }
+
+      const newUser: User = {
+        id: 'user-' + Date.now(),
+        name: name,
+        email: email,
+        avatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
+        balance: 5000.00,
+        joinDate: new Date()
+      };
+
+      await this.saveUserToDatabase(newUser);
+      await this.setUser(newUser);
+      console.log('✅ Usuario registrado en modo local');
+      return newUser;
+    } catch (error: any) {
+      console.error('❌ Error en registerUser:', error);
+      throw error;
+    }
   }
 
   /**
-   * Autenticar usuario (simulado)
+   * Autenticar usuario (usa backend Spring Boot cuando está habilitado)
    */
   public async loginUser(email: string, password: string): Promise<User> {
-    // Buscar usuario existente en la base de datos
+    // Si usamos el backend, delegar la autenticación al endpoint
+    if (this.useBackendAPI) {
+      return new Promise((resolve, reject) => {
+        this.apiService.loginUser(email, password).subscribe({
+          next: async (response: any) => {
+            // El backend devuelve { message, status, user }
+            const payload = response.user || response;
+
+            const user: User = {
+              id: payload.id ? String(payload.id) : 'user-' + Date.now(),
+              name: payload.name || email.split('@')[0],
+              email: email,
+              avatar: payload.avatar || 'https://ionicframework.com/docs/img/demos/avatar.svg',
+              balance: payload.balance || 5000.00,
+              joinDate: payload.createdAt ? new Date(payload.createdAt) : (payload.joinDate ? new Date(payload.joinDate) : new Date())
+            };
+
+            // Guardar token si el backend lo envía
+            if (response.token) {
+              this.apiService.setAuthToken(response.token);
+            }
+
+            await this.setUser(user);
+            resolve(user);
+          },
+          error: (err) => {
+            console.error('❌ Error en login (backend):', err);
+            reject(new Error('Error de conexión con el servidor: ' + (err.message || err.statusText || err.status)));
+          }
+        });
+      });
+    }
+
+    // Fallback local (como antes)
     let user = await this.findUserByEmail(email);
-    
     if (!user) {
-      // Si no existe, crear uno nuevo (para compatibilidad)
       user = {
         id: 'user-' + Date.now(),
         name: email.split('@')[0],
@@ -216,12 +391,9 @@ export class UserService {
         balance: 5000.00,
         joinDate: new Date()
       };
-      
-      // Guardar en la base de datos
       await this.saveUserToDatabase(user);
     }
-    
-    // Establecer como usuario actual
+
     await this.setUser(user);
     return user;
   }

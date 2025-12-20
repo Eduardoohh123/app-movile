@@ -66,13 +66,13 @@
       </ion-menu-toggle>
 
       <ion-list-header>
-        <ion-label>Cuenta</ion-label>
+        <ion-label>Administración</ion-label>
       </ion-list-header>
 
       <ion-menu-toggle auto-hide="true">
-        <ion-item (click)="goToProfile()" button lines="full">
-          <ion-icon name="person-outline" slot="start"></ion-icon>
-          <ion-label>Mi Perfil</ion-label>
+        <ion-item routerLink="/admin/users" routerDirection="root" button lines="full">
+          <ion-icon name="people-outline" slot="start"></ion-icon>
+          <ion-label>Gestión de Usuarios</ion-label>
         </ion-item>
       </ion-menu-toggle>
 
@@ -80,6 +80,17 @@
         <ion-item (click)="goToAdmin()" button lines="full">
           <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
           <ion-label>Panel Admin</ion-label>
+        </ion-item>
+      </ion-menu-toggle>
+
+      <ion-list-header>
+        <ion-label>Cuenta</ion-label>
+      </ion-list-header>
+
+      <ion-menu-toggle auto-hide="true">
+        <ion-item (click)="goToProfile()" button lines="full">
+          <ion-icon name="person-outline" slot="start"></ion-icon>
+          <ion-label>Mi Perfil</ion-label>
         </ion-item>
       </ion-menu-toggle>
 

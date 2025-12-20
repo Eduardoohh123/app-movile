@@ -28,7 +28,7 @@ export class BetsService {
   private readonly STORAGE_KEY = 'user_bets';
   private betsSubject = new BehaviorSubject<Bet[]>([]);
   public bets$: Observable<Bet[]> = this.betsSubject.asObservable();
-  private useFirebase = true; // Toggle para usar Firebase
+  private useFirebase = false; // Deshabilitado: usar PostgreSQL 100%
 
   constructor(private firebaseService: FirebaseService) {
     this.loadBets();
