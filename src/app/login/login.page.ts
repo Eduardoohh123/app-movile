@@ -249,8 +249,11 @@ export class LoginPage implements OnInit, OnDestroy {
     } catch (error: any) {
       console.error('❌ Error al registrar en Spring Boot:', error);
       
+      // Extraer mensaje del cuerpo de la respuesta si existe (HttpErrorResponse)
       let errorMessage = 'Error al crear la cuenta en el servidor';
-      if (error.message) {
+      if (error?.error?.message) {
+        errorMessage = error.error.message;
+      } else if (error?.message) {
         errorMessage = error.message;
       }
       
@@ -330,48 +333,49 @@ export class LoginPage implements OnInit, OnDestroy {
     }
 
     try {
-      // Primero intentamos login contra Supabase directamente
-      console.log('🔐 Probando conexión a Supabase...');
-      const supaTest = await this.supabaseService.testAuthWithHeaders();
-
-      if (supaTest.ok) {
-        console.log('🔐 Iniciando sesión con Supabase');
-        const { data, error } = await this.supabaseService.signIn(this.email, this.password);
-
-        if (error) {
-          // Error de Supabase (puede ser credenciales o net)
-          console.error('❌ Supabase signIn error:', error);
-          // Si parece un problema de conexión, fallback al backend
-          const isNetworkError = String(error).toLowerCase().includes('network') || (error?.message && String(error.message).toLowerCase().includes('network'));
-          if (isNetworkError) {
-            console.warn('⚠️ Supabase no disponible, intentando login por backend...');
-            const user = await this.userService.loginUser(this.email, this.password);
-            await this.onSuccessfulLogin(user.name);
-            return;
-          }
-
-          // Credenciales incorrectas u otro error de Supabase
-          this.passwordError = error?.message || 'Error al iniciar sesión con Supabase';
-          await this.showToast(this.passwordError, 'danger');
-          return;
-        }
-
-        if (data?.user) {
-          // Login correcto vía Supabase: crear perfil local si hace falta y navegar
+      // Intentar login por backend primero (fuente de verdad para registros realizados desde la app)
+      try {
+        console.log('🔐 Intentando login por backend...');
+        const user = await this.userService.loginUser(this.email, this.password);
+        if (user) {
           await Preferences.set({ key: 'rememberedEmail', value: this.rememberMe ? this.email : '' });
-          await this.showToast(`¡Bienvenido de vuelta, ${data.user.email}!`, 'success');
+          await this.showToast(`¡Bienvenido de vuelta, ${user.name}!`, 'success');
           this.router.navigate(['/home']);
           return;
         }
-      } else {
-        console.warn('⚠️ Supabase no responde, fallback a backend');
-        // Fallback: intentar login con el backend Spring Boot
-        const user = await this.userService.loginUser(this.email, this.password);
-        await this.onSuccessfulLogin(user.name);
-        return;
+      } catch (backendErr: any) {
+        // Si el backend falla por conexión o responde con error, intentamos Supabase como respaldo
+        console.warn('⚠️ Login por backend falló o usuario no encontrado, intentando Supabase...', backendErr?.message || backendErr);
+
+        try {
+          console.log('🔐 Intentando login por Supabase como fallback...');
+          const { data, error } = await this.supabaseService.signIn(this.email, this.password);
+
+          if (error) {
+            console.error('❌ Supabase signIn error:', error);
+            this.passwordError = error?.message || 'Error al iniciar sesión';
+            await this.showToast(this.passwordError, 'danger');
+            return;
+          }
+
+          if (data?.user) {
+            await Preferences.set({ key: 'rememberedEmail', value: this.rememberMe ? this.email : '' });
+            await this.showToast(`¡Bienvenido de vuelta, ${data.user.email}!`, 'success');
+            this.router.navigate(['/home']);
+            return;
+          }
+
+          // Si ni backend ni supabase funcionaron, mostrar mensaje genérico
+          await this.showToast('No se pudo iniciar sesión. Revisa tus credenciales o la conexión.', 'danger');
+          return;
+        } catch (sErr:any) {
+          console.error('❌ Error en fallback Supabase:', sErr);
+          await this.showToast('Error al iniciar sesión. Intenta de nuevo.', 'danger');
+          return;
+        }
       }
     } catch (error: any) {
-      console.error('❌ Error al iniciar sesión:', error);
+      console.error('❌ Error al iniciar sesión (outer):', error);
       let message = 'Error al iniciar sesión. Intenta de nuevo.';
       if (error?.message) message = error.message;
       this.passwordError = message;
