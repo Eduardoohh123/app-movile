@@ -163,12 +163,13 @@ export class UserService {
   
   /**
    * Sincronizar usuario con Backend PostgreSQL (método asíncrono separado)
+   * Ahora evita hacer PUT cuando el ID numérico es inválido (<= 0) y crea el usuario en su lugar.
    */
   private async syncWithBackend(user: User): Promise<void> {
     try {
       // Convertir el ID string a number para el backend
       const userId = this.extractNumericId(user.id);
-      
+
       // Preparar datos para el backend
       const backendUser = {
         id: userId,
@@ -179,28 +180,39 @@ export class UserService {
         balance: user.balance,
         joinDate: user.joinDate
       };
-      
-      // Intentar actualizar, si falla crear nuevo
-      this.apiService.updateUser(userId, backendUser).subscribe({
-        next: () => {
-          console.log('🐘 Usuario actualizado en PostgreSQL');
-        },
-        error: (error) => {
-          // Si el error es 404 (no existe), intentar crear
-          if (error.status === 404) {
-            this.apiService.createUser(backendUser).subscribe({
-              next: () => {
-                console.log('🐘 Usuario creado en PostgreSQL');
-              },
-              error: (createError) => {
-                console.error('⚠️ Error al crear usuario en PostgreSQL:', createError);
-              }
-            });
-          } else {
-            console.error('⚠️ Error al actualizar usuario en PostgreSQL:', error);
+
+      // Si el ID numérico no es válido, crear directamente
+      if (userId > 0) {
+        this.apiService.updateUser(userId, backendUser).subscribe({
+          next: () => {
+            console.log('🐘 Usuario actualizado en PostgreSQL');
+          },
+          error: (error: any) => {
+            console.error('⚠️ Error al actualizar usuario en PostgreSQL:', error?.status, error?.error || error);
+            // Si el error es 404 (no existe), intentar crear
+            if (error?.status === 404) {
+              this.apiService.createUser(backendUser).subscribe({
+                next: () => {
+                  console.log('🐘 Usuario creado en PostgreSQL (fallback)');
+                },
+                error: (createError: any) => {
+                  console.error('⚠️ Error al crear usuario en PostgreSQL (fallback):', createError?.status, createError?.error || createError);
+                }
+              });
+            }
           }
-        }
-      });
+        });
+      } else {
+        console.log('ℹ️ ID no válido, creando usuario en PostgreSQL...');
+        this.apiService.createUser(backendUser).subscribe({
+          next: () => {
+            console.log('🐘 Usuario creado en PostgreSQL');
+          },
+          error: (createError: any) => {
+            console.error('⚠️ Error al crear usuario en PostgreSQL:', createError?.status, createError?.error || createError);
+          }
+        });
+      }
     } catch (error) {
       console.error('⚠️ Error al sincronizar con PostgreSQL:', error);
       throw error;
@@ -293,6 +305,9 @@ export class UserService {
           const payload = { username: email.split('@')[0], name, email, password };
           this.apiService.registerUser(payload).subscribe({
             next: async (response: any) => {
+              // Log completo para debugging
+              console.log('🔁 Response registerUser:', response);
+
               // Si backend devuelve token, guárdalo
               if (response.token) this.apiService.setAuthToken(response.token);
 
@@ -309,9 +324,9 @@ export class UserService {
               console.log('✅ Usuario registrado en backend');
               resolve(newUser);
             },
-            error: (err) => {
-              console.error('❌ Error al registrar en backend:', err);
-              reject(new Error('Error de registro en el servidor: ' + (err.message || err.statusText || err.status)));
+            error: (err: any) => {
+              console.error('❌ Error al registrar en backend:', err?.status, err?.error || err);
+              reject(new Error('Error de registro en el servidor: ' + (err?.error?.message || err?.message || err?.statusText || err?.status)));
             }
           });
         });
@@ -352,6 +367,9 @@ export class UserService {
       return new Promise((resolve, reject) => {
         this.apiService.loginUser(email, password).subscribe({
           next: async (response: any) => {
+            // Log completo para debugging
+            console.log('🔁 Response loginUser:', response);
+
             // El backend devuelve { message, status, user }
             const payload = response.user || response;
 
@@ -366,15 +384,16 @@ export class UserService {
 
             // Guardar token si el backend lo envía
             if (response.token) {
+              console.log('🔐 Token recibido loginUser: (oculto)');
               this.apiService.setAuthToken(response.token);
             }
 
             await this.setUser(user);
             resolve(user);
           },
-          error: (err) => {
-            console.error('❌ Error en login (backend):', err);
-            reject(new Error('Error de conexión con el servidor: ' + (err.message || err.statusText || err.status)));
+          error: (err: any) => {
+            console.error('❌ Error en login (backend):', err?.status, err?.error || err);
+            reject(new Error('Error de conexión con el servidor: ' + (err?.error?.message || err?.message || err?.statusText || err?.status)));
           }
         });
       });
